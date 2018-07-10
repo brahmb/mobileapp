@@ -45,10 +45,10 @@ namespace Toggl.Daneel.Extensions
             void toggleVisibilityOnMainThread(bool shouldBeVisible)
             {
                 UIApplication.SharedApplication.InvokeOnMainThread(
-                    () => toggleVisiblity(shouldBeVisible));
+                    () => toggleVisibility(shouldBeVisible));
             }
 
-            void toggleVisiblity(bool shouldBeVisible)
+            void toggleVisibility(bool shouldBeVisible)
             {
                 var isVisible = view.Hidden == false;
                 if (isVisible == shouldBeVisible) return;

@@ -102,7 +102,7 @@ namespace Toggl.Daneel.ViewControllers
             bindingSet.Bind(SetEndButton)
                       .To(vm => vm.EditStopTimeCommand);
 
-            //Visiblity
+            //Visibility
             bindingSet.Bind(EndTimeLabel)
                       .For(v => v.BindVisibility())
                       .To(vm => vm.IsRunning);
