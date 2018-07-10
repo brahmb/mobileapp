@@ -14,7 +14,6 @@ using Toggl.Foundation.Extensions;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.Sync.ConflictResolution;
-using Toggl.Foundation.Extensions;
 
 namespace Toggl.Foundation.DataSources
 {
