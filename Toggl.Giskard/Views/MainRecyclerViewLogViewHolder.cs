@@ -1,26 +1,37 @@
 ﻿using System;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using MvvmCross.Binding.Droid.BindingContext;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Droid.Support.V7.RecyclerView;
+using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Multivac.Extensions;
 
 namespace Toggl.Giskard.Views
 {
     public sealed class MainRecyclerViewLogViewHolder : MvxRecyclerViewHolder
     {
+        private static readonly TimeSpan editThrottleDuration = TimeSpan.FromMilliseconds(1000);
+
         private Button continueButton;
         private bool continueClickOverloaded;
 
         public bool CanSync { get; set; }
 
+        private Subject<Unit> editSubject = new Subject<Unit>();
+        public IMvxAsyncCommand<TimeEntryViewModel> EditCommand { get; set; }
+
         private IMvxAsyncCommand<TimeEntryViewModel> continueCommand;
-        public IMvxAsyncCommand<TimeEntryViewModel> ContinueCommand 
+        public IMvxAsyncCommand<TimeEntryViewModel> ContinueCommand
         {
             get => continueCommand;
-            set 
+            set
             {
                 if (continueCommand == value) return;
 
@@ -31,9 +42,17 @@ namespace Toggl.Giskard.Views
             }
         }
 
+        private CompositeDisposable disposeBag = new CompositeDisposable();
+
         public MainRecyclerViewLogViewHolder(View itemView, IMvxAndroidBindingContext context)
             : base(itemView, context)
         {
+            editSubject
+                .Throttle(editThrottleDuration)
+                .VoidSubscribe(() => ExecuteCommandOnItem(EditCommand))
+                .DisposedBy(disposeBag);
+
+            Click = new MvxCommand(() => editSubject.OnNext(Unit.Default));
         }
 
         public MainRecyclerViewLogViewHolder(IntPtr handle, JniHandleOwnership ownership)
@@ -60,8 +79,11 @@ namespace Toggl.Giskard.Views
 
             if (!disposing) return;
 
-            if (continueButton == null) return;
-            continueButton.Click -= onContinueButtonClick;
+            if (continueButton != null)
+            {
+                continueButton.Click -= onContinueButtonClick;
+            }
+            disposeBag.Dispose();
         }
     }
 }

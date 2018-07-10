@@ -60,7 +60,7 @@ namespace Toggl.Giskard.Adapters
                 case MainTemplateSelector.Item:
                     return new MainRecyclerViewLogViewHolder(inflatedView, itemBindingContext)
                     {
-                        Click = TimeEntriesLogViewModel.EditCommand,
+                        EditCommand = TimeEntriesLogViewModel.EditCommand,
                         ContinueCommand = TimeEntriesLogViewModel.ContinueTimeEntryCommand
                     };
 
