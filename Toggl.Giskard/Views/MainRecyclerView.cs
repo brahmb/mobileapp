@@ -20,11 +20,14 @@ namespace Toggl.Giskard.Views
     public sealed class MainRecyclerView : MvxRecyclerView
     {
         private BehaviorSubject<View> firstTimeEntryViewSubject = new BehaviorSubject<View>(null);
+        private BehaviorSubject<View> lastTimeEntryViewSubject = new BehaviorSubject<View>(null);
         private IDisposable firstTimeEntryViewUpdateDisposable;
+        private IDisposable lastTimeEntryViewUpdateDisposable;
 
         public MainRecyclerAdapter MainRecyclerAdapter => (MainRecyclerAdapter)Adapter;
 
         public IObservable<View> FirstTimeEntryView { get; }
+        public IObservable<View> LastTimeEntryView { get; }
 
         public SuggestionsViewModel SuggestionsViewModel
         {
@@ -71,7 +74,17 @@ namespace Toggl.Giskard.Views
                 .Merge(MainRecyclerAdapter.CollectionChange)
                 .VoidSubscribe(onFirstTimeEntryViewUpdate);
 
+            lastTimeEntryViewUpdateDisposable = Observable
+                .FromEventPattern<ScrollChangeEventArgs>(e => ScrollChange += e, e => ScrollChange -= e)
+                .Select(_ => Unit.Default)
+                .Merge(MainRecyclerAdapter.CollectionChange)
+                .VoidSubscribe(onLastTimeEntryViewUpdate);
+
             FirstTimeEntryView = firstTimeEntryViewSubject
+                .AsObservable()
+                .DistinctUntilChanged();
+
+            LastTimeEntryView = lastTimeEntryViewSubject
                 .AsObservable()
                 .DistinctUntilChanged();
         }
@@ -80,6 +93,12 @@ namespace Toggl.Giskard.Views
         {
             var view = findOldestTimeEntryView();
             firstTimeEntryViewSubject.OnNext(view);
+        }
+
+        private void onLastTimeEntryViewUpdate()
+        {
+            var view = findNewestTimeEntryView();
+            lastTimeEntryViewSubject.OnNext(view);
         }
 
         private View findOldestTimeEntryView()
@@ -95,8 +114,32 @@ namespace Toggl.Giskard.Views
                     if (view == null || layoutManager.GetItemViewType(view) != MainTemplateSelector.Item)
                         return null;
 
-                    var isVisible = 
-                        layoutManager.IsViewPartiallyVisible(view, true, true) 
+                    var isVisible =
+                        layoutManager.IsViewPartiallyVisible(view, true, true)
+                        || layoutManager.IsViewPartiallyVisible(view, false, true);
+
+                    return isVisible ? view : null;
+                }
+            }
+
+            return null;
+        }
+
+        private View findNewestTimeEntryView()
+        {
+            var layoutManager = (LinearLayoutManager)GetLayoutManager();
+
+            for (var position = 0; position <= MainRecyclerAdapter.ItemCount - 1; position++)
+            {
+                var item = MainRecyclerAdapter.GetItem(position);
+                if (item is TimeEntryViewModel)
+                {
+                    View view = layoutManager.FindViewByPosition(position);
+                    if (view == null || layoutManager.GetItemViewType(view) != MainTemplateSelector.Item)
+                        return null;
+
+                    var isVisible =
+                        layoutManager.IsViewPartiallyVisible(view, true, true)
                         || layoutManager.IsViewPartiallyVisible(view, false, true);
 
                     return isVisible ? view : null;

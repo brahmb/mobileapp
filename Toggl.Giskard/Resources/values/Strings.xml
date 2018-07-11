@@ -91,6 +91,8 @@ understand and agree to Toggl\'s</string>
     <string name="OnboardingTapToEdit">You have created your first time entry 🙌\nTap to edit</string>
     <string name="OnboardingTapToStopTimer">Tap to stop timer</string>
     <string name="OnboardingAddProjectOrTag">Add a project and tags on the fly</string>
+    <string name="OnboardingSwipeRight">Swipe right to continue</string>
+    <string name="OnboardingSwipeLeft">Swipe left to delete</string>
     <string name="CategorizeWithProjects">Categorize your time by adding a project</string>
 
     <string name="MainTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.MainTemplateSelector, Toggl.Giskard</string>
