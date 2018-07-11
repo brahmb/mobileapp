@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content.PM;
@@ -16,14 +18,12 @@ using Toggl.Foundation.MvvmCross.Onboarding.MainView;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Giskard.Extensions;
 using Toggl.Giskard.Helper;
+using Toggl.Giskard.Views;
 using Toggl.Multivac.Extensions;
 using static Toggl.Foundation.Sync.SyncProgress;
 using static Toggl.Giskard.Extensions.CircularRevealAnimation.AnimationType;
 using FoundationResources = Toggl.Foundation.Resources;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
-using Toggl.Giskard.Views;
-using System.Reactive.Linq;
-using System.Threading;
 
 namespace Toggl.Giskard.Activities
 {
@@ -31,11 +31,13 @@ namespace Toggl.Giskard.Activities
     [Activity(Theme = "@style/AppTheme",
               ScreenOrientation = ScreenOrientation.Portrait,
               ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
-    public sealed class MainActivity : MvxAppCompatActivity<MainViewModel>
+    public sealed partial class MainActivity : MvxAppCompatActivity<MainViewModel>
     {
         private const int snackbarDuration = 5000;
 
         private CompositeDisposable disposeBag;
+        private Toolbar toolbar;
+        private MainRecyclerView mainRecyclerView;
         private View runningEntryCardFrame;
         private FloatingActionButton playButton;
         private FloatingActionButton stopButton;
@@ -43,10 +45,8 @@ namespace Toggl.Giskard.Activities
         private PopupWindow playButtonTooltipPopupWindow;
         private PopupWindow stopButtonTooltipPopupWindow;
         private PopupWindow tapToEditPopup;
-        
-        private IDisposable editTimeEntryOnboardingStepDisposable;
 
-        private MainRecyclerView mainRecyclerView;
+        private IDisposable editTimeEntryOnboardingStepDisposable;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -56,16 +56,13 @@ namespace Toggl.Giskard.Activities
             SetContentView(Resource.Layout.MainActivity);
             OverridePendingTransition(Resource.Animation.abc_fade_in, Resource.Animation.abc_fade_out);
 
-            SetSupportActionBar(FindViewById<Toolbar>(Resource.Id.Toolbar));
+            initializeViews();
+
+            SetSupportActionBar(toolbar);
             SupportActionBar.SetDisplayShowHomeEnabled(false);
             SupportActionBar.SetDisplayShowTitleEnabled(false);
 
-            runningEntryCardFrame = FindViewById(Resource.Id.MainRunningTimeEntryFrame);
             runningEntryCardFrame.Visibility = ViewStates.Invisible;
-
-            playButton = FindViewById<FloatingActionButton>(Resource.Id.MainPlayButton);
-            stopButton = FindViewById<FloatingActionButton>(Resource.Id.MainStopButton);
-            coordinatorLayout = FindViewById<CoordinatorLayout>(Resource.Id.MainCoordinatorLayout);
 
             disposeBag = new CompositeDisposable();
 
@@ -196,7 +193,6 @@ namespace Toggl.Giskard.Activities
 
         private void setupTapToEditOnboardingStep()
         {
-            mainRecyclerView = FindViewById<MainRecyclerView>(Resource.Id.MainRecyclerView);
             mainRecyclerView.FirstTimeEntryView
                             .ObserveOn(SynchronizationContext.Current)
                             .Subscribe(updateTapToEditOnboardingStep)
