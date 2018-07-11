@@ -94,6 +94,8 @@ understand and agree to Toggl\'s</string>
     <string name="OnboardingSwipeRight">Swipe right to continue</string>
     <string name="OnboardingSwipeLeft">Swipe left to delete</string>
     <string name="CategorizeWithProjects">Categorize your time by adding a project</string>
+    <string name="Continue">Continue</string>
+    <string name="Delete">Delete</string>
 
     <string name="MainTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.MainTemplateSelector, Toggl.Giskard</string>
     <string name="ReportsTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.ReportsTemplateSelector, Toggl.Giskard</string>

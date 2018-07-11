@@ -1,47 +1,20 @@
-﻿using System.Linq;
-using Android.Content;
+﻿using Android.Content;
 using Android.Graphics;
-using Android.Graphics.Drawables;
-using Android.Support.V4.Content;
 using Android.Support.V7.Widget;
 using Android.Support.V7.Widget.Helper;
-using Android.Text;
-using Toggl.Giskard.Extensions;
+using Android.Views;
 using static Android.Support.V7.Widget.RecyclerView;
-using static Toggl.Foundation.Resources;
 
 namespace Toggl.Giskard.Views
 {
     public sealed class MainRecyclerViewTouchCallback : ItemTouchHelper.SimpleCallback
     {
-        private const int left = 0;
-        private const int right = 1;
-
-        private readonly int textMargin;
-        private readonly int deleteTextWidth;
-        private readonly Drawable[] backgrounds;
         private readonly MainRecyclerView recyclerView;
-        private readonly string[] text = { Delete, Continue };
-        private readonly TextPaint textPaint = new TextPaint();
 
         public MainRecyclerViewTouchCallback(Context context, MainRecyclerView recyclerView)
             : base(0, ItemTouchHelper.Left | ItemTouchHelper.Right)
         {
             this.recyclerView = recyclerView;
-
-            backgrounds = new[] { Resource.Color.playButtonRed, Resource.Color.playButtonGreen }
-                .Select(res => new Color(ContextCompat.GetColor(context, res)))
-                .Select(color => new ColorDrawable(color))
-                .ToArray();
-
-            textMargin = 16.DpToPixels(context);
-
-            textPaint.Color = Color.White;
-            textPaint.TextAlign = Paint.Align.Left;
-            textPaint.TextSize = 15.SpToPixels(context);
-            textPaint.SetTypeface(Typeface.Create("sans-serif-medium", TypefaceStyle.Normal));
-
-            deleteTextWidth = (int)textPaint.MeasureText(Delete);
         }
 
         public override int GetSwipeDirs(RecyclerView recyclerView, ViewHolder viewHolder)
@@ -77,38 +50,53 @@ namespace Toggl.Giskard.Views
                                          float dX, float dY,
                                          int actionState, bool isCurrentlyActive)
         {
-            var isInvalidIndex = viewHolder.AdapterPosition == -1;
-            var isTimeEntryCell = viewHolder is MainRecyclerViewLogViewHolder;
-            if (isInvalidIndex || !isTimeEntryCell) return;
-
-            var itemView = viewHolder.ItemView;
-            var isSwippingRight = dX > 0;
-
-            int direction, leftOffset, rightOffset, textX = 0;
-
-            if (isSwippingRight)
+            if (viewHolder is MainRecyclerViewLogViewHolder logViewHolder)
             {
-                direction = right;
-                textX = textMargin;
-                leftOffset = itemView.Left;
-                rightOffset = itemView.Left + (int)dX;
+                if (dX > 0)
+                {
+                    logViewHolder.ContinueBackground.Visibility = ViewStates.Visible;
+                    logViewHolder.DeleteBackground.Visibility = ViewStates.Invisible;
+                }
+                else if (dX < 0)
+                {
+                    logViewHolder.ContinueBackground.Visibility = ViewStates.Invisible;
+                    logViewHolder.DeleteBackground.Visibility = ViewStates.Visible;
+                }
+                else {
+                    logViewHolder.ContinueBackground.Visibility = ViewStates.Invisible;
+                    logViewHolder.DeleteBackground.Visibility = ViewStates.Invisible;
+                }
+
+                DefaultUIUtil.OnDraw(c, recyclerView, logViewHolder.ContentView, dX, dY, actionState, isCurrentlyActive);
             }
             else
             {
-                direction = left;
-                leftOffset = itemView.Right + (int)dX;
-                rightOffset = itemView.Right;
-                textX = rightOffset - textMargin - deleteTextWidth;
+                base.OnChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
+        }
 
-            var textY = (int)((itemView.Height / 2) - ((textPaint.Descent() + textPaint.Ascent()) / 2)) + itemView.Top;
+        public override void OnSelectedChanged(ViewHolder viewHolder, int actionState)
+        {
+            if (viewHolder is MainRecyclerViewLogViewHolder logViewHolder)
+            {
+                DefaultUIUtil.OnSelected(logViewHolder.ContentView);
+            }
+            else
+            {
+                base.OnSelectedChanged(viewHolder, actionState);
+            }
+        }
 
-            backgrounds[direction].SetBounds(leftOffset, itemView.Top, rightOffset, itemView.Bottom);
-            backgrounds[direction].Draw(c);
-            c.DrawText(text[direction], textX, textY, textPaint);
-
-            base.OnChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        public override void ClearView(RecyclerView recyclerView, ViewHolder viewHolder)
+        {
+            if (viewHolder is MainRecyclerViewLogViewHolder logViewHolder)
+            {
+                DefaultUIUtil.ClearView(logViewHolder.ContentView);
+            }
+            else
+            {
+                base.ClearView(recyclerView, viewHolder);
+            }
         }
     }
 }
-
