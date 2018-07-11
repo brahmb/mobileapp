@@ -22,18 +22,12 @@ namespace Toggl.Giskard.Extensions
 
             var dismissableStep = step.ToDismissable(step.GetType().FullName, storage);
 
-            void OnDismiss(object sender, EventArgs args)
-            {
-                tooltip.Dismiss();
-                dismissableStep.Dismiss();
-            }
-
-            tooltip.ContentView.Click += OnDismiss;
+            dismissableStep.DismissByTapping(tooltip);
 
             return dismissableStep.ManageVisibilityOf(tooltip, anchor, popupOffsetsGenerator);
         }
 
-        private static IDisposable ManageVisibilityOf(this IOnboardingStep step, PopupWindow popupWindowTooltip, View anchor, Func<PopupWindow, View, PopupOffsets> popupOffsetsGenerator)
+        public static IDisposable ManageVisibilityOf(this IOnboardingStep step, PopupWindow popupWindowTooltip, View anchor, Func<PopupWindow, View, PopupOffsets> popupOffsetsGenerator)
         {
 
             void toggleVisibilityOnMainThread(bool shouldBeVisible)
@@ -51,6 +45,17 @@ namespace Toggl.Giskard.Extensions
             return step.ShouldBeVisible
                 .combineWithWindowTokenAvailabilityFrom(anchor)
                 .Subscribe(toggleVisibilityOnMainThread);
+        }
+
+        public static void DismissByTapping(this IDismissable step, PopupWindow popupWindow)
+        {
+            void OnDismiss(object sender, EventArgs args)
+            {
+                popupWindow.Dismiss();
+                step.Dismiss();
+            }
+
+            popupWindow.ContentView.Click += OnDismiss;
         }
 
         private static void showPopupTooltip(PopupWindow popupWindow, View anchor, Func<PopupWindow, View, PopupOffsets> popupOffsetsGenerator)

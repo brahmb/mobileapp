@@ -20,7 +20,7 @@ namespace Toggl.Giskard.Extensions
             {
                 throw new AndroidRuntimeException("The contentView must be set before calling this method");
             }
-            
+
             var horizontalOffset = -(contentWindow.MeasuredWidth + dpExtraRightMargin.DpToPixels(contentWindow.Context));
             var verticalOffset = -(contentWindow.MeasuredHeight + Math.Abs(contentWindow.MeasuredHeight - anchor.Height) / 2);
             return new PopupOffsets(horizontalOffset, verticalOffset);
@@ -54,6 +54,22 @@ namespace Toggl.Giskard.Extensions
 
             var horizontalOffset = -(contentWindow.MeasuredWidth - anchor.Width) / 2;
             var verticalOffset = -(contentWindow.MeasuredHeight + anchor.Height + dpExtraTopMargin.DpToPixels(contentWindow.Context));
+            return new PopupOffsets(horizontalOffset, verticalOffset);
+        }
+
+        public static PopupOffsets BottomRightOffsetsTo(this PopupWindow popupWindow,
+            View anchor,
+            int dpExtraRightMargin = 0,
+            int dpExtraTopMargin = 0)
+        {
+            var contentWindow = popupWindow.ContentView;
+            if (contentWindow == null)
+            {
+                throw new AndroidRuntimeException("The contentView must be set before calling this method");
+            }
+
+            var horizontalOffset = -contentWindow.MeasuredWidth + anchor.Width + dpExtraRightMargin.DpToPixels(contentWindow.Context);
+            var verticalOffset = dpExtraTopMargin;
             return new PopupOffsets(horizontalOffset, verticalOffset);
         }
     }

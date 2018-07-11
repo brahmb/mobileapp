@@ -26,6 +26,8 @@ using static Toggl.Foundation.Sync.SyncProgress;
 using static Toggl.Giskard.Extensions.CircularRevealAnimation.AnimationType;
 using FoundationResources = Toggl.Foundation.Resources;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
+using Toggl.PrimeRadiant.Extensions;
+using Toggl.PrimeRadiant.Onboarding;
 
 namespace Toggl.Giskard.Activities
 {
@@ -50,13 +52,13 @@ namespace Toggl.Giskard.Activities
         private PopupWindow swipeRightPopup;
         private PopupWindow swipeLeftPopup;
 
-        private EditTimeEntryOnboardingStep editTimeEntryOnboardingStep;
+        private DismissableOnboardingStep editTimeEntryOnboardingStep;
         private IDisposable editTimeEntryOnboardingStepDisposable;
 
-        private SwipeRightOnboardingStep swipeRightOnboardingStep;
+        private DismissableOnboardingStep swipeRightOnboardingStep;
         private IDisposable swipeRightOnboardingStepDisposable;
 
-        private SwipeLeftOnboardingStep swipeLeftOnboardingStep;
+        private DismissableOnboardingStep swipeLeftOnboardingStep;
         private IDisposable swipeLeftOnboardingStepDisposable;
 
         private IOnboardingStorage onboardingStorage;
@@ -222,7 +224,15 @@ namespace Toggl.Giskard.Activities
 
         private void setupTapToEditOnboardingStep()
         {
-            editTimeEntryOnboardingStep = new EditTimeEntryOnboardingStep(onboardingStorage, Observable.Return(false));
+            tapToEditPopup = PopupWindowFactory.PopupWindowWithText(
+                    this,
+                    Resource.Layout.TooltipWithLeftTopArrow,
+                    Resource.Id.TooltipText,
+                    Resource.String.OnboardingTapToEdit);
+
+            editTimeEntryOnboardingStep = new EditTimeEntryOnboardingStep(onboardingStorage, Observable.Return(false))
+                .ToDismissable(nameof(EditTimeEntryOnboardingStep), onboardingStorage);
+            editTimeEntryOnboardingStep.DismissByTapping(tapToEditPopup);
 
             mainRecyclerView.FirstTimeEntryView
                             .ObserveOn(SynchronizationContext.Current)
@@ -236,7 +246,16 @@ namespace Toggl.Giskard.Activities
                 .ShouldBeVisible
                 .Select(visible => !visible);
 
-            swipeRightOnboardingStep = new SwipeRightOnboardingStep(shouldBeVisible, timeEntriesCountSubject.AsObservable());
+            swipeRightPopup = PopupWindowFactory.PopupWindowWithText(
+                    this,
+                    Resource.Layout.TooltipWithLeftTopArrow,
+                    Resource.Id.TooltipText,
+                    Resource.String.OnboardingSwipeRight);
+
+            swipeRightOnboardingStep = new SwipeRightOnboardingStep(shouldBeVisible, timeEntriesCountSubject.AsObservable())
+                .ToDismissable(nameof(SwipeRightOnboardingStep), onboardingStorage);
+            swipeRightOnboardingStep.DismissByTapping(swipeRightPopup);
+
             mainRecyclerView.LastTimeEntryView
                             .ObserveOn(SynchronizationContext.Current)
                             .Subscribe(updateSwipeRightOnboardingStep)
@@ -251,7 +270,16 @@ namespace Toggl.Giskard.Activities
                 (editTimeEntryVisible, swipeRightVisible) => !editTimeEntryVisible && !swipeRightVisible
             );
 
-            swipeLeftOnboardingStep = new SwipeLeftOnboardingStep(shouldBeVisible, timeEntriesCountSubject.AsObservable());
+            swipeLeftPopup = PopupWindowFactory.PopupWindowWithText(
+                    this,
+                    Resource.Layout.TooltipWithRightTopArrow,
+                    Resource.Id.TooltipText,
+                    Resource.String.OnboardingSwipeLeft);
+
+            swipeLeftOnboardingStep = new SwipeLeftOnboardingStep(shouldBeVisible, timeEntriesCountSubject.AsObservable())
+                .ToDismissable(nameof(SwipeLeftOnboardingStep), onboardingStorage);
+            swipeLeftOnboardingStep.DismissByTapping(swipeLeftPopup);
+
             mainRecyclerView.LastTimeEntryView
                             .ObserveOn(SynchronizationContext.Current)
                             .Subscribe(updateSwipeLeftOnboardingStep)
@@ -261,7 +289,6 @@ namespace Toggl.Giskard.Activities
         private void updateTapToEditOnboardingStep(View firstTimeEntry)
         {
             tapToEditPopup?.Dismiss();
-            tapToEditPopup = null;
 
             if (firstTimeEntry == null)
                 return;
@@ -280,41 +307,21 @@ namespace Toggl.Giskard.Activities
             if (tapToEditPopup != null)
                 tapToEditPopup.Dismiss();
 
-            tapToEditPopup = tapToEditPopup
-                ?? PopupWindowFactory.PopupWindowWithText(
-                    this,
-                    Resource.Layout.TooltipWithLeftTopArrow,
-                    Resource.Id.TooltipText,
-                    Resource.String.OnboardingTapToEdit);
-
             editTimeEntryOnboardingStepDisposable = editTimeEntryOnboardingStep
-                .ManageDismissableTooltip(
+                .ManageVisibilityOf(
                     tapToEditPopup,
                     firstTimeEntry,
-                    (window, view) => PopupOffsets.FromDp(16, -4, this),
-                    onboardingStorage);
+                    (window, view) => PopupOffsets.FromDp(16, -4, this));
         }
 
         private void updateSwipeRightOnboardingStep(View lastTimeEntry)
         {
             swipeRightPopup?.Dismiss();
-            swipeRightPopup = null;
 
             if (lastTimeEntry == null)
                 return;
 
             updateSwipeRightPopupWindowAndAnimation(lastTimeEntry);
-        }
-
-        private void updateSwipeLeftOnboardingStep(View lastTimeEntry)
-        {
-            swipeLeftPopup?.Dismiss();
-            swipeLeftPopup = null;
-
-            if (lastTimeEntry == null)
-                return;
-
-            updateSwipeLeftPopupWindowAndAnimation(lastTimeEntry);
         }
 
         private void updateSwipeRightPopupWindowAndAnimation(View lastTimeEntry)
@@ -328,19 +335,21 @@ namespace Toggl.Giskard.Activities
             if (swipeRightPopup != null)
                 swipeRightPopup.Dismiss();
 
-            swipeRightPopup = swipeRightPopup
-                ?? PopupWindowFactory.PopupWindowWithText(
-                    this,
-                    Resource.Layout.TooltipWithLeftTopArrow,
-                    Resource.Id.TooltipText,
-                    Resource.String.OnboardingSwipeRight);
-
             swipeRightOnboardingStepDisposable = swipeRightOnboardingStep
-                .ManageDismissableTooltip(
+                .ManageVisibilityOf(
                     swipeRightPopup,
                     lastTimeEntry,
-                    (window, view) => PopupOffsets.FromDp(16, -4, this),
-                    onboardingStorage);
+                    (window, view) => PopupOffsets.FromDp(16, -4, this));
+        }
+
+        private void updateSwipeLeftOnboardingStep(View lastTimeEntry)
+        {
+            swipeLeftPopup?.Dismiss();
+
+            if (lastTimeEntry == null)
+                return;
+
+            updateSwipeLeftPopupWindowAndAnimation(lastTimeEntry);
         }
 
         private void updateSwipeLeftPopupWindowAndAnimation(View lastTimeEntry)
@@ -351,22 +360,11 @@ namespace Toggl.Giskard.Activities
                 swipeLeftOnboardingStepDisposable = null;
             }
 
-            if (swipeLeftPopup != null)
-                swipeLeftPopup.Dismiss();
-
-            swipeLeftPopup = swipeLeftPopup
-                ?? PopupWindowFactory.PopupWindowWithText(
-                    this,
-                    Resource.Layout.TooltipWithRightTopArrow,
-                    Resource.Id.TooltipText,
-                    Resource.String.OnboardingSwipeLeft);
-
             swipeLeftOnboardingStepDisposable = swipeLeftOnboardingStep
-                .ManageDismissableTooltip(
+                .ManageVisibilityOf(
                     swipeLeftPopup,
                     lastTimeEntry,
-                    (window, view) => PopupOffsets.FromDp(16, -4, this),
-                    onboardingStorage);
+                    (window, view) => window.BottomRightOffsetsTo(view, -16, -4));
         }
 
         private void onTimeEntriesCountChanged(object sender, PropertyChangedEventArgs e)
