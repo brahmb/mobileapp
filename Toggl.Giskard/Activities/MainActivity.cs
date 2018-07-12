@@ -350,6 +350,12 @@ namespace Toggl.Giskard.Activities
                     lastTimeEntry.ItemView,
                     (window, view) => PopupOffsets.FromDp(16, -4, this));
 
+            if (swipeRightOnboardingAnimationStepDisposable != null)
+            {
+                swipeRightOnboardingAnimationStepDisposable.Dispose();
+                swipeRightOnboardingAnimationStepDisposable = null;
+            }
+
             swipeRightOnboardingAnimationStepDisposable = swipeRightOnboardingStep
                 .ManageSwipeActionAnimationOf(lastTimeEntry, AnimationSide.Right);
         }
@@ -372,6 +378,12 @@ namespace Toggl.Giskard.Activities
                     swipeLeftPopup,
                     lastTimeEntry.ItemView,
                     (window, view) => window.BottomRightOffsetsTo(view, -16, -4));
+
+            if (swipeLeftOnboardingAnimationStepDisposable != null)
+            {
+                swipeLeftOnboardingAnimationStepDisposable.Dispose();
+                swipeLeftOnboardingAnimationStepDisposable = null;
+            }
 
             swipeLeftOnboardingAnimationStepDisposable = swipeLeftOnboardingStep
                 .ManageSwipeActionAnimationOf(lastTimeEntry, AnimationSide.Left);
