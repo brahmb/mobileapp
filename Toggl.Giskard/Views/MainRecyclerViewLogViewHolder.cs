@@ -61,13 +61,13 @@ namespace Toggl.Giskard.Views
         {
         }
 
-        public void StartAnimating(AnimationSide side)
+        public ObjectAnimator StartAnimating(AnimationSide side)
         {
             if (animator != null)
                 StopAnimating();
 
-            ContinueBackground.Visibility = side == AnimationSide.Left ? ViewStates.Visible : ViewStates.Invisible;
-            DeleteBackground.Visibility = side == AnimationSide.Right ? ViewStates.Visible : ViewStates.Invisible;
+            ContinueBackground.Visibility = side == AnimationSide.Right ? ViewStates.Visible : ViewStates.Invisible;
+            DeleteBackground.Visibility = side == AnimationSide.Left ? ViewStates.Visible : ViewStates.Invisible;
 
             var offsetsInDp = getAnimationOffsetsForSide(side);
             var offsetsInPx = offsetsInDp.Select(offset => (float)offset.DpToPixels(Application.Context)).ToArray();
@@ -77,6 +77,8 @@ namespace Toggl.Giskard.Views
             animator.RepeatMode = ValueAnimatorRepeatMode.Reverse;
             animator.RepeatCount = ValueAnimator.Infinite;
             animator.Start();
+
+            return animator;
         }
 
         public void StopAnimating()
@@ -96,12 +98,12 @@ namespace Toggl.Giskard.Views
         {
             switch (side)
             {
-                case AnimationSide.Left:
-                    return new float[] { 50, 0, 3.5f, 0 };
                 case AnimationSide.Right:
+                    return new float[] { 50, 0, 3.5f, 0 };
+                case AnimationSide.Left:
                     return new float[] { -50, 0, -3.5f, 0 };
                 default:
-                    throw new ArgumentException("Unexpected side for animations");
+                    throw new ArgumentException("Unexpected side");
             }
         }
 

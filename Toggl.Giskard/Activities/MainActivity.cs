@@ -57,9 +57,11 @@ namespace Toggl.Giskard.Activities
 
         private DismissableOnboardingStep swipeRightOnboardingStep;
         private IDisposable swipeRightOnboardingStepDisposable;
+        private IDisposable swipeRightOnboardingAnimationStepDisposable;
 
         private DismissableOnboardingStep swipeLeftOnboardingStep;
         private IDisposable swipeLeftOnboardingStepDisposable;
+        private IDisposable swipeLeftOnboardingAnimationStepDisposable;
 
         private IOnboardingStorage onboardingStorage;
         private readonly ISubject<int> timeEntriesCountSubject = new BehaviorSubject<int>(0);
@@ -332,12 +334,14 @@ namespace Toggl.Giskard.Activities
                 swipeRightOnboardingStepDisposable = null;
             }
 
-            lastTimeEntry.StartAnimating(AnimationSide.Right);
             swipeRightOnboardingStepDisposable = swipeRightOnboardingStep
                 .ManageVisibilityOf(
                     swipeRightPopup,
                     lastTimeEntry.ItemView,
                     (window, view) => PopupOffsets.FromDp(16, -4, this));
+
+            swipeRightOnboardingAnimationStepDisposable = swipeRightOnboardingStep
+                .ManageSwipeActionAnimationOf(lastTimeEntry, AnimationSide.Right);
         }
 
         private void updateSwipeLeftOnboardingStep(MainRecyclerViewLogViewHolder lastTimeEntry)
@@ -358,12 +362,14 @@ namespace Toggl.Giskard.Activities
                 swipeLeftOnboardingStepDisposable = null;
             }
 
-            lastTimeEntry.StartAnimating(AnimationSide.Left);
             swipeLeftOnboardingStepDisposable = swipeLeftOnboardingStep
                 .ManageVisibilityOf(
                     swipeLeftPopup,
                     lastTimeEntry.ItemView,
                     (window, view) => window.BottomRightOffsetsTo(view, -16, -4));
+
+            swipeLeftOnboardingAnimationStepDisposable = swipeLeftOnboardingStep
+                .ManageSwipeActionAnimationOf(lastTimeEntry, AnimationSide.Left);
         }
 
         private void onTimeEntriesCountChanged(object sender, PropertyChangedEventArgs e)

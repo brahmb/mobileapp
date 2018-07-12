@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading;
 using Android.Views;
 using Android.Widget;
 using MvvmCross.Base;
+using Toggl.Giskard.Views;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant.Extensions;
 using Toggl.PrimeRadiant.Onboarding;
@@ -43,8 +45,45 @@ namespace Toggl.Giskard.Extensions
             }
 
             return step.ShouldBeVisible
-                .combineWithWindowTokenAvailabilityFrom(anchor)
-                .Subscribe(toggleVisibilityOnMainThread);
+                   .combineWithWindowTokenAvailabilityFrom(anchor)
+                   .ObserveOn(SynchronizationContext.Current)
+                   .Subscribe(toggleVisibilityOnMainThread);
+        }
+
+        public static IDisposable ManageSwipeActionAnimationOf(this IOnboardingStep step, MainRecyclerViewLogViewHolder viewHolder, AnimationSide side)
+        {
+            IDisposable animation = null;
+            void toggleVisibilityOnMainThread(bool shouldBeVisible)
+            {
+                var isVisible = animation != null;
+
+                if (isVisible == shouldBeVisible) return;
+
+                if (shouldBeVisible)
+                {
+                    animation = viewHolder.StartAnimating(side);
+                }
+                else
+                {
+                    viewHolder.StopAnimating();
+                    animation?.Dispose();
+                    animation = null;
+                }
+            }
+
+            var subscriptionDisposable = step.ShouldBeVisible
+                                             .ObserveOn(SynchronizationContext.Current)
+                                             .Subscribe(toggleVisibilityOnMainThread);
+
+            return Disposable.Create(() =>
+            {
+                viewHolder.StopAnimating();
+                animation?.Dispose();
+                animation = null;
+
+                subscriptionDisposable?.Dispose();
+                subscriptionDisposable = null;
+            });
         }
 
         public static void DismissByTapping(this IDismissable step, PopupWindow popupWindow)
