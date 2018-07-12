@@ -17,6 +17,7 @@ using MvvmCross.Platforms.Android.Presenters.Attributes;
 using MvvmCross.WeakSubscription;
 using Toggl.Foundation.MvvmCross.Onboarding.MainView;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Giskard.Extensions;
 using Toggl.Giskard.Helper;
 using Toggl.Giskard.Views;
@@ -58,10 +59,12 @@ namespace Toggl.Giskard.Activities
         private DismissableOnboardingStep swipeRightOnboardingStep;
         private IDisposable swipeRightOnboardingStepDisposable;
         private IDisposable swipeRightOnboardingAnimationStepDisposable;
+        private IDisposable swipeToContinueWasUsedDisposable;
 
         private DismissableOnboardingStep swipeLeftOnboardingStep;
         private IDisposable swipeLeftOnboardingStepDisposable;
         private IDisposable swipeLeftOnboardingAnimationStepDisposable;
+        private IDisposable swipeToDeleteWasUsedDisposable;
 
         private IOnboardingStorage onboardingStorage;
         private readonly ISubject<int> timeEntriesCountSubject = new BehaviorSubject<int>(0);
@@ -101,7 +104,11 @@ namespace Toggl.Giskard.Activities
 
             editTimeEntryOnboardingStepDisposable.Dispose();
             swipeRightOnboardingStepDisposable.Dispose();
+            swipeRightOnboardingAnimationStepDisposable.Dispose();
+            swipeToContinueWasUsedDisposable.Dispose();
             swipeLeftOnboardingStepDisposable.Dispose();
+            swipeLeftOnboardingAnimationStepDisposable.Dispose();
+            swipeToDeleteWasUsedDisposable.Dispose();
         }
 
         protected override void OnStop()
@@ -258,6 +265,14 @@ namespace Toggl.Giskard.Activities
                 .ToDismissable(nameof(SwipeRightOnboardingStep), onboardingStorage);
             swipeRightOnboardingStep.DismissByTapping(swipeRightPopup);
 
+            swipeToContinueWasUsedDisposable = mainRecyclerView.MainRecyclerAdapter.SwipeToContinueWasUsedObservable
+               .VoidSubscribe(() =>
+               {
+                   swipeRightOnboardingStep.Dismiss();
+                   swipeToContinueWasUsedDisposable.Dispose();
+                   swipeToContinueWasUsedDisposable = null;
+               });
+
             mainRecyclerView.LastTimeEntryViewHolder
                             .ObserveOn(SynchronizationContext.Current)
                             .Subscribe(updateSwipeRightOnboardingStep)
@@ -281,6 +296,14 @@ namespace Toggl.Giskard.Activities
             swipeLeftOnboardingStep = new SwipeLeftOnboardingStep(shouldBeVisible, timeEntriesCountSubject.AsObservable())
                 .ToDismissable(nameof(SwipeLeftOnboardingStep), onboardingStorage);
             swipeLeftOnboardingStep.DismissByTapping(swipeLeftPopup);
+
+            swipeToDeleteWasUsedDisposable = mainRecyclerView.MainRecyclerAdapter.SwipeToDeleteWasUsedObservable
+               .VoidSubscribe(() =>
+               {
+                   swipeLeftOnboardingStep.Dismiss();
+                   swipeToDeleteWasUsedDisposable.Dispose();
+                   swipeToDeleteWasUsedDisposable = null;
+               });
 
             mainRecyclerView.LastTimeEntryViewHolder
                             .ObserveOn(SynchronizationContext.Current)
@@ -306,9 +329,6 @@ namespace Toggl.Giskard.Activities
                 editTimeEntryOnboardingStepDisposable = null;
             }
 
-            if (tapToEditPopup != null)
-                tapToEditPopup.Dismiss();
-
             editTimeEntryOnboardingStepDisposable = editTimeEntryOnboardingStep
                 .ManageVisibilityOf(
                     tapToEditPopup,
@@ -323,11 +343,6 @@ namespace Toggl.Giskard.Activities
             if (lastTimeEntry == null)
                 return;
 
-            updateSwipeRightPopupWindowAndAnimation(lastTimeEntry);
-        }
-
-        private void updateSwipeRightPopupWindowAndAnimation(MainRecyclerViewLogViewHolder lastTimeEntry)
-        {
             if (swipeRightOnboardingStepDisposable != null)
             {
                 swipeRightOnboardingStepDisposable.Dispose();
@@ -351,11 +366,6 @@ namespace Toggl.Giskard.Activities
             if (lastTimeEntry == null)
                 return;
 
-            updateSwipeLeftPopupWindowAndAnimation(lastTimeEntry);
-        }
-
-        private void updateSwipeLeftPopupWindowAndAnimation(MainRecyclerViewLogViewHolder lastTimeEntry)
-        {
             if (swipeLeftOnboardingStepDisposable != null)
             {
                 swipeLeftOnboardingStepDisposable.Dispose();

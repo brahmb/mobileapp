@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Android.Runtime;
 using Android.Support.V7.Widget;
 using Android.Views;
@@ -16,12 +19,21 @@ namespace Toggl.Giskard.Adapters
     public sealed class MainRecyclerAdapter
         : SegmentedRecyclerAdapter<TimeEntryViewModelCollection, TimeEntryViewModel>
     {
+        private ISubject<bool> swipeToContinueWasUsedSubject = new Subject<bool>();
+        private ISubject<bool> swipeToDeleteWasUsedSubject = new Subject<bool>();
+
+        private CompositeDisposable disposeBag = new CompositeDisposable();
+
         public bool ShouldShowSuggestions
             => SuggestionsViewModel?.Suggestions.Any() ?? false;
 
         public SuggestionsViewModel SuggestionsViewModel { get; set; }
 
         public TimeEntriesLogViewModel TimeEntriesLogViewModel { get; set; }
+
+        public IObservable<bool> SwipeToContinueWasUsedObservable => swipeToContinueWasUsedSubject.AsObservable();
+
+        public IObservable<bool> SwipeToDeleteWasUsedObservable => swipeToDeleteWasUsedSubject.AsObservable();
 
         private bool isTimeEntryRunning;
         public bool IsTimeEntryRunning
@@ -105,6 +117,7 @@ namespace Toggl.Giskard.Adapters
             var timeEntry = GetItem(viewPosition) as TimeEntryViewModel;
             if (timeEntry == null) return;
             TimeEntriesLogViewModel.ContinueTimeEntryCommand.ExecuteAsync(timeEntry);
+            swipeToContinueWasUsedSubject.OnNext(true);
         }
 
         internal void DeleteTimeEntry(int viewPosition)
@@ -112,6 +125,16 @@ namespace Toggl.Giskard.Adapters
             var timeEntry = GetItem(viewPosition) as TimeEntryViewModel;
             if (timeEntry == null) return;
             TimeEntriesLogViewModel.DeleteCommand.ExecuteAsync(timeEntry);
+            swipeToDeleteWasUsedSubject.OnNext(true);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing) return;
+
+            disposeBag.Dispose();
         }
     }
 }

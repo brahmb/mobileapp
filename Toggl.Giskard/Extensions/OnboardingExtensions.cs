@@ -57,18 +57,16 @@ namespace Toggl.Giskard.Extensions
             {
                 var isVisible = animation != null;
 
-                if (isVisible == shouldBeVisible) return;
-
-                if (shouldBeVisible)
-                {
-                    animation = viewHolder.StartAnimating(side);
-                }
-                else
+                if (!isVisible || !shouldBeVisible)
                 {
                     viewHolder.StopAnimating();
                     animation?.Dispose();
                     animation = null;
+                    return;
                 }
+
+                if (shouldBeVisible)
+                    animation = viewHolder.StartAnimating(side);
             }
 
             var subscriptionDisposable = step.ShouldBeVisible
