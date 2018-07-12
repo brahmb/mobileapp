@@ -318,11 +318,6 @@ namespace Toggl.Giskard.Activities
             if (firstTimeEntry == null)
                 return;
 
-            updateTapToEditPopupWindow(firstTimeEntry.ItemView);
-        }
-
-        private void updateTapToEditPopupWindow(View firstTimeEntry)
-        {
             if (editTimeEntryOnboardingStepDisposable != null)
             {
                 editTimeEntryOnboardingStepDisposable.Dispose();
@@ -332,7 +327,7 @@ namespace Toggl.Giskard.Activities
             editTimeEntryOnboardingStepDisposable = editTimeEntryOnboardingStep
                 .ManageVisibilityOf(
                     tapToEditPopup,
-                    firstTimeEntry,
+                    firstTimeEntry.ItemView,
                     (window, view) => PopupOffsets.FromDp(16, -4, this));
         }
 
