@@ -2,6 +2,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
+using Android.Animation;
 using Android.Views;
 using Android.Widget;
 using MvvmCross.Base;
@@ -52,21 +53,19 @@ namespace Toggl.Giskard.Extensions
 
         public static IDisposable ManageSwipeActionAnimationOf(this IOnboardingStep step, MainRecyclerViewLogViewHolder viewHolder, AnimationSide side)
         {
-            IDisposable animation = null;
+            ObjectAnimator animation = null;
             void toggleVisibilityOnMainThread(bool shouldBeVisible)
             {
-                var isVisible = animation != null;
+                var isVisible = animation?.IsRunning ?? false;
 
-                if (!isVisible || !shouldBeVisible)
+                if (shouldBeVisible && !isVisible)
+                {
+                    animation = viewHolder.StartAnimating(side);
+                }
+                else if (!shouldBeVisible)
                 {
                     viewHolder.StopAnimating();
-                    animation?.Dispose();
-                    animation = null;
-                    return;
                 }
-
-                if (shouldBeVisible)
-                    animation = viewHolder.StartAnimating(side);
             }
 
             var subscriptionDisposable = step.ShouldBeVisible
@@ -76,9 +75,6 @@ namespace Toggl.Giskard.Extensions
             return Disposable.Create(() =>
             {
                 viewHolder.StopAnimating();
-                animation?.Dispose();
-                animation = null;
-
                 subscriptionDisposable?.Dispose();
                 subscriptionDisposable = null;
             });
