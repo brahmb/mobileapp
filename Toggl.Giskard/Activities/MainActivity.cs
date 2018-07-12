@@ -332,9 +332,7 @@ namespace Toggl.Giskard.Activities
                 swipeRightOnboardingStepDisposable = null;
             }
 
-            if (swipeRightPopup != null)
-                swipeRightPopup.Dismiss();
-
+            lastTimeEntry.StartAnimating(AnimationSide.Right);
             swipeRightOnboardingStepDisposable = swipeRightOnboardingStep
                 .ManageVisibilityOf(
                     swipeRightPopup,
@@ -360,6 +358,7 @@ namespace Toggl.Giskard.Activities
                 swipeLeftOnboardingStepDisposable = null;
             }
 
+            lastTimeEntry.StartAnimating(AnimationSide.Left);
             swipeLeftOnboardingStepDisposable = swipeLeftOnboardingStep
                 .ManageVisibilityOf(
                     swipeLeftPopup,

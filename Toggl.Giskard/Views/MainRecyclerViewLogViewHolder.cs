@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using Android.Animation;
+using Android.App;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
@@ -6,13 +9,23 @@ using MvvmCross.Commands;
 using MvvmCross.Droid.Support.V7.RecyclerView;
 using MvvmCross.Platforms.Android.Binding.BindingContext;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Giskard.Extensions;
 
 namespace Toggl.Giskard.Views
 {
+    public enum AnimationSide
+    {
+        Left,
+        Right
+    }
+
     public sealed class MainRecyclerViewLogViewHolder : MvxRecyclerViewHolder
     {
+        private static readonly int animationDuration = 1000;
+
         private Button continueButton;
         private bool continueClickOverloaded;
+        private ObjectAnimator animator;
 
         public bool CanSync { get; set; }
 
@@ -21,10 +34,10 @@ namespace Toggl.Giskard.Views
         public View ContentView { get; private set; }
 
         private IMvxAsyncCommand<TimeEntryViewModel> continueCommand;
-        public IMvxAsyncCommand<TimeEntryViewModel> ContinueCommand 
+        public IMvxAsyncCommand<TimeEntryViewModel> ContinueCommand
         {
             get => continueCommand;
-            set 
+            set
             {
                 if (continueCommand == value) return;
 
@@ -46,6 +59,50 @@ namespace Toggl.Giskard.Views
         public MainRecyclerViewLogViewHolder(IntPtr handle, JniHandleOwnership ownership)
             : base(handle, ownership)
         {
+        }
+
+        public void StartAnimating(AnimationSide side)
+        {
+            if (animator != null)
+                StopAnimating();
+
+            ContinueBackground.Visibility = side == AnimationSide.Left ? ViewStates.Visible : ViewStates.Invisible;
+            DeleteBackground.Visibility = side == AnimationSide.Right ? ViewStates.Visible : ViewStates.Invisible;
+
+            var offsetsInDp = getAnimationOffsetsForSide(side);
+            var offsetsInPx = offsetsInDp.Select(offset => (float)offset.DpToPixels(Application.Context)).ToArray();
+
+            animator = ObjectAnimator.OfFloat(ContentView, "translationX", offsetsInPx);
+            animator.SetDuration(animationDuration);
+            animator.RepeatMode = ValueAnimatorRepeatMode.Reverse;
+            animator.RepeatCount = ValueAnimator.Infinite;
+            animator.Start();
+        }
+
+        public void StopAnimating()
+        {
+            if (animator != null)
+            {
+                animator.Pause();
+                animator = null;
+            }
+
+            ContentView.TranslationX = 0;
+            ContinueBackground.Visibility = ViewStates.Invisible;
+            DeleteBackground.Visibility = ViewStates.Invisible;
+        }
+
+        private float[] getAnimationOffsetsForSide(AnimationSide side)
+        {
+            switch (side)
+            {
+                case AnimationSide.Left:
+                    return new float[] { 50, 0, 3.5f, 0 };
+                case AnimationSide.Right:
+                    return new float[] { -50, 0, -3.5f, 0 };
+                default:
+                    throw new ArgumentException("Unexpected side for animations");
+            }
         }
 
         private void ensureContinueClickOverloaded()
