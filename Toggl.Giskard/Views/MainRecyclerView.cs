@@ -11,7 +11,6 @@ using MvvmCross.Droid.Support.V7.RecyclerView;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Giskard.Adapters;
-using Toggl.Giskard.TemplateSelectors;
 using System.Reactive;
 
 namespace Toggl.Giskard.Views
@@ -19,15 +18,19 @@ namespace Toggl.Giskard.Views
     [Register("toggl.giskard.views.TimeEntriesLogRecyclerView")]
     public sealed class MainRecyclerView : MvxRecyclerView
     {
-        private BehaviorSubject<View> firstTimeEntryViewSubject = new BehaviorSubject<View>(null);
-        private BehaviorSubject<View> lastTimeEntryViewSubject = new BehaviorSubject<View>(null);
-        private IDisposable firstTimeEntryViewUpdateDisposable;
-        private IDisposable lastTimeEntryViewUpdateDisposable;
+        private BehaviorSubject<MainRecyclerViewLogViewHolder> firstTimeEntryViewHolderSubject =
+            new BehaviorSubject<MainRecyclerViewLogViewHolder>(null);
+
+        private BehaviorSubject<MainRecyclerViewLogViewHolder> lastTimeEntryViewHolderSubject =
+            new BehaviorSubject<MainRecyclerViewLogViewHolder>(null);
+
+        private IDisposable firstTimeEntryViewHolderUpdateDisposable;
+        private IDisposable lastTimeEntryViewHolderUpdateDisposable;
 
         public MainRecyclerAdapter MainRecyclerAdapter => (MainRecyclerAdapter)Adapter;
 
-        public IObservable<View> FirstTimeEntryView { get; }
-        public IObservable<View> LastTimeEntryView { get; }
+        public IObservable<MainRecyclerViewLogViewHolder> FirstTimeEntryViewHolder { get; }
+        public IObservable<MainRecyclerViewLogViewHolder> LastTimeEntryViewHolder { get; }
 
         public SuggestionsViewModel SuggestionsViewModel
         {
@@ -68,83 +71,76 @@ namespace Toggl.Giskard.Views
             ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(callback);
             mItemTouchHelper.AttachToRecyclerView(this);
 
-            firstTimeEntryViewUpdateDisposable = Observable
+            firstTimeEntryViewHolderUpdateDisposable = Observable
                 .FromEventPattern<ScrollChangeEventArgs>(e => ScrollChange += e, e => ScrollChange -= e)
                 .Select(_ => Unit.Default)
                 .Merge(MainRecyclerAdapter.CollectionChange)
-                .VoidSubscribe(onFirstTimeEntryViewUpdate);
+                .VoidSubscribe(onFirstTimeEntryViewHolderUpdate);
 
-            lastTimeEntryViewUpdateDisposable = Observable
+            lastTimeEntryViewHolderUpdateDisposable = Observable
                 .FromEventPattern<ScrollChangeEventArgs>(e => ScrollChange += e, e => ScrollChange -= e)
                 .Select(_ => Unit.Default)
                 .Merge(MainRecyclerAdapter.CollectionChange)
-                .VoidSubscribe(onLastTimeEntryViewUpdate);
+                .VoidSubscribe(onLastTimeEntryViewHolderUpdate);
 
-            FirstTimeEntryView = firstTimeEntryViewSubject
+            FirstTimeEntryViewHolder = firstTimeEntryViewHolderSubject
                 .AsObservable()
                 .DistinctUntilChanged();
 
-            LastTimeEntryView = lastTimeEntryViewSubject
+            LastTimeEntryViewHolder = lastTimeEntryViewHolderSubject
                 .AsObservable()
                 .DistinctUntilChanged();
         }
 
-        private void onFirstTimeEntryViewUpdate()
+        private void onFirstTimeEntryViewHolderUpdate()
         {
-            var view = findOldestTimeEntryView();
-            firstTimeEntryViewSubject.OnNext(view);
+            var viewHolder = findOldestTimeEntryViewHolder();
+            firstTimeEntryViewHolderSubject.OnNext(viewHolder);
         }
 
-        private void onLastTimeEntryViewUpdate()
+        private void onLastTimeEntryViewHolderUpdate()
         {
-            var view = findNewestTimeEntryView();
-            lastTimeEntryViewSubject.OnNext(view);
+            var viewHolder = findNewestTimeEntryViewHolder();
+            lastTimeEntryViewHolderSubject.OnNext(viewHolder);
         }
 
-        private View findOldestTimeEntryView()
+        private MainRecyclerViewLogViewHolder findOldestTimeEntryViewHolder()
         {
-            var layoutManager = (LinearLayoutManager)GetLayoutManager();
-
-            for (var position = MainRecyclerAdapter.ItemCount - 1; position >= 0; position--)
+            var oldestPosition = MainRecyclerAdapter.ItemCount - 1;
+            if (oldestPosition> 0)
             {
-                var item = MainRecyclerAdapter.GetItem(position);
-                if (item is TimeEntryViewModel)
-                {
-                    View view = layoutManager.FindViewByPosition(position);
-                    if (view == null || layoutManager.GetItemViewType(view) != MainTemplateSelector.Item)
-                        return null;
-
-                    var isVisible =
-                        layoutManager.IsViewPartiallyVisible(view, true, true)
-                        || layoutManager.IsViewPartiallyVisible(view, false, true);
-
-                    return isVisible ? view : null;
-                }
+                return findViewHOlderAtPosition(oldestPosition);
             }
 
             return null;
         }
 
-        private View findNewestTimeEntryView()
+        private MainRecyclerViewLogViewHolder findNewestTimeEntryViewHolder()
+        {
+            var newestPosition = (MainRecyclerAdapter.ShouldShowSuggestions ? 1 : 0) + 1;
+            if (newestPosition < MainRecyclerAdapter.ItemCount)
+            {
+                return findViewHOlderAtPosition(newestPosition);
+            }
+
+            return null;
+        }
+
+        private MainRecyclerViewLogViewHolder findViewHOlderAtPosition(int position)
         {
             var layoutManager = (LinearLayoutManager)GetLayoutManager();
 
-            for (var position = 0; position <= MainRecyclerAdapter.ItemCount - 1; position++)
-            {
-                var item = MainRecyclerAdapter.GetItem(position);
-                if (item is TimeEntryViewModel)
-                {
-                    View view = layoutManager.FindViewByPosition(position);
-                    if (view == null || layoutManager.GetItemViewType(view) != MainTemplateSelector.Item)
-                        return null;
+            var viewHolder = FindViewHolderForLayoutPosition(position);
 
-                    var isVisible =
-                        layoutManager.IsViewPartiallyVisible(view, true, true)
-                        || layoutManager.IsViewPartiallyVisible(view, false, true);
+            if (viewHolder == null)
+                return null;
 
-                    return isVisible ? view : null;
-                }
-            }
+            var isVisible =
+                layoutManager.IsViewPartiallyVisible(viewHolder.ItemView, true, true)
+                || layoutManager.IsViewPartiallyVisible(viewHolder.ItemView, false, true);
+
+            if (viewHolder is MainRecyclerViewLogViewHolder logViewHolder && isVisible)
+                return logViewHolder;
 
             return null;
         }
@@ -156,7 +152,7 @@ namespace Toggl.Giskard.Views
             if (!disposing)
                 return;
 
-            firstTimeEntryViewUpdateDisposable?.Dispose();
+            firstTimeEntryViewHolderUpdateDisposable?.Dispose();
         }
     }
 }

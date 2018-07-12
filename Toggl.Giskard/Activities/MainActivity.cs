@@ -234,7 +234,7 @@ namespace Toggl.Giskard.Activities
                 .ToDismissable(nameof(EditTimeEntryOnboardingStep), onboardingStorage);
             editTimeEntryOnboardingStep.DismissByTapping(tapToEditPopup);
 
-            mainRecyclerView.FirstTimeEntryView
+            mainRecyclerView.FirstTimeEntryViewHolder
                             .ObserveOn(SynchronizationContext.Current)
                             .Subscribe(updateTapToEditOnboardingStep)
                             .DisposedBy(disposeBag);
@@ -256,7 +256,7 @@ namespace Toggl.Giskard.Activities
                 .ToDismissable(nameof(SwipeRightOnboardingStep), onboardingStorage);
             swipeRightOnboardingStep.DismissByTapping(swipeRightPopup);
 
-            mainRecyclerView.LastTimeEntryView
+            mainRecyclerView.LastTimeEntryViewHolder
                             .ObserveOn(SynchronizationContext.Current)
                             .Subscribe(updateSwipeRightOnboardingStep)
                             .DisposedBy(disposeBag);
@@ -280,20 +280,20 @@ namespace Toggl.Giskard.Activities
                 .ToDismissable(nameof(SwipeLeftOnboardingStep), onboardingStorage);
             swipeLeftOnboardingStep.DismissByTapping(swipeLeftPopup);
 
-            mainRecyclerView.LastTimeEntryView
+            mainRecyclerView.LastTimeEntryViewHolder
                             .ObserveOn(SynchronizationContext.Current)
                             .Subscribe(updateSwipeLeftOnboardingStep)
                             .DisposedBy(disposeBag);
         }
 
-        private void updateTapToEditOnboardingStep(View firstTimeEntry)
+        private void updateTapToEditOnboardingStep(MainRecyclerViewLogViewHolder firstTimeEntry)
         {
             tapToEditPopup?.Dismiss();
 
             if (firstTimeEntry == null)
                 return;
 
-            updateTapToEditPopupWindow(firstTimeEntry);
+            updateTapToEditPopupWindow(firstTimeEntry.ItemView);
         }
 
         private void updateTapToEditPopupWindow(View firstTimeEntry)
@@ -314,7 +314,7 @@ namespace Toggl.Giskard.Activities
                     (window, view) => PopupOffsets.FromDp(16, -4, this));
         }
 
-        private void updateSwipeRightOnboardingStep(View lastTimeEntry)
+        private void updateSwipeRightOnboardingStep(MainRecyclerViewLogViewHolder lastTimeEntry)
         {
             swipeRightPopup?.Dismiss();
 
@@ -324,7 +324,7 @@ namespace Toggl.Giskard.Activities
             updateSwipeRightPopupWindowAndAnimation(lastTimeEntry);
         }
 
-        private void updateSwipeRightPopupWindowAndAnimation(View lastTimeEntry)
+        private void updateSwipeRightPopupWindowAndAnimation(MainRecyclerViewLogViewHolder lastTimeEntry)
         {
             if (swipeRightOnboardingStepDisposable != null)
             {
@@ -338,11 +338,11 @@ namespace Toggl.Giskard.Activities
             swipeRightOnboardingStepDisposable = swipeRightOnboardingStep
                 .ManageVisibilityOf(
                     swipeRightPopup,
-                    lastTimeEntry,
+                    lastTimeEntry.ItemView,
                     (window, view) => PopupOffsets.FromDp(16, -4, this));
         }
 
-        private void updateSwipeLeftOnboardingStep(View lastTimeEntry)
+        private void updateSwipeLeftOnboardingStep(MainRecyclerViewLogViewHolder lastTimeEntry)
         {
             swipeLeftPopup?.Dismiss();
 
@@ -352,7 +352,7 @@ namespace Toggl.Giskard.Activities
             updateSwipeLeftPopupWindowAndAnimation(lastTimeEntry);
         }
 
-        private void updateSwipeLeftPopupWindowAndAnimation(View lastTimeEntry)
+        private void updateSwipeLeftPopupWindowAndAnimation(MainRecyclerViewLogViewHolder lastTimeEntry)
         {
             if (swipeLeftOnboardingStepDisposable != null)
             {
@@ -363,7 +363,7 @@ namespace Toggl.Giskard.Activities
             swipeLeftOnboardingStepDisposable = swipeLeftOnboardingStep
                 .ManageVisibilityOf(
                     swipeLeftPopup,
-                    lastTimeEntry,
+                    lastTimeEntry.ItemView,
                     (window, view) => window.BottomRightOffsetsTo(view, -16, -4));
         }
 
