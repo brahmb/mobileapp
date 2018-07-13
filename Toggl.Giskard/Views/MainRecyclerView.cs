@@ -106,10 +106,13 @@ namespace Toggl.Giskard.Views
 
         private MainRecyclerViewLogViewHolder findOldestTimeEntryViewHolder()
         {
-            var oldestPosition = MainRecyclerAdapter.ItemCount - 1;
-            if (oldestPosition> 0)
+            for (var position = MainRecyclerAdapter.ItemCount - 1; position >= 0; position--)
             {
-                return findViewHOlderAtPosition(oldestPosition);
+                var viewHolder = findLogViewHolderAtPosition(position);
+                if (viewHolder != null)
+                {
+                    return viewHolder;
+                }
             }
 
             return null;
@@ -117,16 +120,19 @@ namespace Toggl.Giskard.Views
 
         private MainRecyclerViewLogViewHolder findNewestTimeEntryViewHolder()
         {
-            var newestPosition = (MainRecyclerAdapter.ShouldShowSuggestions ? 1 : 0) + 1;
-            if (newestPosition < MainRecyclerAdapter.ItemCount)
+            for (var position = 0; position < MainRecyclerAdapter.ItemCount; position++)
             {
-                return findViewHOlderAtPosition(newestPosition);
+                var viewHolder = findLogViewHolderAtPosition(position);
+                if (viewHolder != null)
+                {
+                    return viewHolder;
+                }
             }
 
             return null;
         }
 
-        private MainRecyclerViewLogViewHolder findViewHOlderAtPosition(int position)
+        private MainRecyclerViewLogViewHolder findLogViewHolderAtPosition(int position)
         {
             var layoutManager = (LinearLayoutManager)GetLayoutManager();
 
