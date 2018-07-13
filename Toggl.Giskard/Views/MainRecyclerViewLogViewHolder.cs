@@ -29,6 +29,8 @@ namespace Toggl.Giskard.Views
 
         public bool CanSync { get; set; }
 
+        public bool IsAnimating => animator?.IsRunning ?? false;
+
         public View ContinueBackground { get; private set; }
         public View DeleteBackground { get; private set; }
         public View ContentView { get; private set; }
@@ -85,7 +87,7 @@ namespace Toggl.Giskard.Views
         {
             if (animator != null)
             {
-                animator.Pause();
+                animator.Cancel();
                 animator = null;
             }
 

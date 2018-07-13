@@ -46,21 +46,18 @@ namespace Toggl.Giskard.Extensions
             }
 
             return step.ShouldBeVisible
-                   .combineWithWindowTokenAvailabilityFrom(anchor)
-                   .ObserveOn(SynchronizationContext.Current)
-                   .Subscribe(toggleVisibilityOnMainThread);
+                       .ObserveOn(SynchronizationContext.Current)
+                       .combineWithWindowTokenAvailabilityFrom(anchor)
+                       .Subscribe(toggleVisibilityOnMainThread);
         }
 
         public static IDisposable ManageSwipeActionAnimationOf(this IOnboardingStep step, MainRecyclerViewLogViewHolder viewHolder, AnimationSide side)
         {
-            ObjectAnimator animation = null;
             void toggleVisibilityOnMainThread(bool shouldBeVisible)
             {
-                var isVisible = animation?.IsRunning ?? false;
-
-                if (shouldBeVisible && !isVisible)
+                if (shouldBeVisible && !viewHolder.IsAnimating)
                 {
-                    animation = viewHolder.StartAnimating(side);
+                    viewHolder.StartAnimating(side);
                 }
                 else if (!shouldBeVisible)
                 {
