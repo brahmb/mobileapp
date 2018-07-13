@@ -159,6 +159,7 @@ namespace Toggl.Giskard.Views
                 return;
 
             firstTimeEntryViewHolderUpdateDisposable?.Dispose();
+            lastTimeEntryViewHolderUpdateDisposable?.Dispose();
         }
     }
 }
