@@ -94,10 +94,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                     .Where(isNotRunning)
                     .Subscribe(safeInsertTimeEntry);
 
-            var midnightDisposable =
-                timeService.MidnightObservable
-                    .Subscribe(onMidnight);
-
             var preferencesDisposable =
                 dataSource.Preferences.Current
                     .Subscribe(onPreferencesChanged);
@@ -105,7 +101,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             disposeBag.Add(createDisposable);
             disposeBag.Add(updateDisposable);
             disposeBag.Add(deleteDisposable);
-            disposeBag.Add(midnightDisposable);
             disposeBag.Add(preferencesDisposable);
         }
 
@@ -198,11 +193,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             var item = TimeEntries[collectionIndex].First(vm => vm.Id == id);
             TimeEntries.RemoveFromChildCollection(collectionIndex, item);
             RaisePropertyChanged(nameof(IsEmpty));
-        }
-
-        private void onMidnight(DateTimeOffset midnight)
-        {
-            navigationService.ChangePresentation(new ReloadLogHint());
         }
 
         private void onPreferencesChanged(IThreadSafePreferences preferences)
