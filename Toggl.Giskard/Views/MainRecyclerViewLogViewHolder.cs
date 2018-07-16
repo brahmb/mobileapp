@@ -63,10 +63,10 @@ namespace Toggl.Giskard.Views
         {
         }
 
-        public ObjectAnimator StartAnimating(AnimationSide side)
+        public void StartAnimating(AnimationSide side)
         {
-            if (animator != null)
-                StopAnimating();
+            if (animator != null && animator.IsRunning)
+                return;
 
             ContinueBackground.Visibility = side == AnimationSide.Right ? ViewStates.Visible : ViewStates.Invisible;
             DeleteBackground.Visibility = side == AnimationSide.Left ? ViewStates.Visible : ViewStates.Invisible;
@@ -79,8 +79,6 @@ namespace Toggl.Giskard.Views
             animator.RepeatMode = ValueAnimatorRepeatMode.Reverse;
             animator.RepeatCount = ValueAnimator.Infinite;
             animator.Start();
-
-            return animator;
         }
 
         public void StopAnimating()

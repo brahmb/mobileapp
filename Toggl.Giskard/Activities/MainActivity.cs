@@ -241,7 +241,7 @@ namespace Toggl.Giskard.Activities
 
             editTimeEntryOnboardingStep = new EditTimeEntryOnboardingStep(onboardingStorage, Observable.Return(false))
                 .ToDismissable(nameof(EditTimeEntryOnboardingStep), onboardingStorage);
-            editTimeEntryOnboardingStep.DismissByTapping(tapToEditPopup);
+            editTimeEntryOnboardingStep.DismissByTapping(tapToEditPopup, () => { });
 
             mainRecyclerView.FirstTimeEntryViewHolder
                             .ObserveOn(SynchronizationContext.Current)
@@ -263,7 +263,13 @@ namespace Toggl.Giskard.Activities
 
             swipeRightOnboardingStep = new SwipeRightOnboardingStep(shouldBeVisible, timeEntriesCountSubject.AsObservable())
                 .ToDismissable(nameof(SwipeRightOnboardingStep), onboardingStorage);
-            swipeRightOnboardingStep.DismissByTapping(swipeRightPopup);
+            swipeRightOnboardingStep.DismissByTapping(swipeRightPopup, () => {
+                if (swipeRightOnboardingAnimationStepDisposable != null)
+                {
+                    swipeRightOnboardingAnimationStepDisposable.Dispose();
+                    swipeRightOnboardingAnimationStepDisposable = null;
+                }
+            });
 
             swipeToContinueWasUsedDisposable = mainRecyclerView.MainRecyclerAdapter.SwipeToContinueWasUsedObservable
                .VoidSubscribe(() =>
@@ -295,7 +301,13 @@ namespace Toggl.Giskard.Activities
 
             swipeLeftOnboardingStep = new SwipeLeftOnboardingStep(shouldBeVisible, timeEntriesCountSubject.AsObservable())
                 .ToDismissable(nameof(SwipeLeftOnboardingStep), onboardingStorage);
-            swipeLeftOnboardingStep.DismissByTapping(swipeLeftPopup);
+            swipeLeftOnboardingStep.DismissByTapping(swipeLeftPopup, () => {
+                if (swipeLeftOnboardingAnimationStepDisposable != null)
+                {
+                    swipeLeftOnboardingAnimationStepDisposable.Dispose();
+                    swipeLeftOnboardingAnimationStepDisposable = null;
+                }
+            });
 
             swipeToDeleteWasUsedDisposable = mainRecyclerView.MainRecyclerAdapter.SwipeToDeleteWasUsedObservable
                .VoidSubscribe(() =>

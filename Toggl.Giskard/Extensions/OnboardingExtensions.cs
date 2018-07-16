@@ -25,7 +25,7 @@ namespace Toggl.Giskard.Extensions
 
             var dismissableStep = step.ToDismissable(step.GetType().FullName, storage);
 
-            dismissableStep.DismissByTapping(tooltip);
+            dismissableStep.DismissByTapping(tooltip, () => { });
 
             return dismissableStep.ManageVisibilityOf(tooltip, anchor, popupOffsetsGenerator);
         }
@@ -59,10 +59,6 @@ namespace Toggl.Giskard.Extensions
                 {
                     viewHolder.StartAnimating(side);
                 }
-                else if (!shouldBeVisible)
-                {
-                    viewHolder.StopAnimating();
-                }
             }
 
             var subscriptionDisposable = step.ShouldBeVisible
@@ -77,12 +73,13 @@ namespace Toggl.Giskard.Extensions
             });
         }
 
-        public static void DismissByTapping(this IDismissable step, PopupWindow popupWindow)
+        public static void DismissByTapping(this IDismissable step, PopupWindow popupWindow, Action cleanup)
         {
             void OnDismiss(object sender, EventArgs args)
             {
                 popupWindow.Dismiss();
                 step.Dismiss();
+                cleanup();
             }
 
             popupWindow.ContentView.Click += OnDismiss;
