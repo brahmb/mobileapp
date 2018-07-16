@@ -43,8 +43,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         [DependsOn(nameof(TimeEntries))]
         public bool IsEmpty => TimeEntries.None();
 
-        public bool IsWelcome { get; private set; }
-
         public IMvxAsyncCommand<TimeEntryViewModel> EditCommand { get; }
 
         public IMvxAsyncCommand<TimeEntryViewModel> DeleteCommand { get; }
@@ -80,8 +78,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public override async Task Initialize()
         {
             await base.Initialize();
-
-            IsWelcome = await onboardingStorage.IsNewUser.FirstAsync();
 
             await fetchSectionedTimeEntries();
 
@@ -164,8 +160,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void safeInsertTimeEntry(IThreadSafeTimeEntry timeEntry)
         {
-            IsWelcome = false;
-
             var indexDate = timeEntry.Start.LocalDateTime.Date;
             var collectionIndex = TimeEntries.IndexOf(x => x.Date.LocalDateTime == indexDate);
             var groupExists = collectionIndex >= 0;
@@ -260,13 +254,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                     areContineButtonsEnabled = true;
                     ContinueTimeEntryCommand.RaiseCanExecuteChanged();
                 });
-        }
-
-        private void OnIsWelcomeChanged()
-        {
-            if (IsWelcome) return;
-
-            onboardingStorage.SetIsNewUser(false);
         }
     }
 }

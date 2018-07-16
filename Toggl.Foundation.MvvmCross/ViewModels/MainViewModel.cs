@@ -98,7 +98,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public int TimeEntriesCount => TimeEntriesLogViewModel.TimeEntries?.Select(section => section.Count).Sum() ?? 0;
 
-        public bool IsWelcome => TimeEntriesLogViewModel.IsWelcome;
+        public bool IsWelcome { get; private set; }
 
         public bool IsInManualMode { get; set; } = false;
 
@@ -187,6 +187,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public override async Task Initialize()
         {
             await base.Initialize();
+
+            IsWelcome = await onboardingStorage.IsNewUser.FirstAsync();
 
             await TimeEntriesLogViewModel.Initialize();
             await SuggestionsViewModel.Initialize();
@@ -366,7 +368,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             if (hasStopButtonEverBeenUsed)
                 onboardingStorage.SetNavigatedAwayFromMainViewAfterStopButton();
-            
+
             return navigationService.Navigate<TModel, TParameters>(value);
         }
 
@@ -375,7 +377,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             if (hasStopButtonEverBeenUsed)
                 onboardingStorage.SetNavigatedAwayFromMainViewAfterStopButton();
-            
+
             return navigationService.Navigate<TModel>();
         }
     }

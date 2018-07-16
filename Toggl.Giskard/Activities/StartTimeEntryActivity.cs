@@ -31,6 +31,8 @@ namespace Toggl.Giskard.Activities
               ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
     public sealed partial class StartTimeEntryActivity : MvxAppCompatActivity<StartTimeEntryViewModel>, IReactiveBindingHolder
     {
+        private static readonly TimeSpan typingThrottleDuration = TimeSpan.FromMilliseconds(300);
+
         private PopupWindow onboardingPopupWindow;
 
         public CompositeDisposable DisposeBag { get; } = new CompositeDisposable();
@@ -51,8 +53,8 @@ namespace Toggl.Giskard.Activities
 
             editText.TextObservable
                 .SubscribeOn(ThreadPoolScheduler.Instance)
+                .Throttle(typingThrottleDuration)
                 .Select(text => text.AsImmutableSpans(editText.SelectionStart))
-                .ObserveOn(SynchronizationContext.Current)
                 .Subscribe(async spans => await ViewModel.OnTextFieldInfoFromView(spans))
                 .DisposedBy(DisposeBag);
         }

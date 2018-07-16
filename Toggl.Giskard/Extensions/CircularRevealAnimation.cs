@@ -106,7 +106,7 @@ namespace Toggl.Giskard.Extensions
 
         public void Start()
         {
-            view.Post(() =>
+            view.RunWhenAttachedToWindow(() =>
             {
                 var initialRadius = this.initialRadius;
                 var finalRadius = this.finalRadius;

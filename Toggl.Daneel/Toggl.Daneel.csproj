@@ -974,6 +974,7 @@
       <DependentUpon>LicensesViewCell.cs</DependentUpon>
     </Compile>
     <Compile Include="Combiners\TImeEntryLogViewCellFadeViewConstraintValueCombiner.cs" />
+    <Compile Include="Autocomplete\EmptyInputDelegate.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation.MvvmCross\Toggl.Foundation.MvvmCross.csproj">

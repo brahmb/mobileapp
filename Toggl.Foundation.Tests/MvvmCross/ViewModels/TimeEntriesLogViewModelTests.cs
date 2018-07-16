@@ -218,30 +218,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.TimeEntries.Any(c => c.Any(te => te.Id == 21)).Should().BeFalse();
                 ViewModel.TimeEntries.Aggregate(0, (acc, te) => acc + te.Count).Should().Be(InitialAmountOfTimeEntries);
             }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask SetsTheIsWelcomePropertyToFalse()
-            {
-                var observable = Observable.Return(true);
-                OnboardingStorage.IsNewUser.Returns(observable);
-                await ViewModel.Initialize();
-
-                TimeEntryCreatedSubject.OnNext(NewTimeEntry.With((long)TimeSpan.FromHours(1).TotalSeconds));
-
-                ViewModel.IsWelcome.Should().BeFalse();
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask SetsTheUserIsNotNewFlagToFalseInTheStorage()
-            {
-                var observable = Observable.Return(true);
-                OnboardingStorage.IsNewUser.Returns(observable);
-                await ViewModel.Initialize();
-
-                TimeEntryCreatedSubject.OnNext(NewTimeEntry.With((long)TimeSpan.FromHours(1).TotalSeconds));
-
-                OnboardingStorage.Received().SetIsNewUser(false);
-            }
         }
 
         public sealed class WhenReceivingAnEventFromTheTimeEntryUpdatedObservable : TimeEntryDataSourceObservableTest

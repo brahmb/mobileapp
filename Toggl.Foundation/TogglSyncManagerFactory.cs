@@ -88,7 +88,7 @@ namespace Toggl.Foundation
             var updateWorkspacesSinceDate =
                 new SinceDateUpdatingState<IWorkspace, IDatabaseWorkspace>(database.SinceParameters);
 
-            var detectNoWorkspaceState = new NoWorkspaceDetectingState();
+            var detectNoWorkspaceState = new NoWorkspaceDetectingState(dataSource);
 
             var persistWorkspaceFeatures =
                 new PersistListState<IWorkspaceFeatureCollection, IDatabaseWorkspaceFeatureCollection, IThreadSafeWorkspaceFeatureCollection>(

@@ -98,7 +98,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             SignupCommand = new MvxAsyncCommand(signup);
             GoogleLoginCommand = new MvxCommand(googleLogin);
-            LoginCommand = new MvxCommand(login, () => LoginEnabled);
+            LoginCommand = new MvxCommand(login, () 
+                => { 
+                    Email = Email.TrimmedEnd(); 
+                    return LoginEnabled; 
+                });
             ForgotPasswordCommand = new MvxAsyncCommand(forgotPassword);
             TogglePasswordVisibilityCommand = new MvxCommand(togglePasswordVisibility);
             StartPasswordManagerCommand = new MvxAsyncCommand(startPasswordManager, () => IsPasswordManagerAvailable);

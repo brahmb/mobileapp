@@ -13,6 +13,7 @@ using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 using Toggl.Ultrawave;
+using Toggl.Ultrawave.ApiClients;
 
 namespace Toggl.Foundation.DataSources
 {
@@ -69,6 +70,8 @@ namespace Toggl.Foundation.DataSources
 
             ReportsProvider = new ReportsProvider(api, database);
 
+            FeedbackApi = api.Feedback;
+
             errorHandlingDisposable = SyncManager.ProgressObservable.Subscribe(onSyncError);
             isLoggedIn = true;
         }
@@ -86,6 +89,8 @@ namespace Toggl.Foundation.DataSources
         public ISyncManager SyncManager { get; }
 
         public IReportsProvider ReportsProvider { get; }
+
+        public IFeedbackApi FeedbackApi { get; }
 
         public IObservable<Unit> StartSyncing()
         {

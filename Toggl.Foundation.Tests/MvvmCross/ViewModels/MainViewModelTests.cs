@@ -707,30 +707,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public sealed class TheIsWelcomeProperty : MainViewModelTest
         {
-            [Theory]
-            [InlineData(0)]
-            [InlineData(1)]
-            [InlineData(28)]
-            public async ThreadingTask ReturnsTheSameValueAsTimeEntriesLogViewModel(
-                int timeEntryCount)
-            {
-                var timeEntries = Enumerable
-                    .Range(0, timeEntryCount)
-                    .Select(createTimeEntry);
-                InteractorFactory.GetAllNonDeletedTimeEntries().Execute()
-                    .Returns(Observable.Return(timeEntries));
-                DataSource
-                    .TimeEntries
-                    .Updated
-                    .Returns(Observable.Never<EntityUpdate<IThreadSafeTimeEntry>>());
-                await ViewModel.Initialize();
-
-                ViewModel
-                    .IsWelcome
-                    .Should()
-                    .Be(ViewModel.TimeEntriesLogViewModel.IsWelcome);
-            }
-
             private IThreadSafeTimeEntry createTimeEntry(int id)
             {
                 var timeEntry = Substitute.For<IThreadSafeTimeEntry>();

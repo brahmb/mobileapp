@@ -82,5 +82,11 @@ namespace Toggl.Foundation.Interactors
         IInteractor<IObservable<byte[]>> GetUserAvatar(string url);
 
         #endregion
+
+        #region Settings
+
+        IInteractor<IObservable<Unit>> SendFeedback(string message);
+
+        #endregion
     }
 }

@@ -31,7 +31,6 @@ using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using UIKit;
-using static Toggl.Daneel.Autocomplete.AutocompleteExtensions;
 
 namespace Toggl.Daneel.ViewControllers
 {
@@ -48,6 +47,8 @@ namespace Toggl.Daneel.ViewControllers
         private IDisposable disabledConfirmationButtonOnboardingDisposable;
 
         private ISubject<bool> isDescriptionEmptySubject;
+
+        private IUITextInputDelegate emptyInputDelegate = new EmptyInputDelegate();
 
         public StartTimeEntryViewController()
             : base(nameof(StartTimeEntryViewController))
@@ -209,6 +210,7 @@ namespace Toggl.Daneel.ViewControllers
             isUpdatingDescriptionField = true;
             var (attributedText, cursorPosition) = textFieldInfo.AsAttributedTextAndCursorPosition();
 
+            DescriptionTextView.InputDelegate = emptyInputDelegate; //This line is needed for when the user selects from suggestion and the iOS autocorrect is ready to add text at the same time. Without this line both will happen.
             DescriptionTextView.AttributedText = attributedText;
 
             var positionToSet = DescriptionTextView.GetPosition(DescriptionTextView.BeginningOfDocument, cursorPosition);
