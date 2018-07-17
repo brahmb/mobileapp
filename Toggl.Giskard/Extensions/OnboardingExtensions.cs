@@ -20,7 +20,7 @@ namespace Toggl.Giskard.Extensions
 
         public static IDisposable ManageDismissableTooltip(this IOnboardingStep step, PopupWindow tooltip, View anchor, Func<PopupWindow, View, PopupOffsets> popupOffsetsGenerator, IOnboardingStorage storage)
         {
-            Ensure.Argument.IsNotNull(anchor, nameof(tooltip));
+            Ensure.Argument.IsNotNull(tooltip, nameof(tooltip));
             Ensure.Argument.IsNotNull(anchor, nameof(anchor));
 
             var dismissableStep = step.ToDismissable(step.GetType().FullName, storage);
@@ -30,18 +30,20 @@ namespace Toggl.Giskard.Extensions
             return dismissableStep.ManageVisibilityOf(tooltip, anchor, popupOffsetsGenerator);
         }
 
-        public static IDisposable ManageVisibilityOf(this IOnboardingStep step, PopupWindow popupWindowTooltip, View anchor, Func<PopupWindow, View, PopupOffsets> popupOffsetsGenerator)
+        public static IDisposable ManageVisibilityOf(this IOnboardingStep step, PopupWindow tooltip, View anchor, Func<PopupWindow, View, PopupOffsets> popupOffsetsGenerator)
         {
+            Ensure.Argument.IsNotNull(tooltip, nameof(tooltip));
+            Ensure.Argument.IsNotNull(anchor, nameof(anchor));
 
             void toggleVisibilityOnMainThread(bool shouldBeVisible)
             {
                 if (shouldBeVisible)
                 {
-                    showPopupTooltip(popupWindowTooltip, anchor, popupOffsetsGenerator);
+                    showPopupTooltip(tooltip, anchor, popupOffsetsGenerator);
                 }
                 else
                 {
-                    popupWindowTooltip.Dismiss();
+                    tooltip.Dismiss();
                 }
             }
 
@@ -53,6 +55,8 @@ namespace Toggl.Giskard.Extensions
 
         public static IDisposable ManageSwipeActionAnimationOf(this IOnboardingStep step, MainRecyclerViewLogViewHolder viewHolder, AnimationSide side)
         {
+            Ensure.Argument.IsNotNull(viewHolder, nameof(viewHolder));
+
             void toggleVisibilityOnMainThread(bool shouldBeVisible)
             {
                 if (shouldBeVisible && !viewHolder.IsAnimating)
@@ -73,8 +77,10 @@ namespace Toggl.Giskard.Extensions
             });
         }
 
-        public static void DismissByTapping(this IDismissable step, PopupWindow popupWindow, Action cleanup)
+        public static void DismissByTapping(this IDismissable step, PopupWindow popupWindow, Action cleanup = null)
         {
+            Ensure.Argument.IsNotNull(popupWindow, nameof(popupWindow));
+
             void OnDismiss(object sender, EventArgs args)
             {
                 popupWindow.Dismiss();
