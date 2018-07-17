@@ -26,7 +26,6 @@ using Toggl.PrimeRadiant.Settings;
 using static Toggl.Foundation.Sync.SyncProgress;
 using static Toggl.Giskard.Extensions.CircularRevealAnimation.AnimationType;
 using FoundationResources = Toggl.Foundation.Resources;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
 using Toggl.PrimeRadiant.Extensions;
 using Toggl.PrimeRadiant.Onboarding;
 
@@ -41,12 +40,6 @@ namespace Toggl.Giskard.Activities
         private const int snackbarDuration = 5000;
 
         private CompositeDisposable disposeBag;
-        private Toolbar toolbar;
-        private MainRecyclerView mainRecyclerView;
-        private View runningEntryCardFrame;
-        private FloatingActionButton playButton;
-        private FloatingActionButton stopButton;
-        private CoordinatorLayout coordinatorLayout;
         private PopupWindow playButtonTooltipPopupWindow;
         private PopupWindow stopButtonTooltipPopupWindow;
         private PopupWindow tapToEditPopup;
