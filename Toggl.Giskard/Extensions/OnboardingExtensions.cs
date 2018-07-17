@@ -2,7 +2,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
-using Android.Animation;
 using Android.Views;
 using Android.Widget;
 using MvvmCross.Base;
@@ -11,6 +10,7 @@ using Toggl.Multivac;
 using Toggl.PrimeRadiant.Extensions;
 using Toggl.PrimeRadiant.Onboarding;
 using Toggl.PrimeRadiant.Settings;
+using AnimationSide = Toggl.Giskard.Views.MainRecyclerViewLogViewHolder.AnimationSide;
 
 namespace Toggl.Giskard.Extensions
 {

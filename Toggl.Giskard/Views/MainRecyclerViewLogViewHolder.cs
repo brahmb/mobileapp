@@ -13,14 +13,14 @@ using Toggl.Giskard.Extensions;
 
 namespace Toggl.Giskard.Views
 {
-    public enum AnimationSide
-    {
-        Left,
-        Right
-    }
-
     public sealed class MainRecyclerViewLogViewHolder : MvxRecyclerViewHolder
     {
+        public enum AnimationSide
+        {
+            Left,
+            Right
+        }
+
         private static readonly int animationDuration = 1000;
 
         private Button continueButton;

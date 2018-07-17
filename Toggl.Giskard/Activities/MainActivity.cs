@@ -15,19 +15,20 @@ using Android.Widget;
 using MvvmCross.Droid.Support.V7.AppCompat;
 using MvvmCross.Platforms.Android.Presenters.Attributes;
 using MvvmCross.WeakSubscription;
+using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Onboarding.MainView;
 using Toggl.Foundation.MvvmCross.ViewModels;
-using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Giskard.Extensions;
 using Toggl.Giskard.Helper;
 using Toggl.Giskard.Views;
 using Toggl.Multivac.Extensions;
+using Toggl.PrimeRadiant.Extensions;
+using Toggl.PrimeRadiant.Onboarding;
 using Toggl.PrimeRadiant.Settings;
 using static Toggl.Foundation.Sync.SyncProgress;
 using static Toggl.Giskard.Extensions.CircularRevealAnimation.AnimationType;
+using AnimationSide = Toggl.Giskard.Views.MainRecyclerViewLogViewHolder.AnimationSide;
 using FoundationResources = Toggl.Foundation.Resources;
-using Toggl.PrimeRadiant.Extensions;
-using Toggl.PrimeRadiant.Onboarding;
 
 namespace Toggl.Giskard.Activities
 {
