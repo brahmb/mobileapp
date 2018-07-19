@@ -48,9 +48,9 @@ namespace Toggl.Giskard.Extensions
             }
 
             return step.ShouldBeVisible
-                       .ObserveOn(SynchronizationContext.Current)
-                       .combineWithWindowTokenAvailabilityFrom(anchor)
-                       .Subscribe(toggleVisibilityOnMainThread);
+                .ObserveOn(SynchronizationContext.Current)
+                .combineWithWindowTokenAvailabilityFrom(anchor)
+                .Subscribe(toggleVisibilityOnMainThread);
         }
 
         public static IDisposable ManageSwipeActionAnimationOf(this IOnboardingStep step, MainRecyclerViewLogViewHolder viewHolder, AnimationSide side)
@@ -66,8 +66,8 @@ namespace Toggl.Giskard.Extensions
             }
 
             var subscriptionDisposable = step.ShouldBeVisible
-                                             .ObserveOn(SynchronizationContext.Current)
-                                             .Subscribe(toggleVisibilityOnMainThread);
+                .ObserveOn(SynchronizationContext.Current)
+                .Subscribe(toggleVisibilityOnMainThread);
 
             return Disposable.Create(() =>
             {

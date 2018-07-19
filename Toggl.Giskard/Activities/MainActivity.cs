@@ -312,9 +312,9 @@ namespace Toggl.Giskard.Activities
                });
 
             mainRecyclerView.LastTimeEntryViewHolder
-                            .ObserveOn(SynchronizationContext.Current)
-                            .Subscribe(updateSwipeLeftOnboardingStep)
-                            .DisposedBy(disposeBag);
+                .ObserveOn(SynchronizationContext.Current)
+                .Subscribe(updateSwipeLeftOnboardingStep)
+                .DisposedBy(disposeBag);
         }
 
         private void updateTapToEditOnboardingStep(MainRecyclerViewLogViewHolder firstTimeEntry)
