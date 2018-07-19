@@ -24,8 +24,7 @@ namespace Toggl.Giskard.Views
         private BehaviorSubject<MainRecyclerViewLogViewHolder> lastTimeEntryViewHolderSubject =
             new BehaviorSubject<MainRecyclerViewLogViewHolder>(null);
 
-        private IDisposable firstTimeEntryViewHolderUpdateDisposable;
-        private IDisposable lastTimeEntryViewHolderUpdateDisposable;
+        private IDisposable viewHoldersUpdateDisposable;
 
         public MainRecyclerAdapter MainRecyclerAdapter => (MainRecyclerAdapter)Adapter;
 
@@ -71,17 +70,11 @@ namespace Toggl.Giskard.Views
             ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(callback);
             mItemTouchHelper.AttachToRecyclerView(this);
 
-            firstTimeEntryViewHolderUpdateDisposable = Observable
+            viewHoldersUpdateDisposable = Observable
                 .FromEventPattern<ScrollChangeEventArgs>(e => ScrollChange += e, e => ScrollChange -= e)
                 .Select(_ => Unit.Default)
                 .Merge(MainRecyclerAdapter.CollectionChange)
-                .VoidSubscribe(onFirstTimeEntryViewHolderUpdate);
-
-            lastTimeEntryViewHolderUpdateDisposable = Observable
-                .FromEventPattern<ScrollChangeEventArgs>(e => ScrollChange += e, e => ScrollChange -= e)
-                .Select(_ => Unit.Default)
-                .Merge(MainRecyclerAdapter.CollectionChange)
-                .VoidSubscribe(onLastTimeEntryViewHolderUpdate);
+                .VoidSubscribe(onViewHoldersUpdate);
 
             FirstTimeEntryViewHolder = firstTimeEntryViewHolderSubject
                 .AsObservable()
@@ -92,19 +85,15 @@ namespace Toggl.Giskard.Views
                 .DistinctUntilChanged();
         }
 
-        private void onFirstTimeEntryViewHolderUpdate()
+        private void onViewHoldersUpdate()
         {
-            var viewHolder = findOldestTimeEntryViewHolder();
-            firstTimeEntryViewHolderSubject.OnNext(viewHolder);
+            var lastTimeEntryViewHolder = findFirstTimeEntryViewHolder();
+            lastTimeEntryViewHolderSubject.OnNext(lastTimeEntryViewHolder);
+            var firstTimeEntryViewHolder = findLastTimeEntryViewHolder();
+            firstTimeEntryViewHolderSubject.OnNext(firstTimeEntryViewHolder);
         }
 
-        private void onLastTimeEntryViewHolderUpdate()
-        {
-            var viewHolder = findNewestTimeEntryViewHolder();
-            lastTimeEntryViewHolderSubject.OnNext(viewHolder);
-        }
-
-        private MainRecyclerViewLogViewHolder findOldestTimeEntryViewHolder()
+        private MainRecyclerViewLogViewHolder findLastTimeEntryViewHolder()
         {
             for (var position = MainRecyclerAdapter.ItemCount - 1; position >= 0; position--)
             {
@@ -118,7 +107,7 @@ namespace Toggl.Giskard.Views
             return null;
         }
 
-        private MainRecyclerViewLogViewHolder findNewestTimeEntryViewHolder()
+        private MainRecyclerViewLogViewHolder findFirstTimeEntryViewHolder()
         {
             for (var position = 0; position < MainRecyclerAdapter.ItemCount; position++)
             {
@@ -158,8 +147,7 @@ namespace Toggl.Giskard.Views
             if (!disposing)
                 return;
 
-            firstTimeEntryViewHolderUpdateDisposable?.Dispose();
-            lastTimeEntryViewHolderUpdateDisposable?.Dispose();
+            viewHoldersUpdateDisposable?.Dispose();
         }
     }
 }
