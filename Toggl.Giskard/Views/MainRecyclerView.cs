@@ -87,21 +87,20 @@ namespace Toggl.Giskard.Views
 
         private void onViewHoldersUpdate()
         {
-            var lastTimeEntryViewHolder = findFirstTimeEntryViewHolder();
+            var lastTimeEntryViewHolder = findLastTimeEntryViewHolder();
             lastTimeEntryViewHolderSubject.OnNext(lastTimeEntryViewHolder);
-            var firstTimeEntryViewHolder = findLastTimeEntryViewHolder();
+            var firstTimeEntryViewHolder = findFirstTimeEntryViewHolder();
             firstTimeEntryViewHolderSubject.OnNext(firstTimeEntryViewHolder);
         }
 
         private MainRecyclerViewLogViewHolder findLastTimeEntryViewHolder()
         {
-            for (var position = MainRecyclerAdapter.ItemCount - 1; position >= 0; position--)
+            var position = (MainRecyclerAdapter.ShouldShowSuggestions ? 1 : 0) + 1;
+
+            var viewHolder = findLogViewHolderAtPosition(position);
+            if (viewHolder != null)
             {
-                var viewHolder = findLogViewHolderAtPosition(position);
-                if (viewHolder != null)
-                {
-                    return viewHolder;
-                }
+                return isVisible(viewHolder) ? viewHolder : null;
             }
 
             return null;
@@ -109,12 +108,12 @@ namespace Toggl.Giskard.Views
 
         private MainRecyclerViewLogViewHolder findFirstTimeEntryViewHolder()
         {
-            for (var position = 0; position < MainRecyclerAdapter.ItemCount; position++)
+            for (var position = MainRecyclerAdapter.ItemCount - 1; position >= 0; position--)
             {
                 var viewHolder = findLogViewHolderAtPosition(position);
                 if (viewHolder != null)
                 {
-                    return viewHolder;
+                    return isVisible(viewHolder) ? viewHolder : null;
                 }
             }
 
@@ -123,23 +122,23 @@ namespace Toggl.Giskard.Views
 
         private MainRecyclerViewLogViewHolder findLogViewHolderAtPosition(int position)
         {
-            var layoutManager = (LinearLayoutManager)GetLayoutManager();
-
             var viewHolder = FindViewHolderForLayoutPosition(position);
 
             if (viewHolder == null)
                 return null;
 
-            var isVisible =
-                layoutManager.IsViewPartiallyVisible(viewHolder.ItemView, true, true)
-                || layoutManager.IsViewPartiallyVisible(viewHolder.ItemView, false, true);
-
-            if (viewHolder is MainRecyclerViewLogViewHolder logViewHolder && isVisible)
+            if (viewHolder is MainRecyclerViewLogViewHolder logViewHolder)
                 return logViewHolder;
 
             return null;
         }
 
+        private bool isVisible(ViewHolder viewHolder)
+        {
+            var layoutManager = (LinearLayoutManager)GetLayoutManager();
+                return layoutManager.IsViewPartiallyVisible(viewHolder.ItemView, true, true)
+                || layoutManager.IsViewPartiallyVisible(viewHolder.ItemView, false, true);
+        }
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
