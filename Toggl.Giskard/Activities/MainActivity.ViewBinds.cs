@@ -1,7 +1,8 @@
-﻿using Android.Support.Design.Widget;
-using Android.Support.V7.Widget;
+using Android.Support.Design.Widget;
 using Android.Views;
+using Android.Widget;
 using Toggl.Giskard.Views;
+using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace Toggl.Giskard.Activities
 {
@@ -19,6 +20,8 @@ namespace Toggl.Giskard.Activities
 
         private View runningEntryCardFrame;
 
+        private FrameLayout projectDotView;
+
         private void initializeViews()
         {
             coordinatorLayout = FindViewById<CoordinatorLayout>(Resource.Id.MainCoordinatorLayout);
@@ -32,6 +35,8 @@ namespace Toggl.Giskard.Activities
             stopButton = FindViewById<FloatingActionButton>(Resource.Id.MainStopButton);
 
             runningEntryCardFrame = FindViewById(Resource.Id.MainRunningTimeEntryFrame);
+
+            projectDotView = FindViewById<FrameLayout>(Resource.Id.MainRunningTimeEntryProjectDot);
         }
     }
 }

@@ -8,7 +8,7 @@ using MvvmCross.Platforms.Ios.Binding.Views;
 using ObjCRuntime;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
-using static Toggl.Daneel.Extensions.UIExtensions;
+using static Toggl.Daneel.Extensions.UIKitRxExtensions;
 using static Toggl.Multivac.Extensions.CommonFunctions;
 
 namespace Toggl.Daneel
@@ -83,7 +83,7 @@ namespace Toggl.Daneel
                     .Select(impression => impression.HasValue)
                     .Select(gotImpression => (nfloat)(gotImpression ? 289 : 262)),
                 heightConstraint.BindConstant());
-            
+
             this.BindVoid(YesView.Tapped(), () => DataContext.RegisterImpression(true));
             this.BindVoid(NotReallyView.Tapped(), () => DataContext.RegisterImpression(false));
             this.Bind(CtaButton.Tapped(), DataContext.PerformMainAction);

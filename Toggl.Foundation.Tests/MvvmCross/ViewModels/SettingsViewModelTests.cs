@@ -150,7 +150,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 foreach (var state in statuses.Get)
                 {
                     observer.Messages.Clear();
-                    
+
                     ProgressSubject.OnNext(state);
 
                     var isRunningSync = observer.Messages.Single().Value.Value;
@@ -170,7 +170,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 {
                     if (state == SyncProgress.Unknown)
                         continue;
-                    
+
                     observer.Messages.Clear();
 
                     ProgressSubject.OnNext(state);
@@ -239,7 +239,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 observer.Messages.Single();
             }
-            
+
             [Fact, LogIfTooSlow]
             public async Task CallsLogoutOnTheDataSource()
             {
@@ -388,7 +388,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
             [Fact, LogIfTooSlow]
             public async Task CallsTheSelectWorkspaceViewModel()
-            {   
+            {
                 await ViewModel.PickDefaultWorkspace();
 
                 await NavigationService.Received()
@@ -498,9 +498,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheVersionProperty : SettingsViewModelTest
         {
             [Fact, LogIfTooSlow]
-            public void ForwardsTheValueFromTheUserAgentUsedInConstruction()
+            public void ShouldBeConstructedFromVersionAndBuildNumber()
             {
-                ViewModel.Version.Should().Be(UserAgent.Version);
+                ViewModel.Version.Should().Be($"{UserAgent.Version} ({PlatformConstants.BuildNumber})");
             }
         }
 

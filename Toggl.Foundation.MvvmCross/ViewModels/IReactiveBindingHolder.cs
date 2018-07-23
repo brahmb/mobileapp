@@ -4,6 +4,7 @@ using Toggl.Multivac.Extensions;
 using Toggl.Foundation.MvvmCross.Extensions;
 using System.Reactive;
 using System.Threading.Tasks;
+using System.Reactive.Linq;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {

@@ -33,9 +33,6 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIButton LoginButton { get; set; }
 
 		[Outlet]
-		UIKit.UIButton LoginShakeTriggerButton { get; set; }
-
-		[Outlet]
 		UIKit.UIImageView LogoImageView { get; set; }
 
 		[Outlet]
@@ -114,11 +111,6 @@ namespace Toggl.Daneel.ViewControllers
 			if (TopConstraint != null) {
 				TopConstraint.Dispose ();
 				TopConstraint = null;
-			}
-
-			if (LoginShakeTriggerButton != null) {
-				LoginShakeTriggerButton.Dispose ();
-				LoginShakeTriggerButton = null;
 			}
 		}
 	}

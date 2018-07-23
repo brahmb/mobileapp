@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using CoreAnimation;
 using CoreGraphics;
 using Foundation;
@@ -14,7 +15,12 @@ namespace Toggl.Daneel.Views
     [Register(nameof(LoginTextField))]
     public sealed class LoginTextField : UITextField
     {
+        [Obsolete("Prefer using the FirstResponder observable instead")]
         public event EventHandler IsFirstResponderChanged;
+
+        public ISubject<bool> firstResponderSubject = new Subject<bool>();
+
+        public IObservable<bool> FirstResponder { get; private set; }
 
         private const int textSize = 15;
         private const int textTopOffset = 22;
@@ -29,6 +35,11 @@ namespace Toggl.Daneel.Views
         private readonly CATextLayer placeholderLayer = new CATextLayer();
 
         private bool placeholderDrawn;
+        private bool placeholderIsUp;
+
+        public LoginTextField(CGRect frame) : base(frame) {  }
+
+        public LoginTextField(IntPtr handle) : base(handle)  { }
 
         public override string Text
         {
@@ -37,19 +48,20 @@ namespace Toggl.Daneel.Views
             {
                 if (string.IsNullOrEmpty(base.Text))
                     movePlaceholderUp();
-                if (string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value) && !IsFirstResponder)
                     movePlaceholderDown();
                 base.Text = value;
             }
         }
 
-        public LoginTextField(IntPtr handle) : base(handle) {}
-
-        public LoginTextField(CGRect frame) : base(frame) {}
-
         public override void AwakeFromNib()
         {
             base.AwakeFromNib();
+
+            FirstResponder = firstResponderSubject
+                .AsObservable()
+                .DistinctUntilChanged()
+                .StartWith(false);
 
             Layer.AddSublayer(underlineLayer);
             Layer.AddSublayer(placeholderLayer);
@@ -58,7 +70,8 @@ namespace Toggl.Daneel.Views
             underlineLayer.BackgroundColor = placeholderColor;
             VerticalAlignment = UIControlContentVerticalAlignment.Top;
             DrawPlaceholder(Frame);
-            
+
+            EditingDidBegin += onEditingDidBegin;
         }
 
         public override void LayoutSubviews()
@@ -87,17 +100,27 @@ namespace Toggl.Daneel.Views
                 Frame.Width,
                 Frame.Height - frameY
             );
+
             //For antialiasing
             placeholderLayer.ContentsScale = UIScreen.MainScreen.Scale;
             placeholderDrawn = true;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing) return;
+
+            EditingDidBegin -= onEditingDidBegin;
+        }
+
         public override bool BecomeFirstResponder()
         {
             var becomeFirstResponder = base.BecomeFirstResponder();
-
             if (becomeFirstResponder)
             {
+                firstResponderSubject.OnNext(true);
                 IsFirstResponderChanged?.Raise(this);
 
                 if (placeholderLayer.Frame.Top != 0)
@@ -112,6 +135,7 @@ namespace Toggl.Daneel.Views
             var resignFirstResponder = base.ResignFirstResponder();
             if (resignFirstResponder)
             {
+                firstResponderSubject.OnNext(false);
                 IsFirstResponderChanged?.Raise(this);
 
                 if (string.IsNullOrEmpty(Text))
@@ -132,6 +156,9 @@ namespace Toggl.Daneel.Views
 
         private void movePlaceholderUp()
         {
+            if (placeholderIsUp) return;
+            placeholderIsUp = true;
+
             var yOffset = -placeholderLayer.Frame.Top;
             CATransaction.Begin();
             CATransaction.AnimationDuration = placeholderAnimationDuration;
@@ -142,11 +169,20 @@ namespace Toggl.Daneel.Views
 
         private void movePlaceholderDown()
         {
+            if (!placeholderIsUp) return;
+            placeholderIsUp = false;
+
             CATransaction.Begin();
             CATransaction.AnimationDuration = placeholderAnimationDuration;
             placeholderLayer.AffineTransform = CGAffineTransform.MakeIdentity();
             placeholderLayer.FontSize = bigPlaceholderSize;
             CATransaction.Commit();
+        }
+
+        private void onEditingDidBegin(object sender, EventArgs e)
+        {
+            if (!SecureTextEntry) return;
+            InsertText(Text);
         }
     }
 }

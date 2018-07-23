@@ -1,17 +1,18 @@
-﻿using MvvmCross.Binding;
+using MvvmCross.Binding;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Platforms.Ios.Binding;
 using MvvmCross.Platforms.Ios.Views;
 using MvvmCross.Platforms.Ios.Presenters.Attributes;
 using MvvmCross.Plugin.Color.Platforms.Ios;
 using MvvmCross.Plugin.Visibility;
-using Toggl.Daneel.Extensions;
 using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
+using static Toggl.Daneel.Extensions.ViewBindingExtensions;
 using static Toggl.Daneel.Extensions.LoginSignupViewExtensions;
+using static Toggl.Daneel.Extensions.ViewExtensions;
 
 namespace Toggl.Daneel.ViewControllers
 {
@@ -152,9 +153,10 @@ namespace Toggl.Daneel.ViewControllers
                 }
             };
 
-            PasswordTextField.ResignFirstResponder();
-
             ShowPasswordButton.SetupShowPasswordButton();
+
+            EmailTextField.ResignFirstResponder();
+            PasswordTextField.ResignFirstResponder();
         }
     }
 }

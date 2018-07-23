@@ -21,9 +21,6 @@ namespace Toggl.Daneel.Autocomplete
         private const int lineHeight = 24;
         private const int maxTextLength = 50;
 
-        private const int textFieldInfoTokenLeftMargin = 6;
-        private const int textFieldInfoTokenRightMargin = 0;
-
         private static readonly nfloat textVerticalOffset;
         private static readonly NSParagraphStyle paragraphStyle;
         private static readonly UIStringAttributes tagAttributes;
@@ -44,7 +41,7 @@ namespace Toggl.Daneel.Autocomplete
                 ForegroundColor = Color.StartTimeEntry.TokenText.ToNativeColor()
             };
 
-            textVerticalOffset = (lineHeight / 2) - (tokenFont.CapHeight / 2) - 3;
+            textVerticalOffset = (lineHeight / 2) - (tokenFont.CapHeight / 2) - TokenTextAttachment.TokenMargin;
         }
 
         public static ProjectInformationTuple GetProjectInformation(this NSDictionary dictionary)
@@ -73,13 +70,12 @@ namespace Toggl.Daneel.Autocomplete
             return (tagId, tagName);
         }
 
-        public static TokenTextAttachment GetTagToken(this string tag, int leftMargin, int rightMargin)
-            => new TokenTextAttachment(
+        public static TokenTextAttachment GetTagToken(this string tag)
+            => new TagTextAttachment(
                 new NSMutableAttributedString(tag.TruncatedAt(maxTextLength), tagAttributes),
                 textVerticalOffset,
-                regularFont.Descender,
-                leftMargin,
-                rightMargin);
+                regularFont.Descender
+            );
 
         public static IImmutableList<ISpan> AsImmutableSpans(this NSAttributedString text, int cursorPosition)
             => text.AsSpans(cursorPosition).ToImmutableList();
@@ -173,13 +169,8 @@ namespace Toggl.Daneel.Autocomplete
                 ForegroundColor = projectColor
             });
 
-            var textAttachment = new TokenTextAttachment(
-                projectName,
-                textVerticalOffset,
-                projectColor,
-                regularFont.Descender,
-                textFieldInfoTokenLeftMargin,
-                textFieldInfoTokenRightMargin
+            var textAttachment = new ProjectTextAttachment(
+                projectName, projectColor, textVerticalOffset, regularFont.Descender
             );
 
             var tokenString = new NSMutableAttributedString(NSAttributedString.FromAttachment(textAttachment));
@@ -201,14 +192,9 @@ namespace Toggl.Daneel.Autocomplete
         private static NSMutableAttributedString AsAttributedString(this TagSpan tagSpan)
         {
             var tagName = new NSMutableAttributedString(tagSpan.TagName.TruncatedAt(maxTextLength), tagAttributes);
-            var textAttachment = new TokenTextAttachment(
-                tagName,
-                textVerticalOffset,
-                regularFont.Descender,
-                textFieldInfoTokenLeftMargin,
-                textFieldInfoTokenRightMargin
-            );
+            var textAttachment = new TagTextAttachment(tagName, textVerticalOffset, regularFont.Descender);
             var tokenString = new NSMutableAttributedString(NSAttributedString.FromAttachment(textAttachment));
+
             var attributes = createBasicAttributes();
             attributes.Dictionary[TagId] = new NSNumber(tagSpan.TagId);
             attributes.Dictionary[TagName] = new NSString(tagSpan.TagName);
@@ -217,7 +203,7 @@ namespace Toggl.Daneel.Autocomplete
             return tokenString;
         }
 
-        private static UIStringAttributes createBasicAttributes() 
+        private static UIStringAttributes createBasicAttributes()
             => new UIStringAttributes
             {
                 Font = regularFont,

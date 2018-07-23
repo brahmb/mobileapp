@@ -3,7 +3,7 @@ using System.Reactive;
 
 namespace Toggl.PrimeRadiant
 {
-    public interface ISingleObjectStorage<TModel> : IRepository<TModel>
+    public interface ISingleObjectStorage<TModel> : IBaseStorage<TModel>
         where TModel : IDatabaseSyncable
     {
         IObservable<TModel> Single();

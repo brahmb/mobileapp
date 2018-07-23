@@ -19,6 +19,7 @@ namespace Toggl.Daneel.Views
         protected UIStringAttributes DefaultTextAttributes { get; private set; } 
 
         public event EventHandler TextChanged;
+        public event EventHandler DidBecomeFirstResponder;
 
         private UIColor placeholderColor;
         public UIColor PlaceholderColor
@@ -153,6 +154,18 @@ namespace Toggl.Daneel.Views
         {
             isFocused = false;
             updateAttributedText(Text);
+        }
+
+        public override bool BecomeFirstResponder()
+        {
+            var becomeFirstResponder = base.BecomeFirstResponder();
+
+            if (becomeFirstResponder)
+            {
+                DidBecomeFirstResponder.Raise(this);
+            }
+
+            return becomeFirstResponder;
         }
     }
 }

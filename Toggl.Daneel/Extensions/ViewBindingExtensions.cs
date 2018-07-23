@@ -66,6 +66,9 @@ namespace Toggl.Daneel.Extensions
         public static string BindText(this TextViewWithPlaceholder self)
             => TextViewWithPlaceholderTextTargetBinding.BindingName;
 
+        public static string BindDidBecomeFirstResponder(this TextViewWithPlaceholder self)
+            => TextViewWithPlaceholderDidBecomeFirstResponderTargetBinding.BindingName;
+
         public static string BindAnimatedBackground(this UIView self)
             => ViewAnimatedBackgroundTargetBinding.BindingName;
 

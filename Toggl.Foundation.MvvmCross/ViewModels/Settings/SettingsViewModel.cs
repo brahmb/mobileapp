@@ -82,7 +82,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IObservable<IList<SelectableWorkspaceViewModel>> Workspaces { get; }
 
-        public string Version => userAgent.Version;
+        public string Version => $"{userAgent.Version} ({platformConstants.BuildNumber})";
 
         public SettingsViewModel(
             UserAgent userAgent,

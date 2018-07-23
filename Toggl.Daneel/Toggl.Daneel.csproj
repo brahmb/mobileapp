@@ -603,6 +603,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Binding\DatePickerDateTimeOffsetTargetBinding.cs" />
+    <Compile Include="Extensions\UIKitRxExtensions\NSConstraintRxExtensions.cs" />
+    <Compile Include="Extensions\UIKitRxExtensions\UIButtonRxExtensions.cs" />
+    <Compile Include="Extensions\UIKitRxExtensions\UIDatePickerRxExtensions.cs" />
+    <Compile Include="Extensions\UIKitRxExtensions\UILabelRxExtensions.cs" />
+    <Compile Include="Extensions\UIKitRxExtensions\UISwitchRxExtensions.cs" />
+    <Compile Include="Extensions\UIKitRxExtensions\UITextViewRxExtensions.cs" />
+    <Compile Include="Extensions\UIKitRxExtensions\UIViewRxExtensions.cs" />
     <Compile Include="Services\UserDefaultsStorage.cs" />
     <Compile Include="Startup\Setup.cs" />
     <Compile Include="Startup\SetupTargetFactories.cs">
@@ -954,7 +961,6 @@
     <Compile Include="Extensions\RangeExtensions.cs" />
     <Compile Include="Services\RemoteConfigService.cs" />
     <Compile Include="Extensions\ImageExtension.cs" />
-    <Compile Include="Extensions\UIExtensions.cs" />
     <Compile Include="Services\RatingService.cs" />
     <Compile Include="ViewControllers\ReactiveViewController.cs" />
     <Compile Include="Cells\BaseTableViewCell.cs" />
@@ -974,7 +980,11 @@
       <DependentUpon>LicensesViewCell.cs</DependentUpon>
     </Compile>
     <Compile Include="Combiners\TImeEntryLogViewCellFadeViewConstraintValueCombiner.cs" />
+    <Compile Include="Autocomplete\ProjectTextAttachment.cs" />
+    <Compile Include="Autocomplete\TagTextAttachment.cs" />
     <Compile Include="Autocomplete\EmptyInputDelegate.cs" />
+    <Compile Include="Extensions\UIKitRxExtensions\UITextFieldRxExtensions.cs" />
+    <Compile Include="Binding\TextViewWithPlaceholderDidBecomeFirstResponderTargetBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation.MvvmCross\Toggl.Foundation.MvvmCross.csproj">

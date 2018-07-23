@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Toggl.Foundation.Tests.MvvmCross.Collections
 {
-    public sealed class GroupedOrderedListTests
+    public sealed class GroupedOrderedCollectionTests
     {
         public sealed class MockItem : IEquatable<MockItem>
         {
@@ -45,7 +45,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
             [Fact, LogIfTooSlow]
             public void ListCanBeEmpty()
             {
-                intCollection.Items.Should().BeEmpty();
+                intCollection.IsEmpty.Should().BeTrue();
             }
 
             [Fact, LogIfTooSlow]
@@ -60,7 +60,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                     new List<int> { 1, 2, 3, 4, 7, 8 }
                 };
 
-                CollectionAssert.AreEqual(intCollection.Items, expected);
+                CollectionAssert.AreEqual(intCollection, expected);
             }
 
             [Fact, LogIfTooSlow]
@@ -74,7 +74,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                 {
                     new List<int> { 8, 7, 4, 3, 2, 1 }
                 };
-                CollectionAssert.AreEqual(collection.Items, expected);
+                CollectionAssert.AreEqual(collection, expected);
             }
 
             [Fact, LogIfTooSlow]
@@ -99,7 +99,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                         new MockItem { Id = 1, Start = referenceDate.AddHours(-10) }
                     }
                 };
-                CollectionAssert.AreEqual(mockCollection.Items, expected);
+                CollectionAssert.AreEqual(mockCollection, expected);
             }
 
             [Fact, LogIfTooSlow]
@@ -130,69 +130,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                         new MockItem { Id = 2, Start = referenceDate.AddHours(-10) }
                     }
                 };
-                CollectionAssert.AreEqual(mockCollection.Items, expected);
+                CollectionAssert.AreEqual(mockCollection, expected);
             }
         }
-
-        public sealed class TheItemAtMethod
-        {
-            private GroupedOrderedCollection<int> intCollection;
-            private GroupedOrderedCollection<MockItem> mockCollection;
-
-            public TheItemAtMethod()
-            {
-                intCollection = new GroupedOrderedCollection<int>(i => i, i => i, i => i.ToString().Length);
-                mockCollection = new GroupedOrderedCollection<MockItem>(d => d.Id, d => d.Start.TimeOfDay, d => d.Start.Date, isDescending: true);
-            }
-
-            [Fact, LogIfTooSlow]
-            public void ThrowsIfEmpty()
-            {
-                Action gettingItem = () => intCollection.ItemAt(0, 0);
-                gettingItem.Should().Throw<ArgumentOutOfRangeException>();
-            }
-
-            [Fact, LogIfTooSlow]
-            public void ThrowsIfSectionDoesNotExist()
-            {
-                List<int> list = new List<int> { 40, 70, 8, 3, 1, 2 };
-                intCollection.ReplaceWith(list);
-
-                Action gettingItem = () => intCollection.ItemAt(2, 0);
-
-                gettingItem.Should().Throw<ArgumentOutOfRangeException>();
-            }
-
-
-            [Fact, LogIfTooSlow]
-            public void ThrowsIfIndexOutOfRange()
-            {
-                List<int> list = new List<int> { 40, 70, 8, 3, 1, 2 };
-                intCollection.ReplaceWith(list);
-
-                Action gettingItem = () => intCollection.ItemAt(0, 6);
-
-                gettingItem.Should().Throw<ArgumentOutOfRangeException>();
-            }
-
-            [Fact, LogIfTooSlow]
-            public void ReturnsTheCorrectItem()
-            {
-                DateTimeOffset referenceDate = new DateTimeOffset(2018, 02, 13, 19, 00, 00, TimeSpan.Zero);
-                List<MockItem> list = new List<MockItem>
-                {
-                    new MockItem { Id = 0, Start = referenceDate.AddHours(3) },
-                    new MockItem { Id = 1, Start = referenceDate.AddHours(1) },
-                    new MockItem { Id = 2, Start = referenceDate.AddHours(-10) },
-                    new MockItem { Id = 3, Start = referenceDate.AddDays(5) },
-                    new MockItem { Id = 4, Start = referenceDate.AddDays(5).AddHours(2) }
-                };
-                mockCollection.ReplaceWith(list);
-
-                mockCollection.ItemAt(1, 1).Id.Should().Be(1);
-            }
-        }
-
 
         public sealed class TheIndexOfMethod
         {
@@ -211,7 +151,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
 
                 var index = intCollection.IndexOf(70);
 
-                var expected = new SectionedIndex { Section = 1, Row = 1 };
+                var expected = new SectionedIndex(1, 1);
                 index.Should().Be(expected);
             }
 
@@ -235,104 +175,47 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
             }
         }
 
-        public sealed class TheRemoveItemMethod
+        public sealed class TheIndexOfWithIdMethod
         {
-            private GroupedOrderedCollection<int> intCollection;
+            private GroupedOrderedCollection<MockItem> mockCollection;
+            private DateTimeOffset referenceDate = new DateTimeOffset(2018, 02, 13, 19, 00, 00, TimeSpan.Zero);
 
-            public TheRemoveItemMethod()
+            public TheIndexOfWithIdMethod()
             {
-                intCollection = new GroupedOrderedCollection<int>(i => i, i => i, i => i.ToString().Length);
+                mockCollection = new GroupedOrderedCollection<MockItem>(d => d.Id, d => d.Start.TimeOfDay, d => d.Start.Date, isDescending: true);
+                List<MockItem> list = new List<MockItem>
+                {
+                    new MockItem { Id = 0, Start = referenceDate.AddHours(3) },
+                    new MockItem { Id = 1, Start = referenceDate.AddHours(1) },
+                    new MockItem { Id = 2, Start = referenceDate.AddHours(-10) },
+                    new MockItem { Id = 3, Start = referenceDate.AddDays(5) },
+                    new MockItem { Id = 4, Start = referenceDate.AddDays(5).AddHours(2) }
+                };
+                mockCollection.ReplaceWith(list);
             }
 
+            [Fact, LogIfTooSlow]
+            public void ReturnsCorrectIndex()
+            {
+                var index = mockCollection.IndexOf(itemId: 2);
+
+                var expected = new SectionedIndex(1, 2);
+                index.Should().Be(expected);
+            }
+
+            [Fact, LogIfTooSlow]
+            public void ReturnsNullIfNotExisting()
+            {
+                var index = mockCollection.IndexOf(itemId: 8);
+                index.Should().BeNull();
+            }
 
             [Fact, LogIfTooSlow]
             public void ReturnsNullIfEmpty()
             {
-                var collection = new GroupedOrderedCollection<int>(i => i, i => i, i => i.ToString().Length);
-
-                collection.RemoveItem(5).Should().Be(null);
-            }
-
-            [Fact, LogIfTooSlow]
-            public void ReturnsNullIfItemCantBeFound()
-            {
-                List<int> list = new List<int> { 40, 70, 8, 3, 1, 2 };
-                intCollection.ReplaceWith(list);
-
-                intCollection.RemoveItem(4).Should().Be(null);
-            }
-
-            [Fact, LogIfTooSlow]
-            public void RemovesCorrectItem()
-            {
-                List<int> list = new List<int> { 40, 70, 8, 3, 1, 2 };
-                intCollection.ReplaceWith(list);
-
-                intCollection.RemoveItem(3);
-
-                List<List<int>> expected = new List<List<int>>
-                {
-                    new List<int> { 40, 70 },
-                    new List<int> { 1, 2, 8 }
-                };
-                intCollection.Items.Should().BeEquivalentTo(expected);
-            }
-
-            [Fact, LogIfTooSlow]
-            public void ReturnsCorrectSectionedIndex()
-            {
-                List<int> list = new List<int> { 40, 70, 8, 3, 1, 2 };
-                intCollection.ReplaceWith(list);
-
-                var expected = new SectionedIndex { Section = 1, Row = 0 };
-                intCollection.RemoveItem(40).Should().Be(expected);
-            }
-
-            [Fact, LogIfTooSlow]
-            public void RemovesSectionIfEmpty()
-            {
-                List<int> list = new List<int> { 40, 3, 1, 2 };
-                intCollection.ReplaceWith(list);
-
-                intCollection.RemoveItem(40);
-
-                List<List<int>> expected = new List<List<int>>
-                {
-                    new List<int> { 1, 2, 3 }
-                };
-                CollectionAssert.AreEqual(intCollection.Items, expected);
-            }
-
-            [Fact, LogIfTooSlow]
-            public void CanRemoveLastItem()
-            {
-                List<int> list = new List<int> { 40, 70, 3, 1, 2 };
-                intCollection.ReplaceWith(list);
-
-                intCollection.RemoveItem(70);
-
-                List<List<int>> expected = new List<List<int>>
-                {
-                    new List<int> { 1, 2, 3 },
-                    new List<int> { 40 }
-                };
-                CollectionAssert.AreEqual(intCollection.Items, expected);
-            }
-
-            [Fact, LogIfTooSlow]
-            public void CanRemoveFirstItem()
-            {
-                List<int> list = new List<int> { 40, 70, 3, 1, 2 };
-                intCollection.ReplaceWith(list);
-
-                intCollection.RemoveItem(1);
-
-                List<List<int>> expected = new List<List<int>>
-                {
-                    new List<int> { 2, 3 },
-                    new List<int> { 40, 70 }
-                };
-                CollectionAssert.AreEqual(intCollection.Items, expected);
+                var emptyCollection = new GroupedOrderedCollection<MockItem>(d => d.Id, d => d.Start.TimeOfDay, d => d.Start.Date, isDescending: true);
+                var index = emptyCollection.IndexOf(itemId: 0);
+                index.Should().BeNull();
             }
         }
 
@@ -377,7 +260,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                     new List<int> { 1, 2, 3 },
                     new List<int> { 40, 70 }
                 };
-                intCollection.Items.Should().BeEquivalentTo(expected);
+                CollectionAssert.AreEqual(intCollection, expected);
             }
 
             [Fact, LogIfTooSlow]
@@ -386,7 +269,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                 List<int> list = new List<int> { 40, 70, 8, 3, 1, 2 };
                 intCollection.ReplaceWith(list);
 
-                var expected = new SectionedIndex { Section = 1, Row = 0 };
+                var expected = new SectionedIndex(1, 0);
                 intCollection.RemoveItemAt(1, 0).Should().Be(40);
             }
 
@@ -402,7 +285,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                 {
                     new List<int> { 1, 2, 3 }
                 };
-                CollectionAssert.AreEqual(intCollection.Items, expected);
+                CollectionAssert.AreEqual(intCollection, expected);
             }
 
             [Fact, LogIfTooSlow]
@@ -418,7 +301,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                     new List<int> { 1, 2, 3 },
                     new List<int> { 40 }
                 };
-                CollectionAssert.AreEqual(intCollection.Items, expected);
+                CollectionAssert.AreEqual(intCollection, expected);
             }
 
             [Fact, LogIfTooSlow]
@@ -434,7 +317,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                     new List<int> { 2, 3 },
                     new List<int> { 40, 70 }
                 };
-                CollectionAssert.AreEqual(intCollection.Items, expected);
+                CollectionAssert.AreEqual(intCollection, expected);
             }
         }
 
@@ -460,7 +343,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                     new List<int> { 1, 2, 3, 4, 8 },
                     new List<int> { 40, 70 }
                 };
-                CollectionAssert.AreEqual(intCollection.Items, expected);
+                CollectionAssert.AreEqual(intCollection, expected);
             }
 
             [Fact, LogIfTooSlow]
@@ -477,7 +360,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                     new List<int> { 70, 40 },
                     new List<int> { 8, 4, 3, 2, 1 },
                 };
-                CollectionAssert.AreEqual(collection.Items, expected);
+                CollectionAssert.AreEqual(collection, expected);
             }
 
             [Fact, LogIfTooSlow]
@@ -494,7 +377,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                     new List<int> { 40, 70 },
                     new List<int> { 200 }
                 };
-                CollectionAssert.AreEqual(intCollection.Items, expected);
+                CollectionAssert.AreEqual(intCollection, expected);
             }
 
             [Fact, LogIfTooSlow]
@@ -503,7 +386,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                 List<int> list = new List<int> { 40, 70, 8, 3, 1, 2 };
                 intCollection.ReplaceWith(list);
 
-                var expected = new SectionedIndex { Section = 0, Row = 3 };
+                var expected = new SectionedIndex(0, 3);
 
                 intCollection.InsertItem(4).Should().Be(expected);
             }
@@ -521,7 +404,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                     new List<int> { 1, 2, 3, 8, 9 },
                     new List<int> { 40, 70 }
                 };
-                CollectionAssert.AreEqual(intCollection.Items, expected);
+                CollectionAssert.AreEqual(intCollection, expected);
             }
 
             [Fact, LogIfTooSlow]
@@ -537,22 +420,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                     new List<int> { 1, 2, 3, 8 },
                     new List<int> { 10, 40, 70 }
                 };
-                CollectionAssert.AreEqual(intCollection.Items, expected);
-            }
-        }
-
-        public sealed class TheClearMethod
-        {
-            [Fact, LogIfTooSlow]
-            public void ClearsTheCollection()
-            {
-                var collection = new GroupedOrderedCollection<int>(i => i, i => i, i => i.ToString().Length);
-                List<int> list = new List<int> { 40, 70, 8, 3, 1, 2 };
-                collection.ReplaceWith(list);
-
-                collection.Clear();
-
-                collection.Items.Should().BeEmpty();
+                CollectionAssert.AreEqual(intCollection, expected);
             }
         }
 
@@ -573,7 +441,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                     new List<int> { 10 },
                     new List<int> { 100, 300 }
                 };
-                CollectionAssert.AreEqual(collection.Items, expected);
+                CollectionAssert.AreEqual(collection, expected);
             }
         }
     }

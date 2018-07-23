@@ -1,10 +1,10 @@
-﻿using System;
+using System;
+using System.Linq;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
-using PropertyChanged;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Exceptions;
@@ -14,6 +14,7 @@ using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.Services;
 using Toggl.Multivac;
+using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant.Settings;
 using Toggl.Ultrawave.Exceptions;
 
@@ -22,6 +23,14 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     [Preserve(AllMembers = true)]
     public sealed class LoginViewModel : MvxViewModel<CredentialsParameter>
     {
+        [Flags]
+        public enum ShakeTargets
+        {
+            None = 0,
+            Email = 1,
+            Password = 2
+        }
+
         private readonly ILoginManager loginManager;
         private readonly IAnalyticsService analyticsService;
         private readonly IOnboardingStorage onboardingStorage;
@@ -33,40 +42,33 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private IDisposable loginDisposable;
 
-        public Email Email { get; set; } = Email.Empty;
+        private readonly Subject<ShakeTargets> shakeSubject = new Subject<ShakeTargets>();
+        private readonly Subject<bool> isShowPasswordButtonVisibleSubject = new Subject<bool>();
+        private readonly BehaviorSubject<bool> isLoadingSubject = new BehaviorSubject<bool>(false);
+        private readonly BehaviorSubject<string> errorMessageSubject = new BehaviorSubject<string>("");
+        private readonly BehaviorSubject<bool> isPasswordMaskedSubject = new BehaviorSubject<bool>(true);
+        private readonly BehaviorSubject<Email> emailSubject = new BehaviorSubject<Email>(Multivac.Email.Empty);
+        private readonly BehaviorSubject<Password> passwordSubject = new BehaviorSubject<Password>(Multivac.Password.Empty);
 
-        public Password Password { get; set; } = Password.Empty;
+        public bool IsPasswordManagerAvailable { get; }
 
-        public string ErrorMessage { get; private set; } = "";
+        public IObservable<string> Email { get; }
 
-        [DependsOn(nameof(ErrorMessage))]
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+        public IObservable<string> Password { get; }
 
-        public bool IsLoading { get; private set; } = false;
+        public IObservable<bool> HasError { get; }
 
-        [DependsOn(nameof(Email), nameof(Password), nameof(IsLoading), nameof(HasError))]
-        public bool LoginEnabled => Email.IsValid && Password.IsValid && !IsLoading;
+        public IObservable<bool> IsLoading { get; }
 
-        public bool IsPasswordManagerAvailable
-            => passwordManagerService.IsAvailable;
+        public IObservable<bool> LoginEnabled { get; }
 
-        public bool IsPasswordMasked { get; private set; } = true;
+        public IObservable<ShakeTargets> Shake { get; }
+        
+        public IObservable<string> ErrorMessage { get; }
 
-        [DependsOn(nameof(Password))]
-        public bool IsShowPasswordButtonVisible
-            => Password.ToString().Length > 1;
+        public IObservable<bool> IsPasswordMasked { get; }
 
-        public IMvxCommand LoginCommand { get; }
-
-        public IMvxCommand GoogleLoginCommand { get; }
-
-        public IMvxCommand TogglePasswordVisibilityCommand { get; }
-
-        public IMvxAsyncCommand SignupCommand { get; }
-
-        public IMvxAsyncCommand ForgotPasswordCommand { get; }
-
-        public IMvxAsyncCommand StartPasswordManagerCommand { get; }
+        public IObservable<bool> IsShowPasswordButtonVisible { get; }
 
         public LoginViewModel(
             ILoginManager loginManager,
@@ -87,43 +89,151 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(lastTimeUsageStorage, nameof(lastTimeUsageStorage));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
 
+            this.timeService = timeService;
             this.loginManager = loginManager;
             this.analyticsService = analyticsService;
             this.onboardingStorage = onboardingStorage;
             this.navigationService = navigationService;
-            this.passwordManagerService = passwordManagerService;
             this.errorHandlingService = errorHandlingService;
             this.lastTimeUsageStorage = lastTimeUsageStorage;
-            this.timeService = timeService;
+            this.passwordManagerService = passwordManagerService;
 
-            SignupCommand = new MvxAsyncCommand(signup);
-            GoogleLoginCommand = new MvxCommand(googleLogin);
-            LoginCommand = new MvxCommand(login, () 
-                => { 
-                    Email = Email.TrimmedEnd(); 
-                    return LoginEnabled; 
-                });
-            ForgotPasswordCommand = new MvxAsyncCommand(forgotPassword);
-            TogglePasswordVisibilityCommand = new MvxCommand(togglePasswordVisibility);
-            StartPasswordManagerCommand = new MvxAsyncCommand(startPasswordManager, () => IsPasswordManagerAvailable);
+            var passwordObservable = passwordSubject.AsObservable();
+            var emailObservable = emailSubject.AsObservable().Select(email => email.TrimmedEnd());
+
+            Shake = shakeSubject.AsObservable();
+
+            Email = emailObservable
+                .Select(email => email.ToString())
+                .DistinctUntilChanged();
+
+            Password = passwordSubject
+                .Select(password => password.ToString())
+                .DistinctUntilChanged();
+            
+            IsLoading = isLoadingSubject
+                .AsObservable()
+                .DistinctUntilChanged();
+
+            ErrorMessage = errorMessageSubject
+                .AsObservable()
+                .DistinctUntilChanged();
+
+            IsPasswordMasked = isPasswordMaskedSubject
+                .AsObservable()
+                .DistinctUntilChanged();
+
+            IsShowPasswordButtonVisible = Password
+                .Select(password => password.Length > 1)
+                .CombineLatest(isShowPasswordButtonVisibleSubject.AsObservable(), CommonFunctions.And)
+                .DistinctUntilChanged();
+
+            HasError = ErrorMessage
+                .Select(string.IsNullOrEmpty)
+                .Select(CommonFunctions.Invert);
+
+            LoginEnabled = emailObservable
+                .CombineLatest(
+                    passwordObservable,
+                    IsLoading,
+                    (email, password, isLoading) => email.IsValid && password.IsValid && !isLoading)
+                .DistinctUntilChanged();
+            
+            IsPasswordManagerAvailable = passwordManagerService.IsAvailable;
         }
 
         public override void Prepare(CredentialsParameter parameter)
         {
-            Email = parameter.Email;
-            Password = parameter.Password;
+            emailSubject.OnNext(parameter.Email);
+            passwordSubject.OnNext(parameter.Password);
         }
 
-        private void login()
+        public void SetEmail(Email email)
+            => emailSubject.OnNext(email);
+
+        public void SetPassword(Password password)
+            => passwordSubject.OnNext(password);
+
+        public void SetIsShowPasswordButtonVisible(bool visible)
+            => isShowPasswordButtonVisibleSubject.OnNext(visible);
+
+        public void Login()
         {
-            IsLoading = true;
-            ErrorMessage = "";
+            var shakeTargets = ShakeTargets.None;
+            shakeTargets |= emailSubject.Value.IsValid ? ShakeTargets.None : ShakeTargets.Email;
+            shakeTargets |= passwordSubject.Value.IsValid ? ShakeTargets.None : ShakeTargets.Password;
+
+            if (shakeTargets != ShakeTargets.None)
+            {
+                shakeSubject.OnNext(shakeTargets);
+                return;
+            }
+
+            if (isLoadingSubject.Value) return;
+
+            isLoadingSubject.OnNext(true);
+            errorMessageSubject.OnNext("");
 
             loginDisposable =
                 loginManager
-                    .Login(Email, Password)
+                    .Login(emailSubject.Value, passwordSubject.Value)
                     .Track(analyticsService.Login, AuthenticationMethod.EmailAndPassword)
                     .Subscribe(onDataSource, onError, onCompleted);
+        }
+
+        public async Task StartPasswordManager()
+        {
+            if (!passwordManagerService.IsAvailable) return;
+            if (isLoadingSubject.Value) return;
+
+            analyticsService.PasswordManagerButtonClicked.Track();
+
+            var loginInfo = await passwordManagerService.GetLoginInformation();
+
+            emailSubject.OnNext(loginInfo.Email);
+            if (!emailSubject.Value.IsValid) return;
+            analyticsService.PasswordManagerContainsValidEmail.Track();
+
+            passwordSubject.OnNext(loginInfo.Password);
+            if (!passwordSubject.Value.IsValid) return;
+            analyticsService.PasswordManagerContainsValidPassword.Track();
+
+            Login();
+        }
+
+        public void TogglePasswordVisibility()
+            => isPasswordMaskedSubject.OnNext(!isPasswordMaskedSubject.Value);
+
+        public async Task ForgotPassword()
+        {
+            if (isLoadingSubject.Value) return;
+
+            var emailParameter = EmailParameter.With(emailSubject.Value);
+            emailParameter = await navigationService
+                .Navigate<ForgotPasswordViewModel, EmailParameter, EmailParameter>(emailParameter);
+            if (emailParameter != null)
+                emailSubject.OnNext(emailParameter.Email);
+        }
+
+        public void GoogleLogin()
+        {
+            if (isLoadingSubject.Value) return;
+
+            isLoadingSubject.OnNext(true);
+
+            loginDisposable = loginManager
+                .LoginWithGoogle()
+                .Track(analyticsService.Login, AuthenticationMethod.Google)
+                .Subscribe(onDataSource, onError, onCompleted);
+        }
+
+        public Task Signup()
+        {
+            if (isLoadingSubject.Value)
+                return Task.CompletedTask;
+
+            var parameter = CredentialsParameter.With(emailSubject.Value, passwordSubject.Value);
+            return navigationService.Navigate<SignupViewModel, CredentialsParameter>(parameter);
         }
 
         private async void onDataSource(ITogglDataSource dataSource)
@@ -132,7 +242,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             await dataSource.StartSyncing();
 
-            IsLoading = false;
+            isLoadingSubject.OnNext(false);
 
             onboardingStorage.SetIsNewUser(false);
 
@@ -141,7 +251,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void onError(Exception exception)
         {
-            IsLoading = false;
+            isLoadingSubject.OnNext(false);
             onCompleted();
 
             if (errorHandlingService.TryHandleDeprecationError(exception))
@@ -150,13 +260,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             switch (exception)
             {
                 case UnauthorizedException forbidden:
-                    ErrorMessage = Resources.IncorrectEmailOrPassword;
+                    errorMessageSubject.OnNext(Resources.IncorrectEmailOrPassword);
                     break;
                 case GoogleLoginException googleEx when googleEx.LoginWasCanceled:
-                    ErrorMessage = "";
+                    errorMessageSubject.OnNext("");
                     break;
                 default:
-                    ErrorMessage = Resources.GenericLoginError;
+                    errorMessageSubject.OnNext(Resources.GenericLoginError);
                     break;
             }
         }
@@ -165,74 +275,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             loginDisposable?.Dispose();
             loginDisposable = null;
-        }
-
-        private void OnEmailChanged()
-        {
-            LoginCommand.RaiseCanExecuteChanged();
-        }
-
-        private void OnPasswordChanged()
-        {
-            LoginCommand.RaiseCanExecuteChanged();
-        }
-
-        private void OnIsLoadingChanged()
-        {
-            LoginCommand.RaiseCanExecuteChanged();
-        }
-
-        private async Task startPasswordManager()
-        {
-            analyticsService.PasswordManagerButtonClicked.Track();
-
-            var loginInfo = await passwordManagerService.GetLoginInformation();
-
-            Email = loginInfo.Email;
-            if (!Email.IsValid) return;
-            analyticsService.PasswordManagerContainsValidEmail.Track();
-
-            Password = loginInfo.Password;
-            if (!Password.IsValid) return;
-            analyticsService.PasswordManagerContainsValidPassword.Track();
-
-            login();
-        }
-
-        private void togglePasswordVisibility()
-           => IsPasswordMasked = !IsPasswordMasked;
-
-        private async Task forgotPassword()
-        {
-            if (IsLoading)
-                return;
-
-            var emailParameter = EmailParameter.With(Email);
-            emailParameter = await navigationService
-                .Navigate<ForgotPasswordViewModel, EmailParameter, EmailParameter>(emailParameter);
-            if (emailParameter != null)
-                Email = emailParameter.Email;
-        }
-
-        private void googleLogin()
-        {
-            if (IsLoading) return;
-
-            IsLoading = true;
-
-            loginDisposable = loginManager
-                .LoginWithGoogle()
-                .Track(analyticsService.Login, AuthenticationMethod.Google)
-                .Subscribe(onDataSource, onError, onCompleted);
-        }
-
-        private Task signup()
-        {
-            if (IsLoading)
-                return Task.CompletedTask;
-
-            var parameter = CredentialsParameter.With(Email, Password);
-            return navigationService.Navigate<SignupViewModel, CredentialsParameter>(parameter);
         }
     }
 }

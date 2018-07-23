@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using MvvmCross.Commands;
 using MvvmCross.Navigation;
@@ -49,6 +50,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private RatingViewExperiment ratingViewExperiment;
 
+        private bool isEditViewOpen = false;
+        private object isEditViewOpenLock = new object();
+
         private readonly TimeSpan ratingViewTimeout = TimeSpan.FromMinutes(5);
 
         public TimeSpan CurrentTimeEntryElapsedTime { get; private set; } = TimeSpan.Zero;
@@ -72,6 +76,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public int NumberOfSyncFailures { get; private set; }
 
         public IObservable<bool> IsTimeEntryRunning { get; private set; }
+
+        public IObservable<bool> CurrentTimeEntryHasDescription { get; private set; }
 
         [DependsOn(nameof(SyncingProgress))]
         public bool ShowSyncIndicator => SyncingProgress == SyncProgress.Syncing;
@@ -173,7 +179,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             OpenReportsCommand = new MvxAsyncCommand(openReports);
             OpenSettingsCommand = new MvxAsyncCommand(openSettings);
             OpenSyncFailuresCommand = new MvxAsyncCommand(openSyncFailures);
-            EditTimeEntryCommand = new MvxAsyncCommand(editTimeEntry, () => CurrentTimeEntryId.HasValue);
+            EditTimeEntryCommand = new MvxAsyncCommand(editTimeEntry, canExecuteEditTimeEntryCommand);
             StopTimeEntryCommand = new MvxAsyncCommand(stopTimeEntry, () => isStopButtonEnabled);
             StartTimeEntryCommand = new MvxAsyncCommand(startTimeEntry, () => CurrentTimeEntryId.HasValue == false);
             AlternativeStartTimeEntryCommand = new MvxAsyncCommand(alternativeStartTimeEntry, () => CurrentTimeEntryId.HasValue == false);
@@ -206,6 +212,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             connectableTimeEntryIsRunning.Connect();
 
             IsTimeEntryRunning = connectableTimeEntryIsRunning;
+
+            CurrentTimeEntryHasDescription = dataSource
+                .TimeEntries
+                .CurrentlyRunningTimeEntry
+                .Select(te => !string.IsNullOrWhiteSpace(te?.Description))
+                .DistinctUntilChanged();
 
             timeService
                 .CurrentDateTimeObservable
@@ -368,8 +380,31 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             CurrentTimeEntryElapsedTime = TimeSpan.Zero;
         }
 
-        private Task editTimeEntry()
-            => navigate<EditTimeEntryViewModel, long>(CurrentTimeEntryId.Value);
+        private async Task editTimeEntry()
+        {
+            lock (isEditViewOpenLock)
+            {
+                isEditViewOpen = true;
+            }
+
+            await navigate<EditTimeEntryViewModel, long>(CurrentTimeEntryId.Value);
+
+            lock (isEditViewOpenLock)
+            {
+                isEditViewOpen = false;
+            }
+        }
+
+        private bool canExecuteEditTimeEntryCommand()
+        {
+            lock (isEditViewOpenLock)
+            {
+                if (isEditViewOpen)
+                    return false;
+            }
+
+            return CurrentTimeEntryId.HasValue;
+        }
 
         private Task navigate<TModel, TParameters>(TParameters value)
             where TModel : IMvxViewModel<TParameters>

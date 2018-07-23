@@ -498,6 +498,26 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Navigate<EditTimeEntryViewModel, long>(Arg.Any<long>());
             }
 
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask NavigatesToTheEditViewOnlyOnceOnMultipleTaps()
+            {
+                var timeEntry = Substitute.For<IThreadSafeTimeEntry>();
+                var observable = Observable.Return(timeEntry);
+                DataSource.TimeEntries.CurrentlyRunningTimeEntry.Returns(observable);
+                ViewModel.Initialize().Wait();
+                NavigationService
+                    .Navigate<EditTimeEntryViewModel, long>(Arg.Any<long>())
+                    .Returns(ThreadingTask.Delay(10));
+
+                for (int i = 0; i < 10; i++)
+                {
+                    ThreadingTask runSynchronously = ViewModel.EditTimeEntryCommand.ExecuteAsync();
+                }
+
+                await NavigationService.Received(1)
+                    .Navigate<EditTimeEntryViewModel, long>(Arg.Any<long>());
+            }
+
             [Property]
             public void PassesTheCurrentDateToTheStartTimeEntryViewModel(long id)
             {

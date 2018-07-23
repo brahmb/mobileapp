@@ -85,6 +85,7 @@ namespace Toggl.Giskard.Activities
             disposeBag.Add(ViewModel.WeakSubscribe<PropertyChangedEventArgs>(nameof(ViewModel.SyncingProgress), onSyncChanged));
 
             setupOnboardingSteps();
+            setupProjectDotMargin();
         }
 
         protected override void Dispose(bool disposing)
@@ -110,6 +111,20 @@ namespace Toggl.Giskard.Activities
             base.OnStop();
             playButtonTooltipPopupWindow.Dismiss();
             stopButtonTooltipPopupWindow.Dismiss();
+        }
+
+        private void setupProjectDotMargin()
+        {
+            ViewModel.CurrentTimeEntryHasDescription
+                .ObserveOn(SynchronizationContext.Current)
+                .Subscribe(hasDescription =>
+                {
+                    var leftMargin = hasDescription ? 8.DpToPixels(this) : 0;
+                    var layoutParams = (RelativeLayout.LayoutParams)projectDotView.LayoutParameters;
+                    layoutParams.LeftMargin = leftMargin;
+                    projectDotView.LayoutParameters = layoutParams;
+                    projectDotView.RequestLayout();
+                }).DisposedBy(disposeBag);
         }
 
         private void onSyncChanged(object sender, PropertyChangedEventArgs args)

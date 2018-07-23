@@ -3,6 +3,9 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Collections.Generic;
+using Toggl.Foundation.Analytics;
+using Toggl.Foundation.Models;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant;
@@ -25,6 +28,11 @@ namespace Toggl.Foundation.DataSources
         private long? currentlyRunningTimeEntryId;
 
         private readonly ITimeService timeService;
+
+        private readonly IRepository<IDatabaseTimeEntry> repository;
+
+        private readonly IAnalyticsService analyticsService;
+
         private readonly Func<IDatabaseTimeEntry, IDatabaseTimeEntry, ConflictResolutionMode> alwaysCreate
             = (a, b) => ConflictResolutionMode.Create;
 
@@ -46,16 +54,22 @@ namespace Toggl.Foundation.DataSources
 
         public TimeEntriesDataSource(
             IRepository<IDatabaseTimeEntry> repository,
-            ITimeService timeService)
+            ITimeService timeService,
+            IAnalyticsService analyticsService)
             : base(repository)
         {
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
+            Ensure.Argument.IsNotNull(repository, nameof(repository));
+            Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
 
             this.timeService = timeService;
+            this.repository = repository;
+            this.analyticsService = analyticsService;
+
+            RivalsResolver = new TimeEntryRivalsResolver(timeService);
 
             CurrentlyRunningTimeEntry =
-                GetAll(te => te.IsDeleted == false && te.Duration == null)
-                    .Select(tes => tes.SingleOrDefault())
+                getCurrentlyRunningTimeEntry()
                     .StartWith()
                     .Merge(Created.Where(te => te.IsRunning()))
                     .Merge(Updated.Where(update => update.Id == currentlyRunningTimeEntryId).Select(update => update.Entity))
@@ -64,7 +78,7 @@ namespace Toggl.Foundation.DataSources
                     .ConnectedReplay();
 
             IsEmpty =
-                Observable.Return(default(IDatabaseTimeEntry))
+                Observable.Return(default(IThreadSafeTimeEntry))
                     .StartWith()
                     .Merge(Updated.Select(tuple => tuple.Entity))
                     .Merge(Created)
@@ -78,9 +92,8 @@ namespace Toggl.Foundation.DataSources
             SuggestionStarted = suggestionStartedSubject.AsObservable();
             TimeEntryContinued = timeEntryContinuedSubject.AsObservable();
         }
-
         public override IObservable<IThreadSafeTimeEntry> Create(IThreadSafeTimeEntry entity)
-            => Repository.UpdateWithConflictResolution(entity.Id, entity, alwaysCreate, RivalsResolver)
+            => repository.UpdateWithConflictResolution(entity.Id, entity, alwaysCreate, RivalsResolver)  
                 .ToThreadSafeResult(Convert)
                 .SelectMany(CommonFunctions.Identity)
                 .Do(HandleConflictResolutionResult)
@@ -99,7 +112,7 @@ namespace Toggl.Foundation.DataSources
         public IObservable<Unit> SoftDelete(IThreadSafeTimeEntry timeEntry)
             => Observable.Return(timeEntry)
                 .Select(TimeEntry.DirtyDeleted)
-                .SelectMany(Repository.Update)
+                .SelectMany(repository.Update)
                 .Do(entity => DeletedSubject.OnNext(entity.Id))
                 .Select(_ => Unit.Default);
 
@@ -157,5 +170,23 @@ namespace Toggl.Foundation.DataSources
             currentlyRunningTimeEntryId = timeEntry?.Id;
             return timeEntry;
         }
+
+        private IObservable<IThreadSafeTimeEntry> getCurrentlyRunningTimeEntry()
+            => stopMultipleRunningTimeEntries()
+                .SelectMany(_ => getAllRunning())
+                .SelectMany(CommonFunctions.Identity)
+                .SingleOrDefaultAsync();
+
+        private IObservable<Unit> stopMultipleRunningTimeEntries()
+            => getAllRunning()
+                .Where(list => list.Count() > 1)
+                .SelectMany(BatchUpdate)
+                .Track(analyticsService.TwoRunningTimeEntriesInconsistencyFixed)
+                .ToList()
+                .SelectUnit()
+                .DefaultIfEmpty(Unit.Default);
+
+        private IObservable<IEnumerable<IThreadSafeTimeEntry>> getAllRunning()
+            => GetAll(te => te.IsDeleted == false && te.Duration == null);
     }
 }

@@ -2,7 +2,7 @@
 <FrameLayout xmlns:tools="http://schemas.android.com/tools"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="70dp"
+    android:layout_height="wrap_content"
     android:layout_width="match_parent">
     <RelativeLayout
         android:id="@+id/MainLogBackgroundContinue"
@@ -49,6 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <TextView
+            android:id="@+id/TimeEntriesLogCellDescription"
             local:MvxBind="Text Description; TopMargin LogDescriptionTopOffset(HasProject)"
             android:maxLines="1"
             android:textSize="15sp"
@@ -81,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true" />
+            android:layout_below="@id/TimeEntriesLogCellDescription" />
         <TextView
             android:id="@+id/TimeEntriesLogCellTaskLabel"
             local:MvxBind="Text Format(': {0}', TaskName); TextColor RGBA(ProjectColor); Visibility Visibility(TaskName), ConverterParameter=true"
@@ -93,8 +94,8 @@
             android:layout_marginBottom="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/TimeEntriesLogCellProjectLabel" />
+            android:layout_toRightOf="@id/TimeEntriesLogCellProjectLabel"
+            android:layout_alignBaseline="@id/TimeEntriesLogCellProjectLabel" />
         <TextView
             local:MvxBind="Text ClientName; Visibility Visibility(HasProject)"
             tools:text="Toggl"
@@ -106,14 +107,15 @@
             android:layout_marginBottom="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/TimeEntriesLogCellTaskLabel" />
+            android:layout_toRightOf="@id/TimeEntriesLogCellProjectLabel"
+            android:layout_alignBaseline="@id/TimeEntriesLogCellProjectLabel" />
         <View
             android:background="@drawable/TransparentToWhiteGradient"
             android:layout_width="144dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true" />
         <TextView
+            android:id="@+id/TimeEntriesLogCellDuration"
             local:MvxBind="Text Duration(Duration, DurationFormat)"
             tools:text="0:23:01"
             android:maxLines="1"

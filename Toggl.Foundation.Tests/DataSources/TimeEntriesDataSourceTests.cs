@@ -14,6 +14,7 @@ using Toggl.Foundation.Models;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.Foundation.Tests.Mocks;
+using Toggl.Multivac.Extensions;
 using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Exceptions;
@@ -58,7 +59,7 @@ namespace Toggl.Foundation.Tests.DataSources
 
             protected TimeEntryDataSourceTest()
             {
-                TimeEntriesSource = new TimeEntriesDataSource(Repository, TimeService);
+                TimeEntriesSource = new TimeEntriesDataSource(Repository, TimeService, AnalyticsService);
 
                 IdProvider.GetNextIdentifier().Returns(-1);
                 Repository.GetById(Arg.Is(TimeEntry.Id)).Returns(Observable.Return(TimeEntry));
@@ -74,19 +75,65 @@ namespace Toggl.Foundation.Tests.DataSources
         public sealed class TheConstructor : TimeEntryDataSourceTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(TwoParameterConstructorTestData))]
+            [ClassData(typeof(ThreeParameterConstructorTestData))]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useRepository,
-                bool useTimeService)
+                bool useTimeService,
+                bool useAnalyticsService)
             {
                 var repository = useRepository ? Repository : null;
                 var timeService = useTimeService ? TimeService : null;
+                var analyticsService = useAnalyticsService ? AnalyticsService : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new TimeEntriesDataSource(repository, timeService);
+                    () => new TimeEntriesDataSource(repository, timeService, analyticsService);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void FixesMultipleRunningTimeEntriesDatabaseInconsistency()
+            {
+                Repository.GetAll(Arg.Any<Func<IDatabaseTimeEntry, bool>>())
+                    .Returns(
+                        Observable.Return(new[]
+                        {
+                            new MockTimeEntry { Id = 1, Duration = null, IsDeleted = false },
+                            new MockTimeEntry { Id = 2, Duration = null, IsDeleted = false },
+                        }),
+                        Observable.Return(new[]
+                        {
+                            new MockTimeEntry { Id = 1, Duration = null, IsDeleted = false }
+                        }));
+
+                // ReSharper disable once ObjectCreationAsStatement
+                new TimeEntriesDataSource(Repository, TimeService, AnalyticsService);
+
+                Repository.Received().BatchUpdate(
+                    Arg.Is<IEnumerable<(long Id, IDatabaseTimeEntry Entity)>>(
+                        timeEntries => timeEntries.Count() == 2
+                                       && timeEntries.Any(tuple => tuple.Id == 1 && tuple.Entity.Duration == null)
+                                       && timeEntries.Any(tuple => tuple.Id == 2 && tuple.Entity.Duration == null)),
+                    Arg.Any<Func<IDatabaseTimeEntry, IDatabaseTimeEntry, ConflictResolutionMode>>(),
+                    Arg.Is<IRivalsResolver<IDatabaseTimeEntry>>(rivalsResolver => rivalsResolver != null));
+                AnalyticsService.TwoRunningTimeEntriesInconsistencyFixed.Received().Track();
+            }
+
+            [Fact]
+            public void DoesNotTrackTheEventIfThereAreNotTwoRunningTimeEntries()
+            {
+                Repository.GetAll(Arg.Any<Func<IDatabaseTimeEntry, bool>>())
+                    .Returns(
+                        Observable.Return(new[]
+                        {
+                            new MockTimeEntry { Id = 1, Duration = null, IsDeleted = false }
+                        }));
+
+                // ReSharper disable once ObjectCreationAsStatement
+                new TimeEntriesDataSource(Repository, TimeService, AnalyticsService);
+
+                AnalyticsService.TwoRunningTimeEntriesInconsistencyFixed.DidNotReceive().Track();
             }
         }
 
@@ -121,7 +168,7 @@ namespace Toggl.Foundation.Tests.DataSources
                         new CreateResult<IDatabaseTimeEntry>(newTimeEntry)
                     }));
 
-                var timeEntriesSource = new TimeEntriesDataSource(Repository, TimeService);
+                var timeEntriesSource = new TimeEntriesDataSource(Repository, TimeService, AnalyticsService);
                 timeEntriesSource.Created.Subscribe(createdObserver);
                 await timeEntriesSource.Create(newTimeEntry);
 
@@ -149,7 +196,7 @@ namespace Toggl.Foundation.Tests.DataSources
                         new CreateResult<IDatabaseTimeEntry>(newTimeEntry)
                     }));
 
-                var timeEntriesSource = new TimeEntriesDataSource(Repository, TimeService);
+                var timeEntriesSource = new TimeEntriesDataSource(Repository, TimeService, AnalyticsService);
                 timeEntriesSource.Updated.Subscribe(updatedObserver);
                 timeEntriesSource.Created.Subscribe(createdObserver);
                 await timeEntriesSource.Create(newTimeEntry);

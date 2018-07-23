@@ -40,9 +40,6 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="emailAddress" returnKeyType="next" textContentType="email"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sak-LC-gZ0">
-                                <rect key="frame" x="16" y="297.5" width="343" height="40"/>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8e6-Gh-xye">
                                 <rect key="frame" x="16" y="297.5" width="343" height="40"/>
                                 <color key="backgroundColor" red="0.023529411760000001" green="0.66666666669999997" blue="0.96078431369999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -185,10 +182,7 @@
                         <color key="backgroundColor" red="0.98039215690000003" green="0.98431372549999996" blue="0.98823529409999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="lcd-vh-led" firstAttribute="trailing" secondItem="doe-4h-781" secondAttribute="trailing" id="031-U5-0ks"/>
-                            <constraint firstItem="Sak-LC-gZ0" firstAttribute="trailing" secondItem="8e6-Gh-xye" secondAttribute="trailing" id="2C3-HP-PKh"/>
-                            <constraint firstItem="Sak-LC-gZ0" firstAttribute="leading" secondItem="8e6-Gh-xye" secondAttribute="leading" id="5Hj-O7-RNX"/>
                             <constraint firstItem="6xS-n8-fQk" firstAttribute="trailing" secondItem="mES-7Q-qsS" secondAttribute="trailing" constant="16" id="5cJ-Yr-uin"/>
-                            <constraint firstItem="Sak-LC-gZ0" firstAttribute="top" secondItem="8e6-Gh-xye" secondAttribute="top" id="B5l-d3-I0Y"/>
                             <constraint firstItem="mES-7Q-qsS" firstAttribute="leading" secondItem="6xS-n8-fQk" secondAttribute="leading" constant="16" id="Crj-th-xRk"/>
                             <constraint firstItem="gpt-26-6Ya" firstAttribute="top" secondItem="Lsa-g7-i4M" secondAttribute="top" constant="12" id="GzF-cD-kH9"/>
                             <constraint firstItem="oda-oc-dOV" firstAttribute="top" secondItem="FOx-xg-Ol7" secondAttribute="bottom" constant="12" id="Hlu-IY-jbL"/>
@@ -199,7 +193,6 @@
                             <constraint firstItem="zmO-Bb-Zfg" firstAttribute="top" secondItem="6xS-n8-fQk" secondAttribute="top" constant="40" id="MKN-wv-3NI"/>
                             <constraint firstItem="lcd-vh-led" firstAttribute="top" secondItem="Lsa-g7-i4M" secondAttribute="bottom" constant="12" id="QPh-HO-hcR"/>
                             <constraint firstItem="6xS-n8-fQk" firstAttribute="trailing" secondItem="R6U-zp-jAZ" secondAttribute="trailing" constant="16" id="QWa-Sm-iib"/>
-                            <constraint firstItem="Sak-LC-gZ0" firstAttribute="bottom" secondItem="8e6-Gh-xye" secondAttribute="bottom" id="QZ9-Pk-uH1"/>
                             <constraint firstItem="FOx-xg-Ol7" firstAttribute="top" secondItem="8e6-Gh-xye" secondAttribute="bottom" constant="12" id="Qem-Ie-E3E"/>
                             <constraint firstItem="lcd-vh-led" firstAttribute="leading" secondItem="6xS-n8-fQk" secondAttribute="leading" constant="16" id="Spn-ZS-0GZ"/>
                             <constraint firstAttribute="bottom" secondItem="R6U-zp-jAZ" secondAttribute="bottom" constant="-8" id="UJU-gS-jgb"/>
@@ -233,7 +226,6 @@
                         <outlet property="ForgotPasswordButton" destination="FOx-xg-Ol7" id="Uo1-eh-g8x"/>
                         <outlet property="GoogleLoginButton" destination="3cI-Sa-w2L" id="LAI-yE-h3k"/>
                         <outlet property="LoginButton" destination="8e6-Gh-xye" id="k4i-fW-b3f"/>
-                        <outlet property="LoginShakeTriggerButton" destination="Sak-LC-gZ0" id="shc-mM-ZaW"/>
                         <outlet property="LogoImageView" destination="zmO-Bb-Zfg" id="XIQ-AW-bKf"/>
                         <outlet property="PasswordManagerButton" destination="gpt-26-6Ya" id="6of-sa-JQM"/>
                         <outlet property="PasswordTextField" destination="lcd-vh-led" id="S5g-mJ-4Jg"/>

@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+﻿using System;
+using System.Reactive.Disposables;
 using MvvmCross.Platforms.Ios.Views;
 using MvvmCross.ViewModels;
 using Toggl.Foundation.MvvmCross.ViewModels;
@@ -12,6 +13,9 @@ namespace Toggl.Daneel.ViewControllers
 
         protected ReactiveViewController(string nibName)
             : base(nibName, null) { }
+
+        protected ReactiveViewController(IntPtr handle)
+            : base(handle) { }
 
         protected override void Dispose(bool disposing)
         {

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NSubstitute.Core;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.Tests.Mocks;
@@ -41,12 +42,13 @@ namespace Toggl.Foundation.Tests.DataSources
         private readonly ITimeService timeService = Substitute.For<ITimeService>();
         private readonly IRepository<IDatabaseTimeEntry> repository
             = Substitute.For<IRepository<IDatabaseTimeEntry>>();
+        private readonly IAnalyticsService analyticsService = Substitute.For<IAnalyticsService>();
 
         private readonly DataSource<IThreadSafeTimeEntry, IDatabaseTimeEntry> dataSource;
 
         public DataSourceTests()
         {
-            dataSource = new TimeEntriesDataSource(repository, timeService);
+            dataSource = new TimeEntriesDataSource(repository, timeService, analyticsService);
         }
 
         [Fact]
@@ -64,7 +66,7 @@ namespace Toggl.Foundation.Tests.DataSources
         }
 
         private IObservable<IEnumerable<IConflictResolutionResult<IDatabaseTimeEntry>>> batchUpdateResult(CallInfo info)
-        { 
+        {
             var conflictFn =
                 info.Arg<Func<IDatabaseTimeEntry, IDatabaseTimeEntry, ConflictResolutionMode>>();
 

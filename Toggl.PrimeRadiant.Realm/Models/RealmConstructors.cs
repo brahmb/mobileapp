@@ -32,6 +32,11 @@ namespace Toggl.PrimeRadiant.Realm
             SetPropertiesFrom(entity, realm);
         }
 
+        public void ChangeId(long id)
+        {
+            Id = id;
+        }
+
         public void SetPropertiesFrom(IDatabaseClient entity, Realms.Realm realm)
         {
             At = entity.At;
@@ -106,6 +111,11 @@ namespace Toggl.PrimeRadiant.Realm
             SetPropertiesFrom(entity, realm);
         }
 
+        public void ChangeId(long id)
+        {
+            Id = id;
+        }
+
         public void SetPropertiesFrom(IDatabaseProject entity, Realms.Realm realm)
         {
             At = entity.At;
@@ -158,6 +168,11 @@ namespace Toggl.PrimeRadiant.Realm
             SetPropertiesFrom(entity, realm);
         }
 
+        public void ChangeId(long id)
+        {
+            Id = id;
+        }
+
         public void SetPropertiesFrom(IDatabaseTag entity, Realms.Realm realm)
         {
             At = entity.At;
@@ -196,6 +211,11 @@ namespace Toggl.PrimeRadiant.Realm
         public RealmTask(IDatabaseTask entity, Realms.Realm realm)
         {
             SetPropertiesFrom(entity, realm);
+        }
+
+        public void ChangeId(long id)
+        {
+            Id = id;
         }
 
         public void SetPropertiesFrom(IDatabaseTask entity, Realms.Realm realm)
@@ -242,6 +262,11 @@ namespace Toggl.PrimeRadiant.Realm
         public RealmTimeEntry(IDatabaseTimeEntry entity, Realms.Realm realm)
         {
             SetPropertiesFrom(entity, realm);
+        }
+
+        public void ChangeId(long id)
+        {
+            Id = id;
         }
 
         public void SetPropertiesFrom(IDatabaseTimeEntry entity, Realms.Realm realm)
@@ -299,6 +324,11 @@ namespace Toggl.PrimeRadiant.Realm
             SetPropertiesFrom(entity, realm);
         }
 
+        public void ChangeId(long id)
+        {
+            Id = id;
+        }
+
         public void SetPropertiesFrom(IDatabaseUser entity, Realms.Realm realm)
         {
             At = entity.At;
@@ -340,6 +370,11 @@ namespace Toggl.PrimeRadiant.Realm
         public RealmWorkspace(IDatabaseWorkspace entity, Realms.Realm realm)
         {
             SetPropertiesFrom(entity, realm);
+        }
+
+        public void ChangeId(long id)
+        {
+            Id = id;
         }
 
         public void SetPropertiesFrom(IDatabaseWorkspace entity, Realms.Realm realm)

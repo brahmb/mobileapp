@@ -233,9 +233,9 @@ namespace Toggl.Foundation
 
             var push = new PushState<TDatabase, TThreadsafe>(dataSource);
             var pushOne = new PushOneEntityState<TThreadsafe>();
-            var create = new CreateEntityState<TModel, TThreadsafe>(creatingApi, dataSource, analyticsService, toClean);
+            var create = new CreateEntityState<TModel, TDatabase, TThreadsafe>(creatingApi, dataSource, analyticsService, toClean);
             var update = new UpdateEntityState<TModel, TThreadsafe>(updatingApi, dataSource, analyticsService, toClean);
-            var delete = new DeleteEntityState<TModel, TDatabase, TThreadsafe>(deletingApi, dataSource, analyticsService);
+            var delete = new DeleteEntityState<TModel, TDatabase, TThreadsafe>(deletingApi, analyticsService, dataSource);
             var deleteLocal = new DeleteLocalEntityState<TDatabase, TThreadsafe>(dataSource);
             var tryResolveClientError = new TryResolveClientErrorState<TThreadsafe>();
             var unsyncable = new UnsyncableEntityState<TThreadsafe>(dataSource, toUnsyncable);
@@ -267,8 +267,11 @@ namespace Toggl.Foundation
             transitions.ConfigureTransition(checkServerStatus.Retry, checkServerStatus);
             transitions.ConfigureTransition(checkServerStatus.ServerIsAvailable, push);
 
-            transitions.ConfigureTransition(create.CreatingFinished, finished);
-            transitions.ConfigureTransition(update.UpdatingSucceeded, finished);
+            transitions.ConfigureTransition(create.EntityChanged, create);
+            transitions.ConfigureTransition(update.EntityChanged, update);
+
+            transitions.ConfigureTransition(create.Finished, finished);
+            transitions.ConfigureTransition(update.Finished, finished);
             transitions.ConfigureTransition(delete.DeletingFinished, finished);
             transitions.ConfigureTransition(deleteLocal.Deleted, finished);
             transitions.ConfigureTransition(deleteLocal.DeletingFailed, finished);
@@ -299,7 +302,7 @@ namespace Toggl.Foundation
 
             var push = new PushState<TDatabase, TThreadsafe>(dataSource);
             var pushOne = new PushOneEntityState<TThreadsafe>();
-            var create = new CreateEntityState<TModel, TThreadsafe>(creatingApi, dataSource, analyticsService, toClean);
+            var create = new CreateEntityState<TModel, TDatabase, TThreadsafe>(creatingApi, dataSource, analyticsService, toClean);
             var tryResolveClientError = new TryResolveClientErrorState<TThreadsafe>();
             var unsyncable = new UnsyncableEntityState<TThreadsafe>(dataSource, toUnsyncable);
             var checkServerStatus = new CheckServerStatusState(api, scheduler, apiDelay, statusDelay, delayCancellation);
@@ -323,7 +326,8 @@ namespace Toggl.Foundation
             transitions.ConfigureTransition(checkServerStatus.Retry, checkServerStatus);
             transitions.ConfigureTransition(checkServerStatus.ServerIsAvailable, push);
 
-            transitions.ConfigureTransition(create.CreatingFinished, finished);
+            transitions.ConfigureTransition(create.EntityChanged, create);
+            transitions.ConfigureTransition(create.Finished, finished);
 
             transitions.ConfigureTransition(finished.Continue, push);
 
@@ -342,7 +346,7 @@ namespace Toggl.Foundation
             IScheduler scheduler,
             IObservable<Unit> delayCancellation)
             where TModel : class
-            where TThreadsafe : class, TModel, IThreadSafeModel, IDatabaseSyncable
+            where TThreadsafe : class, TModel, IThreadSafeModel, IDatabaseSyncable, IIdentifiable
         {
             var rnd = new Random();
             var apiDelay = new RetryDelayService(rnd);
@@ -374,7 +378,7 @@ namespace Toggl.Foundation
             transitions.ConfigureTransition(checkServerStatus.Retry, checkServerStatus);
             transitions.ConfigureTransition(checkServerStatus.ServerIsAvailable, push);
 
-            transitions.ConfigureTransition(update.UpdatingSucceeded, finished);
+            transitions.ConfigureTransition(update.Finished, finished);
 
             transitions.ConfigureTransition(finished.Continue, push);
 

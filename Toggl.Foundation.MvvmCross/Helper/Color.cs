@@ -37,6 +37,7 @@ namespace Toggl.Foundation.MvvmCross.Helper
 
         public static class Login
         {
+            public static readonly MvxColor EnabledButtonColor = new MvxColor(255, 255, 255);
             public static readonly MvxColor DisabledButtonColor = new MvxColor(255, 255, 255, 122);
             public static readonly MvxColor TextViewPlaceholder = pinkishGrey;
             public static readonly MvxColor ForgotPassword = new MvxColor(94, 91, 91);

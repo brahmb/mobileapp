@@ -1,16 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Toggl.Multivac.Extensions;
 
 namespace Toggl.Foundation.MvvmCross.Collections
 {
-    public struct SectionedIndex
-    {
-        public int Section { get; set; }
-        public int Row { get; set; }
-    }
-
     public class GroupedOrderedCollection<TItem> : IGroupOrderedCollection<TItem>
     {
         private List<List<TItem>> sections;
@@ -19,8 +14,11 @@ namespace Toggl.Foundation.MvvmCross.Collections
         private Func<TItem, IComparable> groupingKey;
         private bool isDescending;
 
-        public IReadOnlyList<IReadOnlyList<TItem>> Items
-            => sections;
+        public bool IsEmpty
+            => sections.Count == 0;
+
+        public int Count
+            => sections.Sum(section => section.Count);
 
         public GroupedOrderedCollection(
             Func<TItem, IComparable> indexKey,
@@ -36,24 +34,14 @@ namespace Toggl.Foundation.MvvmCross.Collections
             sections = new List<List<TItem>> { };
         }
 
-        public void Clear()
-        {
-            sections = new List<List<TItem>> { };
-        }
+        public IEnumerator<IReadOnlyList<TItem>> GetEnumerator()
+            => sections.GetEnumerator();
 
-        public void ReplaceWith(IEnumerable<TItem> items)
-        {
-            sections = items
-                .GroupBy(groupingKey)
-                .Select(g => g.OrderBy(orderingKey, isDescending).ToList())
-                .OrderBy( g => groupingKey(g.First()), isDescending)
-                .ToList();
-        }
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator();
 
-        public TItem ItemAt(int section, int row)
-        {
-            return sections[section][row];
-        }
+        public IReadOnlyList<TItem> this[int index]
+            => sections[index];
 
         public SectionedIndex? IndexOf(TItem item)
         {
@@ -66,26 +54,21 @@ namespace Toggl.Foundation.MvvmCross.Collections
             if (rowIndex == -1)
                 return null;
 
-            return new SectionedIndex { Section = sectionIndex, Row = rowIndex };
+            return new SectionedIndex(sectionIndex, rowIndex);
         }
 
-        public SectionedIndex? RemoveItem(TItem item)
+        public SectionedIndex? IndexOf(IComparable itemId)
         {
-            var index = IndexOf(item);
+            for (int section = 0; section < sections.Count; section++)
+            {
+                var row = sections[section].IndexOf(item => indexKey(item).CompareTo(itemId) == 0);
+                if (row != -1)
+                {
+                    return new SectionedIndex(section, row);
+                }
+            }
 
-            if (!index.HasValue)
-                return null;
-
-            removeItemFromSection(index.Value.Section, index.Value.Row);
-
-            return index.Value;
-        }
-
-        public TItem RemoveItemAt(int section, int row)
-        {
-            var item = sections[section][row];
-            removeItemFromSection(section, row);
-            return item;
+            return null;
         }
 
         public SectionedIndex InsertItem(TItem item)
@@ -99,12 +82,12 @@ namespace Toggl.Foundation.MvvmCross.Collections
                 if (insertionIndex == -1)
                 {
                     sections.Insert(0, list);
-                    return new SectionedIndex { Section = 0, Row = 0 };
+                    return new SectionedIndex(0, 0);
                 }
                 else
                 {
                     sections.Insert(insertionIndex + 1, list);
-                    return new SectionedIndex { Section = insertionIndex + 1, Row = 0 };
+                    return new SectionedIndex(insertionIndex + 1, 0);
                 }
             }
             else
@@ -113,14 +96,41 @@ namespace Toggl.Foundation.MvvmCross.Collections
                 if (rowIndex == -1)
                 {
                     sections[sectionIndex].Insert(0, item);
-                    return new SectionedIndex { Section = sectionIndex, Row = 0 };
+                    return new SectionedIndex(sectionIndex, 0);
                 }
                 else
                 {
                     sections[sectionIndex].Insert(rowIndex + 1, item);
-                    return new SectionedIndex { Section = sectionIndex, Row = rowIndex + 1 };
+                    return new SectionedIndex(sectionIndex, rowIndex + 1 );
                 }
             }
+        }
+
+        public SectionedIndex? UpdateItem(TItem item)
+        {
+            var oldIndex = IndexOf(indexKey(item));
+
+            if (!oldIndex.HasValue)
+                return null;
+
+            RemoveItemAt(oldIndex.Value.Section, oldIndex.Value.Row);
+            return InsertItem(item);
+         }
+
+        public void ReplaceWith(IEnumerable<TItem> items)
+        {
+            sections = items
+                .GroupBy(groupingKey)
+                .Select(g => g.OrderBy(orderingKey, isDescending).ToList())
+                .OrderBy(g => groupingKey(g.First()), isDescending)
+                .ToList();
+        }
+
+        public TItem RemoveItemAt(int section, int row)
+        {
+            var item = sections[section][row];
+            removeItemFromSection(section, row);
+            return item;
         }
 
         private bool areInOrder(TItem ob1, TItem ob2, Func<TItem, IComparable> key)

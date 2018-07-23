@@ -8,6 +8,8 @@
 
         public bool IsValid { get; }
 
+        public int Length => password.Length;
+
         private Password(string password)
         {
             this.password = password;

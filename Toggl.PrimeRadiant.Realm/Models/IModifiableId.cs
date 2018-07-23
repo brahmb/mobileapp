@@ -1,9 +1,13 @@
-﻿namespace Toggl.PrimeRadiant.Realm.Models
+﻿using Toggl.Multivac.Models;
+
+namespace Toggl.PrimeRadiant.Realm.Models
 {
-    interface IModifiableId
+    interface IModifiableId : IIdentifiable
     {
-        long Id { get; set; }
+        new long Id { get; set; }
 
         long? OriginalId { get; set; }
+
+        void ChangeId(long id);
     }
 }

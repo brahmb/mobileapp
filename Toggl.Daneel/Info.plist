@@ -34,7 +34,7 @@
 	<key>CFBundleName</key>
 	<string>Toggl for Devs</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.7.1</string>
+	<string>1.7.2</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

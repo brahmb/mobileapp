@@ -108,7 +108,6 @@ namespace Toggl.Giskard
                     .WithOnboardingStorage(settingsStorage)
                     .WithNavigationService(navigationService)
                     .WithAccessRestrictionStorage(settingsStorage)
-                    .WithPasswordManagerService<OnePasswordService>()
                     .WithErrorHandlingService(new ErrorHandlingService(navigationService, settingsStorage))
                     .Build();
 

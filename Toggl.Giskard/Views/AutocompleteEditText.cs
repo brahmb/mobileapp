@@ -29,7 +29,7 @@ namespace Toggl.Giskard.Views
             AddTextChangedListener(this);
             
             TextObservable =
-                this.Text().CombineLatest(positionChanged.AsObservable(), (text, _) => text);
+                this.TextFormatted().CombineLatest(positionChanged.AsObservable(), (text, _) => text);
         }
 
         public AutocompleteEditText(IntPtr javaReference, JniHandleOwnership transfer)

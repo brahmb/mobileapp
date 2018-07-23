@@ -1,15 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Toggl.Foundation.MvvmCross.Collections
 {
-    public interface IGroupOrderedCollection<TItem>
+    public interface IGroupOrderedCollection<TItem> : IReadOnlyList<IReadOnlyList<TItem>>
     {
-        void Clear();
-        void ReplaceWith(IEnumerable<TItem> items);
-        TItem ItemAt(int section, int row);
+        bool IsEmpty { get; }
+        int Count { get; }
+
         SectionedIndex? IndexOf(TItem item);
-        SectionedIndex? RemoveItem(TItem item);
-        TItem RemoveItemAt(int section, int row);
+        SectionedIndex? IndexOf(IComparable itemId);
+
         SectionedIndex InsertItem(TItem item);
+        SectionedIndex? UpdateItem(TItem item);
+        void ReplaceWith(IEnumerable<TItem> items);
+        TItem RemoveItemAt(int section, int row);
     }
 }

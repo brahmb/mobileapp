@@ -12,9 +12,6 @@ namespace Toggl.Daneel.Binding
 {
     public sealed class TextViewTagListTargetBinding : MvxTargetBinding<UITextView, IEnumerable<string>>
     {
-        private const int tokenLeftMargin = 3;
-        private const int tokenRightMargin = 3;
-
         public const string BindingName = "Tags";
 
         private readonly nfloat elipsisTagWidth;
@@ -24,13 +21,13 @@ namespace Toggl.Daneel.Binding
 
         public TextViewTagListTargetBinding(UITextView target) : base(target)
         {
-            elipsisTag = "...".GetTagToken(tokenLeftMargin, tokenRightMargin);
+            elipsisTag = "...".GetTagToken();
             elipsisTagWidth = elipsisTag.Image.Size.Width;
         }
 
         protected override void SetValue(IEnumerable<string> value)
         {
-            var tagTokens = value.Select(tag => tag.GetTagToken(tokenLeftMargin, tokenRightMargin));
+            var tagTokens = value.Select(tag => tag.GetTagToken());
 
             nfloat totalLength = 0;
             var cumulativeLengths = tagTokens

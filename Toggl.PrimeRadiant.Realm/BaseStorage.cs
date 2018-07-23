@@ -5,18 +5,37 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Toggl.Multivac;
-using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant.Exceptions;
 
 namespace Toggl.PrimeRadiant.Realm
 {
-    internal abstract class BaseStorage<TModel>
+    internal abstract class BaseStorage<TModel> : IBaseStorage<TModel>
     {
         protected IRealmAdapter<TModel> Adapter { get; }
 
         protected BaseStorage(IRealmAdapter<TModel> adapter)
         {
             Adapter = adapter;
+        }
+
+        public IObservable<TModel> Create(TModel entity)
+        {
+            Ensure.Argument.IsNotNull(entity, nameof(entity));
+
+            return Observable
+                .Start(() => Adapter.Create(entity))
+                .Catch<TModel, Exception>(ex => Observable.Throw<TModel>(new DatabaseException(ex)));
+        }
+
+        public IObservable<IEnumerable<IConflictResolutionResult<TModel>>> BatchUpdate(
+            IEnumerable<(long Id, TModel Entity)> entities,
+            Func<TModel, TModel, ConflictResolutionMode> conflictResolution,
+            IRivalsResolver<TModel> rivalsResolver = null)
+        {
+            Ensure.Argument.IsNotNull(entities, nameof(entities));
+            Ensure.Argument.IsNotNull(conflictResolution, nameof(conflictResolution));
+
+            return CreateObservable(() => Adapter.BatchUpdate(entities, conflictResolution, rivalsResolver));
         }
 
         public IObservable<TModel> Update(long id, TModel entity)

@@ -7,9 +7,10 @@ namespace Toggl.Giskard.TemplateSelectors
     public sealed class MainTemplateSelector : IMvxTemplateSelector
     {
         public const int Header = 0;
-        public const int Item = 1;
-        public const int Footer = 2;
-        public const int Suggestions = 3;
+        public const int TimeEntry = 1;
+        public const int TimeEntryDescriptionOnly = 2;
+        public const int Footer = 3;
+        public const int Suggestions = 4;
 
         public int ItemTemplateId { get; set; }
 
@@ -21,8 +22,11 @@ namespace Toggl.Giskard.TemplateSelectors
             if (fromViewType == Footer)
                 return Resource.Layout.MainLogFooter;
 
-            if (fromViewType == Item)
+            if (fromViewType == TimeEntry)
                 return Resource.Layout.MainLogCell;
+
+            if (fromViewType == TimeEntryDescriptionOnly)
+                return Resource.Layout.MainLogCellDescriptionOnly;
 
             return Resource.Layout.MainSuggestions;
         }
@@ -38,7 +42,10 @@ namespace Toggl.Giskard.TemplateSelectors
             if (forItemObject is SuggestionsViewModel)
                 return Suggestions;
 
-            return Item;
+            if (forItemObject is TimeEntryViewModel timeEntry && !timeEntry.HasProject)
+                return TimeEntryDescriptionOnly;
+
+            return TimeEntry;
         }
     }
 }

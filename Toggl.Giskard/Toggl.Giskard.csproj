@@ -259,11 +259,13 @@
     <Compile Include="Startup\Setup.cs" />
     <Compile Include="Startup\SplashScreen.cs" />
     <Compile Include="Services\GoogleService.cs" />
-    <Compile Include="Services\OnePasswordService.cs" />
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\BrowserService.cs" />
     <Compile Include="Activities\OnboardingActivity.cs" />
     <Compile Include="Activities\LoginActivity.cs" />
+    <Compile Include="Activities\LoginActivity.ViewBinds.cs">
+		<DependentUpon>LoginActivity.cs</DependentUpon>
+	</Compile>
     <Compile Include="Services\SharedPreferencesStorage.cs" />
     <Compile Include="Activities\MainActivity.cs" />
     <Compile Include="Activities\MainActivity.ViewBinds.cs">
@@ -405,6 +407,7 @@
       <DependentUpon>AboutActivity.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\AutocompleteEditText.cs" />
+    <Compile Include="Views\NonSwipingViewPager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />
@@ -786,6 +789,8 @@
     <AndroidResource Include="Resources\anim\abc_slide_out_left.xml" />
     <AndroidResource Include="Resources\anim\abc_slide_in_left.xml" />
     <AndroidResource Include="Resources\anim\abc_slide_out_right.xml" />
+    <AndroidResource Include="Resources\layout\MainLogCellDescriptionOnly.axml" />
+    <AndroidResource Include="Resources\layout\MainSuggestionsCardDescriptionOnly.axml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation\Toggl.Foundation.csproj">

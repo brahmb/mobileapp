@@ -1,4 +1,5 @@
 ﻿using System;
+using Android.App;
 using Android.OS;
 using Toggl.Foundation;
 
@@ -13,6 +14,13 @@ namespace Toggl.Giskard
         public string OperatingSystem { get; } = getOperatingSystem();
 
         public string FeedbackEmailSubject => "Toggl Android feedback";
+
+        public string BuildNumber { get; } = Application.Context
+            .ApplicationContext
+            .PackageManager
+            .GetPackageInfo(Application.Context.ApplicationContext.PackageName, 0)
+            .VersionCode
+            .ToString();
 
         private static string getOperatingSystem()
         {

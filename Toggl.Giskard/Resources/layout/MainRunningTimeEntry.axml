@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<RelativeLayout
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/MainRunningTimeEntryFrame"
@@ -53,16 +52,22 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_above="@id/MainRunningTimeEntryDescription" />
-    <View
+    <FrameLayout
         android:id="@+id/MainRunningTimeEntryProjectDot"
-        local:MvxBind="DrawableColor ARGB(CurrentTimeEntryProjectColor); Visibility Visibility(HasProject)"
-        android:background="@drawable/SmallDot"
-        android:layout_width="4dp"
-        android:layout_height="4dp"
+        local:MvxBind="Visibility Visibility(HasProject)"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginLeft="8dp"
-        android:layout_marginBottom="25dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@id/MainRunningTimeEntryDescription" />
+        android:layout_toRightOf="@id/MainRunningTimeEntryDescription"
+        android:layout_alignTop="@+id/MainRunningTimeEntryProjectLabel"
+        android:layout_alignBottom="@+id/MainRunningTimeEntryProjectLabel">
+        <View
+            local:MvxBind="DrawableColor ARGB(CurrentTimeEntryProjectColor);"
+            android:background="@drawable/SmallDot"
+            android:layout_gravity="center"
+            android:layout_width="4dp"
+            android:layout_height="4dp" />
+    </FrameLayout>
     <TextView
         android:id="@+id/MainRunningTimeEntryProjectLabel"
         local:MvxBind="Text CurrentTimeEntryProject; TextColor ARGB(CurrentTimeEntryProjectColor); Visibility Visibility(HasProject)"
