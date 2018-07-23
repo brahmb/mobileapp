@@ -378,9 +378,7 @@ namespace Toggl.Giskard.Activities
             }
 
             swipeRightOnboardingAnimationStepDisposable = swipeRightOnboardingStep
-                .ManageSwipeActionAnimationOf(lastTimeEntry, AnimationSide.Right);
-
-            mainRecyclerView.SmoothScrollBy(0, 1);
+                .ManageSwipeActionAnimationOf(mainRecyclerView, lastTimeEntry, AnimationSide.Right);
         }
 
         private void updateSwipeLeftOnboardingStep(MainRecyclerViewLogViewHolder lastTimeEntry)
@@ -409,9 +407,7 @@ namespace Toggl.Giskard.Activities
             }
 
             swipeLeftOnboardingAnimationStepDisposable = swipeLeftOnboardingStep
-                .ManageSwipeActionAnimationOf(lastTimeEntry, AnimationSide.Left);
-
-            mainRecyclerView.SmoothScrollBy(0, 1);
+                .ManageSwipeActionAnimationOf(mainRecyclerView, lastTimeEntry, AnimationSide.Left);
         }
 
         private void onTimeEntriesCountChanged(object sender, PropertyChangedEventArgs e)

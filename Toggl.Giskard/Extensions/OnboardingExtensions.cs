@@ -53,7 +53,7 @@ namespace Toggl.Giskard.Extensions
                 .Subscribe(toggleVisibilityOnMainThread);
         }
 
-        public static IDisposable ManageSwipeActionAnimationOf(this IOnboardingStep step, MainRecyclerViewLogViewHolder viewHolder, AnimationSide side)
+        public static IDisposable ManageSwipeActionAnimationOf(this IOnboardingStep step, MainRecyclerView recyclerView, MainRecyclerViewLogViewHolder viewHolder, AnimationSide side)
         {
             Ensure.Argument.IsNotNull(viewHolder, nameof(viewHolder));
 
@@ -62,6 +62,7 @@ namespace Toggl.Giskard.Extensions
                 if (shouldBeVisible && !viewHolder.IsAnimating)
                 {
                     viewHolder.StartAnimating(side);
+                    recyclerView.ScrollBy(0, 1);
                 }
             }
 
