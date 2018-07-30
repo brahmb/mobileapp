@@ -639,7 +639,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 ExecuteCommand();
 
-                NavigationService.Received().Navigate<MainViewModel>();
+                NavigationService.Received().Navigate<MainTabBarViewModel>();
             }
         }
 

@@ -131,7 +131,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 ViewModel.DoneCommand.Execute();
 
-                NavigationService.Received().Navigate<MainViewModel>();
+                NavigationService.Received().Navigate<MainTabBarViewModel>();
             }
 
             [Fact, LogIfTooSlow]

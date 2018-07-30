@@ -149,7 +149,7 @@ namespace Toggl.Foundation.Tests.MvvmCross
 
                 await Task.Run(() => AppStart.Start());
 
-                await NavigationService.Received().Navigate<MainViewModel>();
+                await NavigationService.Received().Navigate<MainTabBarViewModel>();
             }
 
             [Fact, LogIfTooSlow]
@@ -171,7 +171,7 @@ namespace Toggl.Foundation.Tests.MvvmCross
 
                 await Task.Run(() => AppStart.Start());
 
-                await NavigationService.Received().Navigate<MainViewModel>();
+                await NavigationService.Received().Navigate<MainTabBarViewModel>();
             }
 
             [Fact, LogIfTooSlow]
