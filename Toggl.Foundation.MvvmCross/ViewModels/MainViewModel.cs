@@ -126,10 +126,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxAsyncCommand EditTimeEntryCommand { get; }
 
-        public IMvxAsyncCommand OpenSettingsCommand { get; }
-
-        public IMvxAsyncCommand OpenReportsCommand { get; }
-
         public IMvxAsyncCommand OpenSyncFailuresCommand { get; }
 
         public IMvxCommand RefreshCommand { get; }
@@ -176,8 +172,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ratingViewExperiment = new RatingViewExperiment(timeService, dataSource, onboardingStorage, remoteConfigService);
 
             RefreshCommand = new MvxCommand(refresh);
-            OpenReportsCommand = new MvxAsyncCommand(openReports);
-            OpenSettingsCommand = new MvxAsyncCommand(openSettings);
             OpenSyncFailuresCommand = new MvxAsyncCommand(openSyncFailures);
             EditTimeEntryCommand = new MvxAsyncCommand(editTimeEntry, canExecuteEditTimeEntryCommand);
             StopTimeEntryCommand = new MvxAsyncCommand(stopTimeEntry, () => isStopButtonEnabled);
@@ -349,15 +343,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private void onMidnight(DateTimeOffset midnight)
         {
             navigationService.ChangePresentation(new ReloadLogHint());
-        }
-
-        private Task openSettings()
-            => navigate<SettingsViewModel>();
-
-        private async Task openReports()
-        {
-            var workspace = await interactorFactory.GetDefaultWorkspace().Execute();
-            await navigate<ReportsViewModel, long>(workspace.Id);
         }
 
         private Task openSyncFailures()
