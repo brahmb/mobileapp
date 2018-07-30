@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -261,7 +261,7 @@ time entries will appear here.</string>
                     </constraints>
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Kk-Hz-RBS">
-                    <rect key="frame" x="295" y="587" width="80" height="80"/>
+                    <rect key="frame" x="295" y="538" width="80" height="80"/>
                     <accessibility key="accessibilityConfiguration" label="MainStartTimeEntry"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="80" id="ZPS-gP-0Ab"/>
@@ -270,7 +270,7 @@ time entries will appear here.</string>
                     <state key="normal" image="playIcon"/>
                 </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jpn-gJ-vFB">
-                    <rect key="frame" x="113" y="603" width="167" height="48"/>
+                    <rect key="frame" x="113" y="554" width="167" height="48"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap to start timer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LCs-H0-PO4">
                             <rect key="frame" x="28" y="15" width="111.5" height="17"/>
@@ -308,7 +308,7 @@ time entries will appear here.</string>
                     </userDefinedRuntimeAttributes>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vou-B4-go4">
-                    <rect key="frame" x="0.0" y="595" width="375" height="72"/>
+                    <rect key="frame" x="0.0" y="546" width="375" height="121"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0:15:25" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0J7-Pj-geT">
                             <rect key="frame" x="161.5" y="14" width="53.5" height="18"/>
@@ -317,10 +317,10 @@ time entries will appear here.</string>
                             <nil key="highlightedColor"/>
                         </label>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="E3W-8n-IfX" userLabel="Fading view" customClass="FadeView">
-                            <rect key="frame" x="48" y="32" width="279" height="40"/>
+                            <rect key="frame" x="48" y="32" width="279" height="89"/>
                             <subviews>
                                 <scrollView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tuf-H4-v8x" customClass="MarqueeView">
-                                    <rect key="frame" x="0.0" y="0.0" width="279" height="40"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="279" height="89"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PtF-34-2BI">
                                             <rect key="frame" x="0.0" y="0.0" width="355.5" height="22.5"/>
@@ -376,7 +376,7 @@ time entries will appear here.</string>
                     </constraints>
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ddo-IW-xE3">
-                    <rect key="frame" x="319" y="603" width="56" height="56"/>
+                    <rect key="frame" x="319" y="554" width="56" height="56"/>
                     <accessibility key="accessibilityConfiguration" label="MainStopTimeEntry"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="56" id="cJZ-zk-6qM"/>
@@ -385,7 +385,7 @@ time entries will appear here.</string>
                     <state key="normal" image="stopIcon"/>
                 </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0wI-i0-MgR">
-                    <rect key="frame" x="193.5" y="554" width="173.5" height="45"/>
+                    <rect key="frame" x="193.5" y="505" width="173.5" height="45"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap to stop timer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tFY-U0-EZM">
                             <rect key="frame" x="32" y="14" width="109.5" height="17"/>
@@ -429,7 +429,7 @@ time entries will appear here.</string>
                 <constraint firstAttribute="trailing" secondItem="4Kk-Hz-RBS" secondAttribute="trailing" id="90o-lU-zgz"/>
                 <constraint firstItem="4Kk-Hz-RBS" firstAttribute="leading" secondItem="jpn-gJ-vFB" secondAttribute="trailing" constant="15" id="9bb-2W-Ulw"/>
                 <constraint firstItem="jpn-gJ-vFB" firstAttribute="centerY" secondItem="4Kk-Hz-RBS" secondAttribute="centerY" id="DHx-Nf-c5q"/>
-                <constraint firstAttribute="bottom" secondItem="4Kk-Hz-RBS" secondAttribute="bottom" id="DYd-Ht-tay"/>
+                <constraint firstItem="S4t-q9-ct9" firstAttribute="bottom" secondItem="4Kk-Hz-RBS" secondAttribute="bottom" id="DYd-Ht-tay"/>
                 <constraint firstItem="vou-B4-go4" firstAttribute="top" secondItem="S4t-q9-ct9" secondAttribute="bottom" constant="-72" id="Lpx-CQ-TA7"/>
                 <constraint firstItem="Ddo-IW-xE3" firstAttribute="top" secondItem="0wI-i0-MgR" secondAttribute="bottom" constant="4" id="MVm-2l-BA6"/>
                 <constraint firstItem="0wI-i0-MgR" firstAttribute="trailing" secondItem="Ddo-IW-xE3" secondAttribute="centerX" constant="20" id="Pmg-mN-KVS"/>
@@ -443,6 +443,7 @@ time entries will appear here.</string>
                 <constraint firstItem="iEb-UM-o0r" firstAttribute="centerX" secondItem="Ddo-IW-xE3" secondAttribute="centerX" id="tRU-y4-0ll"/>
                 <constraint firstItem="Jhd-oR-xIN" firstAttribute="leading" secondItem="2" secondAttribute="leading" id="yWZ-Xb-sTX"/>
             </constraints>
+            <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
             <viewLayoutGuide key="safeArea" id="S4t-q9-ct9"/>
             <point key="canvasLocation" x="103.5" y="23.5"/>
         </view>
