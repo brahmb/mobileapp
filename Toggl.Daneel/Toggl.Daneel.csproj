@@ -524,6 +524,10 @@
     <ImageAsset Include="Resources\Images.xcassets\icWarning.imageset\icWarning.png" />
     <ImageAsset Include="Resources\Images.xcassets\icWarning.imageset\icWarning%402x.png" />
     <ImageAsset Include="Resources\Images.xcassets\icWarning.imageset\icWarning%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icTime.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\icTime.imageset\icTime.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icTime.imageset\icTime%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icTime.imageset\icTime%403x.png" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -985,6 +989,7 @@
     <Compile Include="Autocomplete\EmptyInputDelegate.cs" />
     <Compile Include="Extensions\UIKitRxExtensions\UITextFieldRxExtensions.cs" />
     <Compile Include="Binding\TextViewWithPlaceholderDidBecomeFirstResponderTargetBinding.cs" />
+    <Compile Include="ViewControllers\MainTabBarController.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation.MvvmCross\Toggl.Foundation.MvvmCross.csproj">
@@ -1040,6 +1045,7 @@
     <Folder Include="Resources\Images.xcassets\paws.imageset\" />
     <Folder Include="Resources\Images.xcassets\icBackNoPadding.imageset\" />
     <Folder Include="Resources\Images.xcassets\icWarning.imageset\" />
+    <Folder Include="Resources\Images.xcassets\icTime.imageset\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="GoogleService-Info.plist" />
