@@ -112,6 +112,7 @@ namespace Toggl.Daneel
             switch (shortcutType)
             {
                 case ShortcutType.ContinueLastTimeEntry:
+                    navigationService.Navigate<MainViewModel>();
                     var interactorFactory = Mvx.Resolve<IInteractorFactory>();
                     if (interactorFactory == null) return;
                     IDisposable subscription = null;
@@ -130,6 +131,7 @@ namespace Toggl.Daneel
                     break;
 
                 case ShortcutType.StartTimeEntry:
+                    navigationService.Navigate<MainViewModel>();
                     navigationService.Navigate<StartTimeEntryViewModel>();
                     break;
             }

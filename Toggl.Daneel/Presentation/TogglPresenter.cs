@@ -148,7 +148,21 @@ namespace Toggl.Daneel.Presentation
             //Don't show the same view twice
             if (topViewController?.ViewModel?.GetType() == request.ViewModelType)
                 return;
-                
+
+            if (request.ViewModelType == typeof(MainViewModel))
+            {
+                tabBarController.SelectedIndex = 0;
+                (tabBarController.ViewControllers[0] as UINavigationController).PopToRootViewController(false);
+                return;
+            }
+
+            if (request.ViewModelType == typeof(ReportsViewModel))
+            {
+                tabBarController.SelectedIndex = 1;
+                (tabBarController.ViewControllers[1] as UINavigationController).PopToRootViewController(false);
+                return;
+            }
+
             base.Show(request);
         }
 
