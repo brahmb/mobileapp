@@ -4,7 +4,6 @@ using Foundation;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Platforms.Ios.Binding;
 using MvvmCross.Platforms.Ios.Views;
-using MvvmCross.Platforms.Ios.Presenters.Attributes;
 using Toggl.Daneel.ViewSources;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.ViewModels;
@@ -14,7 +13,6 @@ using static Toggl.Daneel.Extensions.AnimationExtensions;
 
 namespace Toggl.Daneel.ViewControllers
 {
-    [MvxChildPresentation]
     public sealed partial class ReportsViewController : MvxViewController<ReportsViewModel>
     {
         private const string boundsKey = "bounds";

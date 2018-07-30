@@ -1,5 +1,4 @@
 ﻿using System;
-using MvvmCross.Platforms.Ios.Presenters.Attributes;
 using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Daneel.Extensions;
 using Toggl.Foundation.MvvmCross.Helper;
@@ -10,7 +9,6 @@ using Math = System.Math;
 
 namespace Toggl.Daneel.ViewControllers
 {
-    [MvxChildPresentation]
     public partial class SettingsViewController : ReactiveViewController<SettingsViewModel>
     {
         private const int verticalSpacing = 24;
