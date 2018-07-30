@@ -9,7 +9,6 @@ using Foundation;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Platforms.Ios.Binding;
 using MvvmCross.Platforms.Ios.Views;
-using MvvmCross.Platforms.Ios.Presenters.Attributes;
 using MvvmCross.WeakSubscription;
 using MvvmCross.Plugin.Color;
 using MvvmCross.Plugin.Color.Platforms.Ios;
@@ -34,7 +33,6 @@ using static Toggl.Foundation.MvvmCross.Helper.Animation;
 
 namespace Toggl.Daneel.ViewControllers
 {
-    [MvxRootPresentation(WrapInNavigationController = true)]
     public partial class MainViewController : MvxViewController<MainViewModel>
     {
         private const float showCardDelay = 0.1f;
@@ -261,11 +259,6 @@ namespace Toggl.Daneel.ViewControllers
             base.ViewWillAppear(animated);
 
             NavigationItem.TitleView = titleImage;
-            NavigationItem.RightBarButtonItems = new[]
-            {
-                new UIBarButtonItem(settingsButton),
-                new UIBarButtonItem(reportsButton)
-            };
 
 #if DEBUG
             NavigationItem.LeftBarButtonItems = new[]
