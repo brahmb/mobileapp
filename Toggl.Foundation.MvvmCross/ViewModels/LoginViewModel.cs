@@ -246,7 +246,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             onboardingStorage.SetIsNewUser(false);
 
-            await navigationService.Navigate<MainViewModel>();
+            await navigationService.Navigate<MainTabBarViewModel>();
         }
 
         private void onError(Exception exception)

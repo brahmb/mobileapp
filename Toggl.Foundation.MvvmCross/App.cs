@@ -76,7 +76,7 @@ namespace Toggl.Foundation.MvvmCross
 
             var _ = dataSource.StartSyncing();
 
-            await navigationService.Navigate<MainViewModel>();
+            await navigationService.Navigate<MainTabBarViewModel>();
         }
     }
 }

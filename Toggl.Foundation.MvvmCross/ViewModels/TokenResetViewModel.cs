@@ -124,7 +124,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             IsLoading = false;
 
-            navigationService.Navigate<MainViewModel>();
+            navigationService.Navigate<MainTabBarViewModel>();
         }
 
         private void onError(Exception ex)
