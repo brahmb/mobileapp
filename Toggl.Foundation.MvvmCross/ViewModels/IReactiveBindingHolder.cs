@@ -38,6 +38,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .Subscribe(onNext)
                 .DisposedBy(holder.DisposeBag);
         }
+
+        public static void Bind<TInput, TOutput>(this IReactiveBindingHolder holder, IObservable<TInput> observable, RxAction<TInput, TOutput> action)
+        {
+            observable
+                .Subscribe(action.Inputs)
+                .DisposedBy(holder.DisposeBag);
+        }
     }
-    
+
 }

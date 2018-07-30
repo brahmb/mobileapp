@@ -138,6 +138,9 @@ namespace Toggl.Giskard.Adapters
             catch
             {
                 calculateHeaderIndexes();
+
+                if (viewPosition > ItemCount) return null;
+
                 var item = tryGetItem(viewPosition);
                 return item;
             }

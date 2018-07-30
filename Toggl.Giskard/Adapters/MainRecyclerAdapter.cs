@@ -76,6 +76,8 @@ namespace Toggl.Giskard.Adapters
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
+            if (position > ItemCount) return;
+
             base.OnBindViewHolder(holder, position);
 
             if (holder is MainRecyclerViewLogViewHolder timeEntriesLogRecyclerViewHolder

@@ -21,6 +21,8 @@ namespace Toggl.Giskard.Views
     {
         private BehaviorSubject<View> firstTimeEntryViewSubject = new BehaviorSubject<View>(null);
         private IDisposable firstTimeEntryViewUpdateDisposable;
+        private bool isRunningSync;
+        private bool canTraverseAdapter = true;
 
         public MainRecyclerAdapter MainRecyclerAdapter => (MainRecyclerAdapter)Adapter;
 
@@ -42,6 +44,19 @@ namespace Toggl.Giskard.Views
         {
             get => MainRecyclerAdapter.IsTimeEntryRunning;
             set => MainRecyclerAdapter.IsTimeEntryRunning = value;
+        }
+
+        public bool IsSyncRunning
+        {
+            get => isRunningSync;
+            set
+            {
+                isRunningSync = value;
+                if (isRunningSync)
+                {
+                    canTraverseAdapter = false;
+                }
+            }
         }
 
         public MainRecyclerView(IntPtr javaReference, JniHandleOwnership transfer)
@@ -76,8 +91,19 @@ namespace Toggl.Giskard.Views
                 .DistinctUntilChanged();
         }
 
+        public override void OnScrollStateChanged(int state)
+        {
+            base.OnScrollStateChanged(state);
+            if (!canTraverseAdapter && !isRunningSync)
+            {
+                canTraverseAdapter = ScrollState == ScrollStateIdle;
+            }
+        }
+
         private void onFirstTimeEntryViewUpdate()
         {
+            if (!canTraverseAdapter) return;
+
             var view = findOldestTimeEntryView();
             firstTimeEntryViewSubject.OnNext(view);
         }
@@ -88,6 +114,8 @@ namespace Toggl.Giskard.Views
 
             for (var position = MainRecyclerAdapter.ItemCount - 1; position >= 0; position--)
             {
+                if (!canTraverseAdapter) return null;
+
                 var item = MainRecyclerAdapter.GetItem(position);
                 if (item is TimeEntryViewModel)
                 {

@@ -13,7 +13,6 @@ using MvvmCross.Navigation;
 namespace Toggl.Giskard
 {
     [Activity(Label = "Toggl for Devs",
-              NoHistory = true,
               MainLauncher = true,
               Icon = "@mipmap/ic_launcher",
               Theme = "@style/Theme.Splash",
