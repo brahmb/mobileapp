@@ -54,6 +54,11 @@ namespace Toggl.Foundation.MvvmCross.Helper
             public static readonly MvxColor BackgroundColor = nearlyWhite;
         }
 
+        public static class TabBar
+        {
+            public static readonly MvxColor SelectedImageTintColor = new MvxColor(6, 170, 245);
+        }
+
         public static class Main
         {
             private static readonly MvxColor lightGrey = new MvxColor(181, 188, 192);
