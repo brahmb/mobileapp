@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MvvmCross.Platforms.Ios.Presenters.Attributes;
 using MvvmCross.Platforms.Ios.Views;
@@ -11,6 +12,13 @@ namespace Toggl.Daneel.ViewControllers
     [MvxRootPresentation(WrapInNavigationController = false)]
     public partial class MainTabBarController : MvxTabBarViewController<MainTabBarViewModel>
     {
+        private Dictionary<Type, String> imageNameForType = new Dictionary<Type, String>
+        {
+            {typeof(MainViewModel), "icTime"},
+            {typeof(ReportsViewModel), "icReports"},
+            {typeof(SettingsViewModel), "icSettings"}
+        };
+
         public MainTabBarController()
         {
             setupViewControllers();
@@ -18,17 +26,17 @@ namespace Toggl.Daneel.ViewControllers
 
         private void setupViewControllers()
         {
-            var viewControllers = ViewModel.ViewModelTuples.Select(tuple => createTabFor(tuple.Item1, tuple.Item2)).ToArray();
+            var viewControllers = ViewModel.ViewModels.Select(vm => createTabFor(vm)).ToArray();
             ViewControllers = viewControllers;
         }
 
-        private UIViewController createTabFor(IMvxViewModel viewModel, String imageName)
+        private UIViewController createTabFor(IMvxViewModel viewModel)
         {
             var controller = new UINavigationController();
             var screen = this.CreateViewControllerFor(viewModel) as UIViewController;
             var item = new UITabBarItem();
             item.Title = "";
-            item.Image = UIImage.FromBundle(imageName);
+            item.Image = UIImage.FromBundle(imageNameForType[viewModel.GetType()]);
             item.ImageInsets = new UIEdgeInsets(6, 0, -6, 0);
             screen.TabBarItem = item;
             controller.PushViewController(screen, true);

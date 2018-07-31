@@ -24,7 +24,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private ReportsViewModel reportsViewModel;
         private SettingsViewModel settingsViewModel;
 
-        public IEnumerable<(MvxViewModel, String)> ViewModelTuples { get; private set; }
+        public IEnumerable<MvxViewModel> ViewModels { get; private set; }
 
         public MainTabBarViewModel(
             ITogglDataSource dataSource,
@@ -97,7 +97,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             await base.Initialize();
 
-            ViewModelTuples = new(MvxViewModel, String)[] { (mainViewModel, "icTime"), (reportsViewModel, "icReports"), (settingsViewModel, "icSettings") }.Do(async tuple => await tuple.Item1.Initialize());
+            ViewModels = new MvxViewModel[] { mainViewModel, reportsViewModel, settingsViewModel }.Do(async vm => await vm.Initialize());
         }
     }
 }
