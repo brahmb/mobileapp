@@ -36,6 +36,10 @@ namespace Toggl.Daneel.Views
             init();
         }
 
+        /// <summary>
+        /// Starts the spinning animation of the activity indicator.
+        /// NOTE: may not work when called from ViewDidLoad, use ViewWillAppear or ViewDidAppear.
+        /// </summary>
         public void StartAnimation()
         {
             var animation = createAnimation();
@@ -43,6 +47,9 @@ namespace Toggl.Daneel.Views
             Layer.AddAnimation(animation, "spinning");
         }
 
+        /// <summary>
+        /// Stops the spinning animation.
+        /// </summary>
         public void StopAnimation()
         {
             Layer.RemoveAllAnimations();

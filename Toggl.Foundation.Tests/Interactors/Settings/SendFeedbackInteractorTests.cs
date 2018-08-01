@@ -28,7 +28,7 @@ namespace Toggl.Foundation.Tests.Interactors.Settings
         public sealed class TheConstructor : BaseInteractorTests
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(TenParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheParametersIsNullOrInvalid(
                 bool useFeedbackApi,
                 bool useUserDataSource,

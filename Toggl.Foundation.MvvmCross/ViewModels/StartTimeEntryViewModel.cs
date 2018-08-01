@@ -140,6 +140,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
         }
 
+        public DurationFormat DisplayedTimeFormat { get; } = DurationFormat.Improved;
+
         public bool IsBillable { get; private set; } = false;
 
         public bool IsBillableAvailable { get; private set; } = false;

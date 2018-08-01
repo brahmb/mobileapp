@@ -26,7 +26,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheConstructor : NoWorkspaceViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(TwoParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(bool useNavigationService, bool useDataSource)
             {
                 var navigationService = useNavigationService ? NavigationService : null;

@@ -41,7 +41,7 @@
             android:background="@color/blueToolbarBackground"
             android:textCursorDrawable="@drawable/EditTextWhiteCursor"
             android:textColorHint="@color/blueBackgroundTextHintColor"
-            android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
+            android:inputType="textMultiLine"
             android:layout_marginTop="64dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"

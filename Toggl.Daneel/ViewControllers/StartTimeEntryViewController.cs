@@ -22,13 +22,13 @@ using Toggl.Daneel.ViewSources;
 using Toggl.Foundation;
 using Toggl.Foundation.Autocomplete;
 using Toggl.Foundation.Autocomplete.Suggestions;
+using Toggl.Foundation.MvvmCross.Combiners;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.Onboarding.CreationView;
 using Toggl.Foundation.MvvmCross.Onboarding.StartTimeEntryView;
 using Toggl.Foundation.MvvmCross.ViewModels;
-using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using UIKit;
 
@@ -84,13 +84,13 @@ namespace Toggl.Daneel.ViewControllers
             SuggestionsTableView.Source = source;
             source.ToggleTasksCommand = new MvxCommand<ProjectSuggestion>(toggleTaskSuggestions);
 
-            var parametricDurationConverter = new ParametricTimeSpanToDurationValueConverter();
             var invertedVisibilityConverter = new MvxInvertedVisibilityValueConverter();
             var invertedBoolConverter = new BoolToConstantValueConverter<bool>(false, true);
             var buttonColorConverter = new BoolToConstantValueConverter<UIColor>(
                 Color.StartTimeEntry.ActiveButton.ToNativeColor(),
                 Color.StartTimeEntry.InactiveButton.ToNativeColor()
             );
+            var durationCombiner = new DurationValueCombiner();
 
             var bindingSet = this.CreateBindingSet<StartTimeEntryViewController, StartTimeEntryViewModel>();
 
@@ -139,8 +139,9 @@ namespace Toggl.Daneel.ViewControllers
 
             bindingSet.Bind(TimeLabel)
                       .For(v => v.Text)
-                      .To(vm => vm.DisplayedTime)
-                      .WithConversion(parametricDurationConverter, DurationFormat.Improved);
+                      .ByCombining(durationCombiner,
+                          vm => vm.DisplayedTime,
+                          vm => vm.DisplayedTimeFormat);
 
             bindingSet.Bind(Placeholder)
                       .To(vm => vm.PlaceholderText);

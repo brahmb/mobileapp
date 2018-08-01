@@ -30,8 +30,10 @@ namespace Toggl.Daneel.Extensions
                 AnimationExtensions.Animate(
                     Animation.Timings.EnterTiming,
                     Animation.Curves.EaseIn,
-                    () => view.Alpha = alpha
-                );
+                    () =>
+                    {
+                        view.Alpha = alpha;
+                    });
             };
 
         public static Action<UIColor> BindTintColor(this UIView view)

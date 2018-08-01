@@ -19,7 +19,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheConstructor : OnboardingViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(ThreeParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useNavigationService, bool useOnboardingStorage, bool useAnalyticsService)
             {

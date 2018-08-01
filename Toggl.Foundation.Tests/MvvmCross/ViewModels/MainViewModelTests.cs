@@ -43,7 +43,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     TimeService,
                     RatingService,
                     UserPreferences,
-                    FeedbackService,
                     AnalyticsService,
                     OnboardingStorage,
                     InteractorFactory,
@@ -73,13 +72,12 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheConstructor : MainViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(ElevenParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useDataSource,
                 bool useTimeService,
                 bool useRatingService,
                 bool useUserPreferences,
-                bool useFeedbackService,
                 bool useAnalyticsService,
                 bool useOnboardingStorage,
                 bool useInteractorFactory,
@@ -91,7 +89,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var timeService = useTimeService ? TimeService : null;
                 var ratingService = useRatingService ? RatingService : null;
                 var userPreferences = useUserPreferences ? UserPreferences : null;
-                var feedbackService = useFeedbackService ? FeedbackService : null;
                 var analyticsService = useAnalyticsService ? AnalyticsService : null;
                 var navigationService = useNavigationService ? NavigationService : null;
                 var interactorFactory = useInteractorFactory ? InteractorFactory : null;
@@ -105,7 +102,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         timeService,
                         ratingService,
                         userPreferences,
-                        feedbackService,
                         analyticsService,
                         onboardingStorage,
                         interactorFactory,

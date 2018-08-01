@@ -95,7 +95,6 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewDidAppear(bool animated)
         {
             base.ViewDidAppear(animated);
-
             ActivityIndicator.Alpha = 0;
             ActivityIndicator.StartAnimation();
             PasswordTextField.ResignFirstResponder();

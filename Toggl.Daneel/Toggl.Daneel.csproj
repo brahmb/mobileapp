@@ -590,6 +590,7 @@
     <InterfaceDefinition Include="Cells\SyncFailures\SyncFailureCell.xib" />
     <InterfaceDefinition Include="Cells\Settings\LicensesHeaderViewCell.xib" />
     <InterfaceDefinition Include="Cells\Settings\LicensesViewCell.xib" />
+    <InterfaceDefinition Include="ViewControllers\Settings\SendFeedbackViewController.xib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -608,7 +609,9 @@
   <ItemGroup>
     <Compile Include="Binding\DatePickerDateTimeOffsetTargetBinding.cs" />
     <Compile Include="Extensions\UIKitRxExtensions\NSConstraintRxExtensions.cs" />
+    <Compile Include="Extensions\UIKitRxExtensions\UIApplicationRxExtensions.cs" />
     <Compile Include="Extensions\UIKitRxExtensions\UIButtonRxExtensions.cs" />
+    <Compile Include="Extensions\UIKitRxExtensions\UIControlRxExtensions.cs" />
     <Compile Include="Extensions\UIKitRxExtensions\UIDatePickerRxExtensions.cs" />
     <Compile Include="Extensions\UIKitRxExtensions\UILabelRxExtensions.cs" />
     <Compile Include="Extensions\UIKitRxExtensions\UISwitchRxExtensions.cs" />
@@ -988,6 +991,10 @@
     <Compile Include="Autocomplete\TagTextAttachment.cs" />
     <Compile Include="Autocomplete\EmptyInputDelegate.cs" />
     <Compile Include="Extensions\UIKitRxExtensions\UITextFieldRxExtensions.cs" />
+    <Compile Include="ViewControllers\Settings\SendFeedbackViewController.cs" />
+    <Compile Include="ViewControllers\Settings\SendFeedbackViewController.designer.cs">
+      <DependentUpon>SendFeedbackViewController.cs</DependentUpon>
+    </Compile>
     <Compile Include="Binding\TextViewWithPlaceholderDidBecomeFirstResponderTargetBinding.cs" />
     <Compile Include="ViewControllers\MainTabBarController.cs" />
   </ItemGroup>

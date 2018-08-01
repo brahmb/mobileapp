@@ -38,7 +38,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Services
         public sealed class TheConstructor
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(TwoParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(bool useNavigationService, bool useAccessRestrictionStorage)
             {
                 var navigationService = useNavigationService ? Substitute.For<IMvxNavigationService>() : null;

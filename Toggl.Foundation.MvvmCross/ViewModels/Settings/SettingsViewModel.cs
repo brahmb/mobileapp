@@ -14,6 +14,7 @@ using Toggl.Foundation.DataSources;
 using Toggl.Foundation.DTOs;
 using Toggl.Foundation.Interactors;
 using Toggl.Foundation.Models.Interfaces;
+using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.MvvmCross.Transformations;
@@ -32,9 +33,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     [Preserve(AllMembers = true)]
     public sealed class SettingsViewModel : MvxViewModel
     {
-        private const string feedbackRecipient = "support@toggl.com";
-
         private readonly ISubject<Unit> loggingOutSubject = new Subject<Unit>();
+        private readonly ISubject<bool> isFeedbackSuccessViewShowing = new Subject<bool>();
         private readonly CompositeDisposable disposeBag = new CompositeDisposable();
 
         private readonly UserAgent userAgent;
@@ -42,7 +42,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly ITogglDataSource dataSource;
         private readonly IDialogService dialogService;
         private readonly IUserPreferences userPreferences;
-        private readonly IFeedbackService feedbackService;
         private readonly IAnalyticsService analyticsService;
         private readonly IPlatformConstants platformConstants;
         private readonly IOnboardingStorage onboardingStorage;
@@ -65,22 +64,24 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public IObservable<Unit> LoggingOut { get; }
 
         public IObservable<byte[]> UserAvatar { get; }
-        
+
         public IObservable<string> DateFormat { get; }
-        
+
         public IObservable<bool> IsRunningSync { get; }
 
         public IObservable<string> WorkspaceName { get; }
-        
+
         public IObservable<string> DurationFormat { get; }
 
         public IObservable<string> BeginningOfWeek { get; }
-        
+
         public IObservable<bool> IsManualModeEnabled { get; }
 
         public IObservable<bool> UseTwentyFourHourFormat { get; }
 
         public IObservable<IList<SelectableWorkspaceViewModel>> Workspaces { get; }
+
+        public IObservable<bool> IsFeedbackSuccessViewShowing { get; }
 
         public string Version => $"{userAgent.Version} ({platformConstants.BuildNumber})";
 
@@ -90,7 +91,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ITogglDataSource dataSource,
             IDialogService dialogService,
             IUserPreferences userPreferences,
-            IFeedbackService feedbackService,
             IAnalyticsService analyticsService,
             IInteractorFactory interactorFactory,
             IPlatformConstants platformConstants,
@@ -102,7 +102,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(mailService, nameof(mailService));
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
-            Ensure.Argument.IsNotNull(feedbackService, nameof(feedbackService));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
@@ -114,7 +113,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.mailService = mailService;
             this.dialogService = dialogService;
             this.userPreferences = userPreferences;
-            this.feedbackService = feedbackService;
             this.analyticsService = analyticsService;
             this.interactorFactory = interactorFactory;
             this.navigationService = navigationService;
@@ -196,6 +194,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IsRunningSync
                 .Subscribe(isSyncing => this.isSyncing = isSyncing)
                 .DisposedBy(disposeBag);
+
+            IsFeedbackSuccessViewShowing = isFeedbackSuccessViewShowing.AsObservable();
+        }
+
+        public void CloseFeedbackSuccessView()
+        {
+            isFeedbackSuccessViewShowing.OnNext(false);
         }
 
         public Task GoBack() => navigationService.Close(this);
@@ -203,7 +208,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public Task OpenAboutView()
             => navigationService.Navigate<AboutViewModel>();
 
-        public Task OpenHelpView() => 
+        public Task OpenHelpView() =>
             navigationService.Navigate<BrowserViewModel, BrowserParameters>(
                 BrowserParameters.WithUrlAndTitle(platformConstants.HelpUrl, Resources.Help)
             );
@@ -219,8 +224,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             await changeDefaultWorkspace(selectedWorkspaceId);
         }
 
-        public Task SubmitFeedback()
-            => feedbackService.SubmitFeedback();
+        public async Task SubmitFeedback()
+        {
+            var sendFeedbackSucceed = await navigationService.Navigate<SendFeedbackViewModel, bool>();
+            isFeedbackSuccessViewShowing.OnNext(sendFeedbackSucceed);
+        }
 
         public Task SelectDefaultWorkspace(SelectableWorkspaceViewModel workspace)
             => changeDefaultWorkspace(workspace.WorkspaceId);
@@ -324,8 +332,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             => isLoggingOut == false && progress == SyncProgress.Syncing;
 
         private async Task updatePreferences(
-            New<DurationFormat> durationFormat = default(New<DurationFormat>), 
-            New<DateFormat> dateFormat = default(New<DateFormat>), 
+            New<DurationFormat> durationFormat = default(New<DurationFormat>),
+            New<DateFormat> dateFormat = default(New<DateFormat>),
             New<TimeFormat> timeFormat = default(New<TimeFormat>))
         {
             var preferencesDto = new EditPreferencesDTO
@@ -348,7 +356,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         }
 
         private WorkspaceToSelectableWorkspaceLambda selectableWorkspacesFromWorkspaces(IThreadSafeUser user)
-            => workspaces 
+            => workspaces
                 => workspaces
                     .Select(workspace => new SelectableWorkspaceViewModel(workspace, user.DefaultWorkspaceId == workspace.Id))
                     .ToList();

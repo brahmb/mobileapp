@@ -9,6 +9,11 @@ namespace Toggl.Daneel.Extensions
     {
         private const string selectedTextRangeChangedKey = "selectedTextRange";
 
+        public static IObservable<string> Text(this UITextView textView)
+            => Observable
+                .FromEventPattern(e => textView.Changed += e, e => textView.Changed -= e)
+                .Select(e => ((UITextView)e.Sender).Text);
+
         public static IObservable<NSAttributedString> AttributedText(this UITextView textView)
             => Observable
                 .FromEventPattern(e => textView.Changed += e, e => textView.Changed -= e)

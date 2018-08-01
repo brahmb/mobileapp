@@ -20,6 +20,7 @@ namespace Toggl.Foundation.MvvmCross.Services
     {
         DiscardNewTimeEntry,
         DiscardEditingChanges,
-        DeleteExistingTimeEntry
+        DeleteExistingTimeEntry,
+        DiscardFeedback
     }
 }

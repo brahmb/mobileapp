@@ -41,7 +41,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheConstructor : TokenResetViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(SevenParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool userLoginManager,
                 bool userNavigationService,

@@ -22,7 +22,7 @@ namespace Toggl.Foundation.Tests.Sync.States
             = Substitute.For<IBaseDataSource<IThreadSafeTestModel>>();
 
         [Theory, LogIfTooSlow]
-        [ClassData(typeof(TwoParameterConstructorTestData))]
+        [ConstructorData]
         public void ThrowsWhenArgumentsAreNull(bool hasEntity, bool hasReason)
         {
             var entity = hasEntity ? new TestModel(-1, SyncStatus.SyncNeeded) : (IThreadSafeTestModel)null;

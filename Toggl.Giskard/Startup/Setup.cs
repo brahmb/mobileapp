@@ -54,7 +54,7 @@ namespace Toggl.Giskard
             return navigationService;
         }
 
-        protected override IMvxAndroidViewPresenter CreateViewPresenter() 
+        protected override IMvxAndroidViewPresenter CreateViewPresenter()
             => new TogglPresenter(AndroidViewAssemblies);
 
         protected override void InitializeApp(IMvxPluginManager pluginManager, IMvxApplication app)
@@ -77,7 +77,6 @@ namespace Toggl.Giskard
             var platformConstants = new PlatformConstants();
             var keyValueStorage = new SharedPreferencesStorage(sharedPreferences);
             var settingsStorage = new SettingsStorage(appVersion, keyValueStorage);
-            var feedbackService = new FeedbackService(userAgent, mailService, dialogService, platformConstants);
 
             var foundation =
                 TogglFoundation
@@ -100,7 +99,6 @@ namespace Toggl.Giskard
 
                     .StartRegisteringPlatformServices()
                     .WithDialogService(dialogService)
-                    .WithFeedbackService(feedbackService)
                     .WithLastTimeUsageStorage(settingsStorage)
                     .WithBrowserService<BrowserService>()
                     .WithKeyValueStorage(keyValueStorage)

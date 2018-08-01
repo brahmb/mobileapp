@@ -19,7 +19,7 @@ namespace Toggl.Foundation.Tests.Sync
         public sealed class TheConstructor
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(TwoParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyArgumentIsNull(bool useHandler, bool useScheduler)
             {
                 var handler = useHandler ? Substitute.For<ITransitionHandlerProvider>() : null;

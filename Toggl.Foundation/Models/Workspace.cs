@@ -35,13 +35,13 @@ namespace Toggl.Foundation.Models
 
             public Builder SetSyncStatus(SyncStatus syncStatus)
             {
-                SyncStatus = SyncStatus;
+                SyncStatus = syncStatus;
                 return this;
             }
 
             public Builder SetAt(DateTimeOffset at)
             {
-                At = At;
+                At = at;
                 return this;
             }
         }

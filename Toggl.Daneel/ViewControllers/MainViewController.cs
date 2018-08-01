@@ -18,6 +18,7 @@ using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Suggestions;
 using Toggl.Daneel.Views;
 using Toggl.Daneel.ViewSources;
+using Toggl.Foundation.MvvmCross.Combiners;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Helper;
@@ -33,7 +34,7 @@ using static Toggl.Foundation.MvvmCross.Helper.Animation;
 
 namespace Toggl.Daneel.ViewControllers
 {
-    public partial class MainViewController : MvxViewController<MainViewModel>
+    public partial class MainViewController : ReactiveViewController<MainViewModel>
     {
         private const float showCardDelay = 0.1f;
 
@@ -88,7 +89,7 @@ namespace Toggl.Daneel.ViewControllers
         private readonly SuggestionsView suggestionsView = new SuggestionsView { TranslatesAutoresizingMaskIntoConstraints = false };
 
         public MainViewController()
-            : base(nameof(MainViewController), null)
+            : base(nameof(MainViewController))
         {
         }
 
@@ -113,7 +114,6 @@ namespace Toggl.Daneel.ViewControllers
             );
             var colorConverter = new MvxNativeColorValueConverter();
             var visibilityConverter = new MvxVisibilityValueConverter();
-            var parametricTimeSpanConverter = new ParametricTimeSpanToDurationValueConverter();
             var invertedVisibilityConverter = new MvxInvertedVisibilityValueConverter();
             var timeEntriesLogFooterConverter = new BoolToConstantValueConverter<UIView>(new UIView(), timeEntriesLogFooter);
             var projectTaskClientCombiner = new ProjectTaskClientValueCombiner(
@@ -125,6 +125,7 @@ namespace Toggl.Daneel.ViewControllers
                 UIImage.FromBundle("manualIcon"),
                 UIImage.FromBundle("playIcon")
             );
+            var durationCombiner = new DurationValueCombiner();
 
             var bindingSet = this.CreateBindingSet<MainViewController, MainViewModel>();
 
@@ -198,9 +199,11 @@ namespace Toggl.Daneel.ViewControllers
 
             //Text
             bindingSet.Bind(CurrentTimeEntryDescriptionLabel).To(vm => vm.CurrentTimeEntryDescription);
+
             bindingSet.Bind(CurrentTimeEntryElapsedTimeLabel)
-                      .To(vm => vm.CurrentTimeEntryElapsedTime)
-                      .WithConversion(parametricTimeSpanConverter, DurationFormat.Improved);
+                      .ByCombining(durationCombiner,
+                          vm => vm.CurrentTimeEntryElapsedTime,
+                          vm => vm.CurrentTimeEntryElapsedTimeFormat);
 
             bindingSet.Bind(CurrentTimeEntryProjectTaskClientLabel)
                       .For(v => v.AttributedText)
@@ -223,6 +226,10 @@ namespace Toggl.Daneel.ViewControllers
                 .WithConversion(visibilityConverter);
 
             bindingSet.Apply();
+
+            this.Bind(ViewModel.RatingViewModel.IsFeedbackSuccessViewShowing,
+                SendFeedbackSuccessView.BindAnimatedIsVisible());
+            this.BindVoid(SendFeedbackSuccessView.Tapped(), ViewModel.RatingViewModel.CloseFeedbackSuccessView);
 
             View.SetNeedsLayout();
             View.LayoutIfNeeded();
@@ -372,6 +379,9 @@ namespace Toggl.Daneel.ViewControllers
 
             RunningEntryDescriptionFadeView.FadeLeft = true;
             RunningEntryDescriptionFadeView.FadeRight = true;
+
+            // Send Feedback Success View Setup
+            SendFeedbackSuccessView.Hidden = true;
 
             prepareSpiderViews();
             prepareEmptyStateView();

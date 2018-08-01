@@ -40,7 +40,7 @@ namespace Toggl.Foundation.Tests.Suggestions
         public sealed class TheConstructor : MostUsedTimeEntrySuggestionProviderTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(TwoParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(bool useDatabase, bool useTimeService)
             {
                 var database = useDatabase ? Database : null;

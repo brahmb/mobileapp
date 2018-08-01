@@ -75,7 +75,7 @@ namespace Toggl.Foundation.Tests.DataSources
         public sealed class TheConstructor : TimeEntryDataSourceTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(ThreeParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useRepository,
                 bool useTimeService,

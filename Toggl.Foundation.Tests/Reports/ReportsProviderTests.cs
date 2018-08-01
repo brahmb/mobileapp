@@ -52,7 +52,7 @@ namespace Toggl.Foundation.Tests.Reports
         public sealed class Constructor : ReportsProviderTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(TwoParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(bool useApi, bool useDatabase)
             {
                 var api = useApi ? Api : null;

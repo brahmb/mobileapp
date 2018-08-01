@@ -100,6 +100,8 @@ namespace Toggl.Multivac.Extensions
                 () => Console.WriteLine($"OnCompleted {tag}")
         );
 
+        public static IObservable<bool> Invert(this IObservable<bool> observable) => observable.Select(b => !b);
+
         public static IObservable<T> WhereAsync<T>(this IObservable<T> observable, Func<T, IObservable<bool>> asyncPredicate)
             => observable.SelectMany(item =>
                 asyncPredicate(item)
