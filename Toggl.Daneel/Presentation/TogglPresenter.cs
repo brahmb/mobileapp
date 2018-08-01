@@ -194,7 +194,7 @@ namespace Toggl.Daneel.Presentation
                 {
                     var mainViewController = mainTabBarController
                         .ViewControllers
-                        .Select(vc => vc as UINavigationController)
+                        .Cast<UINavigationController>()
                         .SelectMany(nav => nav.ViewControllers)
                         .FirstOrDefault(vc => vc is MainViewController) as MainViewController;
 
