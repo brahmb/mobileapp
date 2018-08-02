@@ -71,6 +71,17 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .DisposedBy(disposeBag);
         }
 
+        public void RemoveTimeEntryFromVieWModel(TimeEntryViewModel timeEntryViewModel)
+        {
+            var index = TimeEntries.IndexOf(timeEntryViewModel.Id);
+            TimeEntries.RemoveItemAt(index.Value.Section, index.Value.Row);
+        }
+
+        public void AddTimeEntryToViewModel(TimeEntryViewModel timeEntryViewModel)
+        {
+            TimeEntries.InsertItem(timeEntryViewModel);
+        }
+
         private async Task fetchSectionedTimeEntries()
         {
             var groupedEntries = await interactorFactory.GetAllNonDeletedTimeEntries().Execute()
