@@ -35,6 +35,12 @@ namespace Toggl.Daneel.Presentation
             TimingFunction = Animation.Curves.SharpCurve.ToMediaTimingFunction()
         };
 
+        private UITabBarController mainTabBarController
+            => UIApplication.SharedApplication.KeyWindow?.RootViewController as UITabBarController;
+
+        public UIViewController TopViewController
+            => getPresentedViewController(mainTabBarController);
+
         public TogglPresenter(IUIApplicationDelegate applicationDelegate, UIWindow window)
             : base(applicationDelegate, window)
         {
@@ -140,10 +146,9 @@ namespace Toggl.Daneel.Presentation
 
         public override void Show(MvxViewModelRequest request)
         {
-            var tabBarController = UIApplication.SharedApplication.KeyWindow?.RootViewController as UITabBarController;
-            var topViewController = tabBarController == null
+            var topViewController = mainTabBarController == null
                 ? null
-                : getPresentedViewController(tabBarController.SelectedViewController) as MvxViewController;
+                : getPresentedViewController(mainTabBarController.SelectedViewController) as MvxViewController;
 
             //Don't show the same view twice
             if (topViewController?.ViewModel?.GetType() == request.ViewModelType)
@@ -151,22 +156,22 @@ namespace Toggl.Daneel.Presentation
 
             if (request.ViewModelType == typeof(MainViewModel))
             {
-                tabBarController.SelectedIndex = 0;
-                (tabBarController.ViewControllers[0] as UINavigationController).PopToRootViewController(false);
+                mainTabBarController.SelectedIndex = 0;
+                (mainTabBarController.ViewControllers[0] as UINavigationController).PopToRootViewController(false);
                 return;
             }
 
             if (request.ViewModelType == typeof(ReportsViewModel))
             {
-                tabBarController.SelectedIndex = 1;
-                (tabBarController.ViewControllers[1] as UINavigationController).PopToRootViewController(false);
+                mainTabBarController.SelectedIndex = 1;
+                (mainTabBarController.ViewControllers[1] as UINavigationController).PopToRootViewController(false);
                 return;
             }
 
             if (request.ViewModelType == typeof(SettingsViewModel))
             {
-                tabBarController.SelectedIndex = 2;
-                (tabBarController.ViewControllers[2] as UINavigationController).PopToRootViewController(false);
+                mainTabBarController.SelectedIndex = 2;
+                (mainTabBarController.ViewControllers[2] as UINavigationController).PopToRootViewController(false);
                 return;
             }
 
@@ -240,12 +245,6 @@ namespace Toggl.Daneel.Presentation
 
             base.ChangePresentation(hint);
         }
-
-        private UITabBarController mainTabBarController
-            => UIApplication.SharedApplication.KeyWindow?.RootViewController as UITabBarController;
-
-        public UIViewController TopViewController
-            => getPresentedViewController(mainTabBarController);
 
         private UIViewController getPresentedViewController(UIViewController current)
             => current.PresentedViewController == null || current.PresentedViewController.IsBeingDismissed
