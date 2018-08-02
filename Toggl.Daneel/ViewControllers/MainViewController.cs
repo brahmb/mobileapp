@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using CoreGraphics;
 using Foundation;
@@ -73,6 +74,8 @@ namespace Toggl.Daneel.ViewControllers
 
         private TimeEntriesLogViewSource tableViewSource;
 
+        private SnackBar snackBar;
+
         public MainViewController()
             : base(nameof(MainViewController))
         {
@@ -119,8 +122,21 @@ namespace Toggl.Daneel.ViewControllers
                 tableViewSource.SwipeToContinue
             );
             this.Bind(continueTimeEntry, ViewModel.ContinueTimeEntry);
-            this.Bind(tableViewSource.SwipeToDelete, ViewModel.DeleteTimeEntry);
+            this.Bind(tableViewSource.SwipeToDelete, ViewModel.PreDeleteTimeEntry);
             this.Bind(tableViewSource.ItemSelected, ViewModel.SelectTimeEntry);
+
+            this.Bind(tableViewSource.SwipeToDelete, timeEntry =>
+            {
+                if (snackBar != null)
+                    snackBar.Hide();
+
+                snackBar = SnackBar.Undo(
+                    () => { ViewModel.UndoDeleteTimeEntry.Execute(timeEntry);},
+                    () => { ViewModel.DeleteTimeEntry.Execute(timeEntry); });
+                snackBar.SnackBottomAnchor = StartTimeEntryButton.TopAnchor;
+                snackBar.Show(View);
+            });
+
 
             tableViewSource.SwipeToContinue
                 .VoidSubscribe(() =>
