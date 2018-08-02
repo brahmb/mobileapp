@@ -76,6 +76,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         // Inputs
         public InputAction<TimeEntryViewModel> ContinueTimeEntry { get; }
         public InputAction<TimeEntryViewModel> DeleteTimeEntry { get; }
+        public InputAction<TimeEntryViewModel> PreDeleteTimeEntry { get; }
+        public InputAction<TimeEntryViewModel> UndoDeleteTimeEntry { get; }
         public InputAction<TimeEntryViewModel> SelectTimeEntry { get; }
         public UIAction RefreshAction { get; }
 
@@ -170,6 +172,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             ContinueTimeEntry = new InputAction<TimeEntryViewModel>(continueTimeEntry);
             DeleteTimeEntry = new InputAction<TimeEntryViewModel>(deleteTimeEntry);
+            PreDeleteTimeEntry = new InputAction<TimeEntryViewModel>(preDeleteTimeEntry);
+            UndoDeleteTimeEntry = new InputAction<TimeEntryViewModel>(undoDeleteTimeEntry);
             SelectTimeEntry = new InputAction<TimeEntryViewModel>(timeEntrySelected);
             RefreshAction = new UIAction(refresh);
         }
@@ -396,6 +400,18 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             onboardingStorage.TimeEntryWasTapped();
             return navigate<EditTimeEntryViewModel, long>(timeEntry.Id).ToObservable();
+        }
+
+        private IObservable<Unit> preDeleteTimeEntry(TimeEntryViewModel timeEntry)
+        {
+            timeEntriesViewModel.RemoveTimeEntryFromVieWModel(timeEntry);
+            return Observable.Return(Unit.Default);
+        }
+
+        private IObservable<Unit> undoDeleteTimeEntry(TimeEntryViewModel timeEntry)
+        {
+            timeEntriesViewModel.AddTimeEntryToViewModel(timeEntry);
+            return Observable.Return(Unit.Default);
         }
 
         private IObservable<Unit> deleteTimeEntry(TimeEntryViewModel timeEntry)
