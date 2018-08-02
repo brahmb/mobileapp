@@ -37,12 +37,13 @@ namespace Toggl.Daneel
         private ButtonPositionType buttonPosition = ButtonPositionType.Right;
         private Func<Task> startTimer;
         private bool showing = false;
+        private string text;
 
         public SnackBar (IntPtr handle) : base (handle)
         {
         }
 
-        public static SnackBar Create()
+        public static SnackBar Create(string text)
         {
             var arr = NSBundle.MainBundle.LoadNib("SnackBar", null, null);
             var snackBar = Runtime.GetNSObject<SnackBar>(arr.ValueAt(0));
@@ -57,6 +58,7 @@ namespace Toggl.Daneel
                 Font = UIFont.SystemFontOfSize(14, UIFontWeight.Semibold)
             };
 
+            snackBar.text = text;
             snackBar.configure();
             return snackBar;
         }
@@ -88,7 +90,7 @@ namespace Toggl.Daneel
             };
         }
 
-        public void Show(string text, UIView superView)
+        public void Show(UIView superView)
         {
             if (Superview != null) // Only show it once
             {
@@ -187,6 +189,14 @@ namespace Toggl.Daneel
             }
 
             SetNeedsLayout();
+        }
+
+        public static SnackBar Undo(Action onTap, Action onTimer)
+        {
+            var snackBar = SnackBar.Create("Time entry was deleted");
+            snackBar.AddButton("UNDO", onTap);
+            snackBar.SetTimer(5, onTimer);
+            return snackBar;
         }
     }
 }
