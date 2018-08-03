@@ -79,6 +79,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public void AddTimeEntryToViewModel(TimeEntryViewModel timeEntryViewModel)
         {
+            if (TimeEntries.IndexOf(timeEntryViewModel.Id).HasValue)
+                return;
+
             TimeEntries.InsertItem(timeEntryViewModel);
         }
 
