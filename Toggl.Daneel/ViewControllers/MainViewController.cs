@@ -273,6 +273,16 @@ namespace Toggl.Daneel.ViewControllers
 #endif
         }
 
+        public override void ViewWillDisappear(bool animated)
+        {
+            base.ViewWillDisappear(animated);
+            if (snackBar != null) 
+            {
+                snackBar.Hide(true);
+                snackBar = null;
+            }                
+        }
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
