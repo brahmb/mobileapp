@@ -79,7 +79,7 @@ namespace Toggl.Multivac.Extensions
 
         public static IObservable<T> AsDriver<T>(this IObservable<T> observable, T onErrorJustReturn)
             => observable
-                .Share()
+                .Replay(1).RefCount()
                 .Catch(Observable.Return(onErrorJustReturn))
                 .ObserveOn(SynchronizationContext.Current);
 
@@ -99,6 +99,8 @@ namespace Toggl.Multivac.Extensions
                 ex => Console.WriteLine($"OnError {tag}: {ex}"),
                 () => Console.WriteLine($"OnCompleted {tag}")
         );
+
+        public static IObservable<bool> Invert(this IObservable<bool> observable) => observable.Select(b => !b);
 
         public static IObservable<T> WhereAsync<T>(this IObservable<T> observable, Func<T, IObservable<bool>> asyncPredicate)
             => observable.SelectMany(item =>

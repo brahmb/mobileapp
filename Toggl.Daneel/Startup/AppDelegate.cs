@@ -32,11 +32,6 @@ namespace Toggl.Daneel
 
         public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
         {
-            base.FinishedLaunching(application, launchOptions);
-
-            #if ENABLE_TEST_CLOUD
-            Xamarin.Calabash.Start();
-            #endif
             #if USE_ANALYTICS
             Microsoft.AppCenter.AppCenter.Start(
                 "{TOGGL_APP_CENTER_ID_IOS}",
@@ -45,6 +40,14 @@ namespace Toggl.Daneel
             Firebase.Core.App.Configure();
             Google.SignIn.SignIn.SharedInstance.ClientID =
                 Firebase.Core.App.DefaultInstance.Options.ClientId;
+            #endif
+
+            base.FinishedLaunching(application, launchOptions);
+
+            #if ENABLE_TEST_CLOUD
+            Xamarin.Calabash.Start();
+            #endif
+            #if USE_ANALYTICS
             Facebook.CoreKit.ApplicationDelegate.SharedInstance.FinishedLaunching(application, launchOptions);
             #endif
 

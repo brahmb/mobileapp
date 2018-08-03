@@ -35,10 +35,11 @@ namespace Toggl.Giskard.Fragments
             Date,
             Time,
             Duration,
-            RunningTimeEntry
+            RunningTimeEntry,
+            EditingDuration
         }
 
-        private readonly int[] heights = { 450, 400, 224, 204 };
+        private readonly int[] heights = { 450, 400, 224, 204, 164 };
         private const int vibrationDuration = 250;
 
         private EditorMode editorMode = Date;
@@ -89,6 +90,7 @@ namespace Toggl.Giskard.Fragments
 
             subscribeAndAddToDisposableBag(nameof(ViewModel.StopTime), onStopTimeChanged);
             subscribeAndAddToDisposableBag(nameof(ViewModel.StartTime), onStartTimeChanged);
+            subscribeAndAddToDisposableBag(nameof(ViewModel.IsEditingDuration), onDurationEditingStateChanged);
 
             ViewModel.TemporalInconsistencyDetected
                      .Subscribe(onTemporalInconsistency)
@@ -141,6 +143,12 @@ namespace Toggl.Giskard.Fragments
             {
                 startTimePicker.Value = ViewModel.StartTime;
             }
+        }
+
+        private void onDurationEditingStateChanged(object sender, PropertyChangedEventArgs args)
+        {
+            editorMode = calculateEditorMode();
+            updateLayoutHeight();
         }
 
         private void setupDialogWindowPosition()
@@ -238,7 +246,9 @@ namespace Toggl.Giskard.Fragments
         private EditorMode calculateEditorMode()
         {
             if (ViewModel.CurrentTab == DurationTab)
-                return Duration;
+            {
+                return ViewModel.IsEditingDuration ? EditingDuration : Duration;
+            }
 
             if (ViewModel.CurrentTab == StopTimeTab && !ViewModel.IsTimeEntryStopped)
                 return RunningTimeEntry;

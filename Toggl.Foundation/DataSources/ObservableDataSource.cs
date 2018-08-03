@@ -44,9 +44,9 @@ namespace Toggl.Foundation.DataSources
             => base.Update(entity)
                 .Do(updatedEntity => UpdatedSubject.OnNext(new EntityUpdate<TThreadsafe>(updatedEntity.Id, updatedEntity)));
 
-        public override IObservable<TThreadsafe> Overwrite(TThreadsafe original, TThreadsafe entity)
-            => base.Overwrite(original, entity)
-                .Do(updatedEntity => UpdatedSubject.OnNext(new EntityUpdate<TThreadsafe>(original.Id, updatedEntity)));
+        public override IObservable<TThreadsafe> ChangeId(long currentId, long newId)
+            => base.ChangeId(currentId, newId)
+                .Do(updatedEntity => UpdatedSubject.OnNext(new EntityUpdate<TThreadsafe>(currentId, updatedEntity)));
 
         public override IObservable<Unit> Delete(long id)
             => base.Delete(id)

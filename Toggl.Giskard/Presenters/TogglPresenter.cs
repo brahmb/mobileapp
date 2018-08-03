@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Android.Content;
+using Android.Support.V4.App;
 using MvvmCross.Droid.Support.V7.AppCompat;
+using MvvmCross.Platforms.Android.Presenters.Attributes;
 using MvvmCross.ViewModels;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.MvvmCross.ViewModels.Hints;
@@ -49,6 +51,19 @@ namespace Toggl.Giskard.Presenters
             }
 
             base.ChangePresentation(hint);
+        }
+
+        protected override bool CloseFragmentDialog(IMvxViewModel viewModel, MvxDialogFragmentPresentationAttribute attribute)
+        {
+            var tag = FragmentJavaName(attribute.ViewType);
+            var toClose = CurrentFragmentManager?.FindFragmentByTag(tag);
+            if (toClose is DialogFragment dialog)
+            {
+                dialog.DismissAllowingStateLoss();
+                return true;
+            }
+
+            return false;
         }
     }
 }

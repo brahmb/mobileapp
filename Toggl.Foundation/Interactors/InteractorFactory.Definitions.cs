@@ -4,6 +4,7 @@ using Toggl.Foundation.Shortcuts;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Settings;
+using Toggl.Ultrawave.Network;
 
 namespace Toggl.Foundation.Interactors
 {
@@ -16,6 +17,9 @@ namespace Toggl.Foundation.Interactors
         private readonly IUserPreferences userPreferences;
         private readonly IAnalyticsService analyticsService;
         private readonly IApplicationShortcutCreator shortcutCreator;
+        private readonly ILastTimeUsageStorage lastTimeUsageStorage;
+        private readonly IPlatformConstants platformConstants;
+        private readonly UserAgent userAgent;
 
         public InteractorFactory(
             IIdProvider idProvider,
@@ -23,7 +27,10 @@ namespace Toggl.Foundation.Interactors
             ITogglDataSource dataSource,
             IUserPreferences userPreferences,
             IAnalyticsService analyticsService,
-            IApplicationShortcutCreator shortcutCreator)
+            IApplicationShortcutCreator shortcutCreator,
+            ILastTimeUsageStorage lastTimeUsageStorage,
+            IPlatformConstants platformConstants,
+            UserAgent userAgent)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(idProvider, nameof(idProvider));
@@ -31,6 +38,9 @@ namespace Toggl.Foundation.Interactors
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
             Ensure.Argument.IsNotNull(shortcutCreator, nameof(shortcutCreator));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
+            Ensure.Argument.IsNotNull(lastTimeUsageStorage, nameof(lastTimeUsageStorage));
+            Ensure.Argument.IsNotNull(platformConstants, nameof(platformConstants));
+            Ensure.Argument.IsNotNull(userAgent, nameof(userAgent));
 
             this.dataSource = dataSource;
             this.idProvider = idProvider;
@@ -38,6 +48,9 @@ namespace Toggl.Foundation.Interactors
             this.userPreferences = userPreferences;
             this.shortcutCreator = shortcutCreator;
             this.analyticsService = analyticsService;
+            this.lastTimeUsageStorage = lastTimeUsageStorage;
+            this.platformConstants = platformConstants;
+            this.userAgent = userAgent;
         }
     }
 }

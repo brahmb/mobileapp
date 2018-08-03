@@ -83,49 +83,6 @@ namespace Toggl.Ultrawave.Tests.Integration
                 => togglApi.TimeEntries.GetAll(start, end);
 
             [Fact]
-            public async Task DoesNotReturnTimeEntriesWhichStartBeforeTheStartParameter()
-            {
-                var (api, user) = await SetupTestUser();
-                var timeEntry = createTimeEntry(user, start.AddDays(-1));
-                await api.TimeEntries.Create(timeEntry);
-
-                var list = await api.TimeEntries.GetAll(start, end);
-
-                list.Should().BeEmpty();
-            }
-
-            [Fact]
-            public async Task DoesNotReturnTimeEntriesWhichStartAfterTheEndParameter()
-            {
-                var (api, user) = await SetupTestUser();
-                var timeEntry = createTimeEntry(user, end.AddDays(1));
-                await api.TimeEntries.Create(timeEntry);
-
-                var list = await api.TimeEntries.GetAll(start, end);
-
-                list.Should().BeEmpty();
-            }
-
-            [Fact]
-            public async Task ReturnsOnlyTheTimeEntriesWhichAreBetweenTheStartAndEndDates()
-            {
-                var (api, user) = await SetupTestUser();
-                var timeEntryA = createTimeEntry(user, start.AddDays(-1));
-                var timeEntryB = createTimeEntry(user, start.AddDays(1));
-                var timeEntryC = createTimeEntry(user, end.AddDays(1));
-                await api.TimeEntries.Create(timeEntryA);
-                await api.TimeEntries.Create(timeEntryB);
-                await api.TimeEntries.Create(timeEntryC);
-
-                var list = await api.TimeEntries.GetAll(start, end);
-
-                list.Should().HaveCount(1);
-                var item = list[0];
-                item.Start.ToUnixTimeSeconds().Should().BeGreaterOrEqualTo(start.ToUnixTimeSeconds());
-                item.Start.ToUnixTimeSeconds().Should().BeLessThan(end.ToUnixTimeSeconds());
-            }
-
-            [Fact]
             public async Task ReturnsTimeEntriesOnlyUpToMidnightOfTheEndDate()
             {
                 var endDateMidnight = midnightUTCFrom(end);

@@ -1,17 +1,12 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Threading;
 using CoreGraphics;
 using Foundation;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Platforms.Ios.Binding;
-using MvvmCross.Platforms.Ios.Views;
 using MvvmCross.Platforms.Ios.Presenters.Attributes;
-using MvvmCross.WeakSubscription;
-using MvvmCross.Plugin.Color;
 using MvvmCross.Plugin.Color.Platforms.Ios;
 using MvvmCross.Plugin.Visibility;
 using Toggl.Daneel.Combiners;
@@ -19,6 +14,7 @@ using Toggl.Daneel.Extensions;
 using Toggl.Daneel.Suggestions;
 using Toggl.Daneel.Views;
 using Toggl.Daneel.ViewSources;
+using Toggl.Foundation.MvvmCross.Combiners;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Helper;
@@ -35,14 +31,13 @@ using static Toggl.Foundation.MvvmCross.Helper.Animation;
 namespace Toggl.Daneel.ViewControllers
 {
     [MvxRootPresentation(WrapInNavigationController = true)]
-    public partial class MainViewController : MvxViewController<MainViewModel>
+    public partial class MainViewController : ReactiveViewController<MainViewModel>
     {
         private const float showCardDelay = 0.1f;
 
         private const float spiderHingeCornerRadius = 0.8f;
         private const float spiderHingeWidth = 16;
         private const float spiderHingeHeight = 2;
-        private const float spiderXOffset = -2;
 
         private const float tooltipOffset = 7;
         private const float emptyViewTopMargin = 32;
@@ -55,8 +50,7 @@ namespace Toggl.Daneel.ViewControllers
         private readonly UIImageView titleImage = new UIImageView(UIImage.FromBundle("togglLogo"));
         private readonly TimeEntriesEmptyLogView emptyStateView = TimeEntriesEmptyLogView.Create();
 
-        private MainTableViewSource source;
-        private TimeEntriesLogViewCell firstTimeEntry;
+        private TimeEntriesLogViewCell firstTimeEntryCell;
 
         private bool viewInitialized;
         private CancellationTokenSource cardAnimationCancellation;
@@ -69,30 +63,18 @@ namespace Toggl.Daneel.ViewControllers
 
         private CompositeDisposable disposeBag = new CompositeDisposable();
 
-        private IDisposable tapToEditDisposable;
-        private IDisposable firstTimeEntryDisposable;
-        private IDisposable isEmptyDisposable;
-        private IDisposable startButtonOnboardingDisposable;
-        private IDisposable stopButtonOnboardingDisposable;
-        private IDisposable scrollDisposable;
-        private IDisposable timeEntriesCountDisposable;
-        private IDisposable swipeLeftOnboardingDisposable;
-        private IDisposable swipeRightOnboardingDisposable;
         private IDisposable swipeLeftAnimationDisposable;
         private IDisposable swipeRightAnimationDisposable;
-        private IDisposable swipeToContinueWasUsedDisposable;
-        private IDisposable swipeToDeleteWasUsedDisposable;
-
-        private readonly ISubject<bool> isEmptySubject = new BehaviorSubject<bool>(false);
-        private readonly ISubject<int> timeEntriesCountSubject = new BehaviorSubject<int>(0);
 
         private readonly UIView tableHeader = new UIView();
         private readonly UIView suggestionsContaier = new UIView { TranslatesAutoresizingMaskIntoConstraints = false };
         private readonly UIView ratingViewContainer = new UIView { TranslatesAutoresizingMaskIntoConstraints = false };
         private readonly SuggestionsView suggestionsView = new SuggestionsView { TranslatesAutoresizingMaskIntoConstraints = false };
 
+        private TimeEntriesLogViewSource tableViewSource;
+
         public MainViewController()
-            : base(nameof(MainViewController), null)
+            : base(nameof(MainViewController))
         {
         }
 
@@ -101,25 +83,10 @@ namespace Toggl.Daneel.ViewControllers
             base.ViewDidLoad();
 
             prepareViews();
-
-            source = new MainTableViewSource(TimeEntriesLogTableView);
-
             prepareOnboarding();
-
             setupTableViewHeader();
 
-            TimeEntriesLogTableView.Source = source;
-
-            source.Initialize();
-
-            var timeEntriesLogFooter = new UIView(
-                new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width, 64)
-            );
-            var colorConverter = new MvxNativeColorValueConverter();
             var visibilityConverter = new MvxVisibilityValueConverter();
-            var parametricTimeSpanConverter = new ParametricTimeSpanToDurationValueConverter();
-            var invertedVisibilityConverter = new MvxInvertedVisibilityValueConverter();
-            var timeEntriesLogFooterConverter = new BoolToConstantValueConverter<UIView>(new UIView(), timeEntriesLogFooter);
             var projectTaskClientCombiner = new ProjectTaskClientValueCombiner(
                 CurrentTimeEntryProjectTaskClientLabel.Font.CapHeight,
                 Color.Main.CurrentTimeEntryClientColor.ToNativeColor(),
@@ -129,22 +96,50 @@ namespace Toggl.Daneel.ViewControllers
                 UIImage.FromBundle("manualIcon"),
                 UIImage.FromBundle("playIcon")
             );
+            var durationCombiner = new DurationValueCombiner();
 
             var bindingSet = this.CreateBindingSet<MainViewController, MainViewModel>();
 
-            //Table view
-            bindingSet.Bind(source)
-                      .For(v => v.ObservableCollection)
-                      .To(vm => vm.TimeEntriesLogViewModel.TimeEntries);
+            // Table view
+            tableViewSource = new TimeEntriesLogViewSource(ViewModel.TimeEntries, TimeEntriesLogViewCell.Identifier);
+            TimeEntriesLogTableView
+                .Bind(tableViewSource)
+                .DisposedBy(disposeBag);
 
-            bindingSet.Bind(source)
-                      .For(v => v.SyncProgress)
-                      .To(vm => vm.SyncingProgress);
+            this.Bind(tableViewSource.FirstCell, f =>
+            {
+                onFirstTimeEntryChanged(f);
+                firstTimeEntryCell = f;
+            });
 
-            bindingSet.Bind(TimeEntriesLogTableView)
-                      .For(v => v.TableFooterView)
-                      .To(vm => vm.TimeEntriesLogViewModel.IsEmpty)
-                      .WithConversion(timeEntriesLogFooterConverter);
+            this.Bind(tableViewSource.ScrollOffset, onTableScroll);
+
+            var continueTimeEntry = Observable.Merge(
+                tableViewSource.ContinueTap,
+                tableViewSource.SwipeToContinue
+            );
+            this.Bind(continueTimeEntry, ViewModel.ContinueTimeEntry);
+            this.Bind(tableViewSource.SwipeToDelete, ViewModel.DeleteTimeEntry);
+            this.Bind(tableViewSource.ItemSelected, ViewModel.SelectTimeEntry);
+
+            tableViewSource.SwipeToContinue
+                .VoidSubscribe(() =>
+                {
+                    swipeRightStep.Dismiss();
+                })
+                .DisposedBy(disposeBag);
+
+            tableViewSource.SwipeToDelete
+                .VoidSubscribe(() =>
+                {
+                    swipeLeftStep.Dismiss();
+                })
+                .DisposedBy(disposeBag);
+
+            // Refresh Control
+            var refreshControl = new RefreshControl(ViewModel.SyncProgressState.AsDriver(), tableViewSource);
+            this.Bind(refreshControl.Refresh, ViewModel.RefreshAction);
+            TimeEntriesLogTableView.CustomRefreshControl = refreshControl;
 
             //Commands
             bindingSet.Bind(reportsButton).To(vm => vm.OpenReportsCommand);
@@ -158,22 +153,6 @@ namespace Toggl.Daneel.ViewControllers
                       .For(v => v.BindTap())
                       .To(vm => vm.EditTimeEntryCommand);
 
-            bindingSet.Bind(source)
-                      .For(v => v.OnSelectionChangedCommand)
-                      .To(vm => vm.TimeEntriesLogViewModel.EditCommand);
-
-            bindingSet.Bind(source)
-                      .For(v => v.ContinueTimeEntryCommand)
-                      .To(vm => vm.TimeEntriesLogViewModel.ContinueTimeEntryCommand);
-
-            bindingSet.Bind(source)
-                      .For(v => v.RefreshCommand)
-                      .To(vm => vm.RefreshCommand);
-
-            bindingSet.Bind(source)
-                      .For(v => v.DeleteTimeEntryCommand)
-                      .To(vm => vm.TimeEntriesLogViewModel.DeleteCommand);
-
             bindingSet.Bind(suggestionsView)
                       .For(v => v.SuggestionTappedCommad)
                       .To(vm => vm.SuggestionsViewModel.StartTimeEntryCommand);
@@ -183,30 +162,25 @@ namespace Toggl.Daneel.ViewControllers
                       .To(vm => vm.AlternativeStartTimeEntryCommand);
 
             //Visibility
-            bindingSet.Bind(WelcomeBackView)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.ShouldShowWelcomeBack)
-                      .WithConversion(visibilityConverter);
-
-            bindingSet.Bind(spiderContainerView)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.ShouldShowWelcomeBack)
-                      .WithConversion(visibilityConverter);
-
-            bindingSet.Bind(spiderBroView)
-                      .For(v => v.BindSpiderVisibility())
-                      .To(vm => vm.ShouldShowWelcomeBack);
-
-            bindingSet.Bind(emptyStateView)
-                      .For(v => v.BindVisibility())
-                      .To(vm => vm.ShouldShowEmptyState)
-                      .WithConversion(visibilityConverter);
+            var shouldWelcomeBack = ViewModel.ShouldShowWelcomeBack.AsDriver();
+            this.Bind(ViewModel.ShouldShowEmptyState.AsDriver(), visible => emptyStateView.Hidden = !visible);
+            this.Bind(shouldWelcomeBack, WelcomeBackView.BindIsVisible());
+            this.Bind(shouldWelcomeBack, spiderContainerView.BindIsVisible());
+            this.Bind(shouldWelcomeBack, visible =>
+            {
+                if (visible)
+                    spiderBroView.Show();
+                else
+                    spiderBroView.Hide();
+            });
 
             //Text
             bindingSet.Bind(CurrentTimeEntryDescriptionLabel).To(vm => vm.CurrentTimeEntryDescription);
+
             bindingSet.Bind(CurrentTimeEntryElapsedTimeLabel)
-                      .To(vm => vm.CurrentTimeEntryElapsedTime)
-                      .WithConversion(parametricTimeSpanConverter, DurationFormat.Improved);
+                      .ByCombining(durationCombiner,
+                          vm => vm.CurrentTimeEntryElapsedTime,
+                          vm => vm.CurrentTimeEntryElapsedTimeFormat);
 
             bindingSet.Bind(CurrentTimeEntryProjectTaskClientLabel)
                       .For(v => v.AttributedText)
@@ -229,6 +203,10 @@ namespace Toggl.Daneel.ViewControllers
                 .WithConversion(visibilityConverter);
 
             bindingSet.Apply();
+
+            this.Bind(ViewModel.RatingViewModel.IsFeedbackSuccessViewShowing,
+                SendFeedbackSuccessView.BindAnimatedIsVisible());
+            this.BindVoid(SendFeedbackSuccessView.Tapped(), ViewModel.RatingViewModel.CloseFeedbackSuccessView);
 
             View.SetNeedsLayout();
             View.LayoutIfNeeded();
@@ -282,25 +260,7 @@ namespace Toggl.Daneel.ViewControllers
             if (!disposing) return;
 
             spiderBroView.Dispose();
-            tapToEditDisposable.Dispose();
-            firstTimeEntryDisposable.Dispose();
-            isEmptyDisposable.Dispose();
-
-            scrollDisposable.Dispose();
-            swipeLeftOnboardingDisposable.Dispose();
-            swipeRightOnboardingDisposable.Dispose();
-            source.OnScrolled -= onScrolled;
             ViewModel.NavigationService.AfterNavigate -= onNavigate;
-            timeEntriesCountDisposable.Dispose();
-
-            startButtonOnboardingDisposable.Dispose();
-            stopButtonOnboardingDisposable.Dispose();
-
-            swipeToContinueWasUsedDisposable?.Dispose();
-            swipeToContinueWasUsedDisposable = null;
-
-            swipeToDeleteWasUsedDisposable?.Dispose();
-            swipeToDeleteWasUsedDisposable = null;
 
             disposeBag?.Dispose();
             disposeBag = null;
@@ -335,6 +295,7 @@ namespace Toggl.Daneel.ViewControllers
             ratingView.DataContext = ViewModel.RatingViewModel;
             ratingViewContainer.AddSubview(ratingView);
             ratingView.ConstrainInView(ratingViewContainer);
+            Reload();
         }
 
         public void HideRatingView()
@@ -384,6 +345,9 @@ namespace Toggl.Daneel.ViewControllers
 
             RunningEntryDescriptionFadeView.FadeLeft = true;
             RunningEntryDescriptionFadeView.FadeRight = true;
+
+            // Send Feedback Success View Setup
+            SendFeedbackSuccessView.Hidden = true;
 
             prepareSpiderViews();
             prepareEmptyStateView();
@@ -491,115 +455,66 @@ namespace Toggl.Daneel.ViewControllers
         {
             var storage = ViewModel.OnboardingStorage;
 
-            isEmptySubject.OnNext(ViewModel.IsLogEmpty);
+            var timelineIsEmpty = ViewModel.LogEmpty.AsDriver();
 
-            isEmptyDisposable = ViewModel.WeakSubscribe(() => ViewModel.IsLogEmpty, onEmptyChanged);
+            new StartTimeEntryOnboardingStep(storage)
+                .ManageDismissableTooltip(StartTimeEntryOnboardingBubbleView, storage)
+                .DisposedBy(disposeBag);
 
-            startButtonOnboardingDisposable = new StartTimeEntryOnboardingStep(storage)
-                .ManageDismissableTooltip(StartTimeEntryOnboardingBubbleView, storage);
+            new StopTimeEntryOnboardingStep(storage, ViewModel.IsTimeEntryRunning)
+                .ManageDismissableTooltip(StopTimeEntryOnboardingBubbleView, storage)
+                .DisposedBy(disposeBag);
 
-            stopButtonOnboardingDisposable = new StopTimeEntryOnboardingStep(storage, ViewModel.IsTimeEntryRunning)
-                .ManageDismissableTooltip(StopTimeEntryOnboardingBubbleView, storage);
-
-            tapToEditStep = new EditTimeEntryOnboardingStep(storage, isEmptySubject.AsObservable())
+            tapToEditStep = new EditTimeEntryOnboardingStep(storage, timelineIsEmpty)
                 .ToDismissable(nameof(EditTimeEntryOnboardingStep), storage);
 
             tapToEditStep.DismissByTapping(TapToEditBubbleView);
-            tapToEditDisposable = tapToEditStep.ManageVisibilityOf(TapToEditBubbleView);
+            tapToEditStep.ManageVisibilityOf(TapToEditBubbleView).DisposedBy(disposeBag);
 
             prepareSwipeGesturesOnboarding(storage, tapToEditStep.ShouldBeVisible);
-
-            scrollDisposable = tapToEditStep.ShouldBeVisible
-                .CombineLatest(
-                    swipeLeftStep.ShouldBeVisible,
-                    swipeRightStep.ShouldBeVisible,
-                    (tapToEdit, swipeLeft, swipeRight) => tapToEdit || swipeLeft || swipeRight)
-                    .ObserveOn(SynchronizationContext.Current)
-                    .Subscribe(onScrollableTooltipsVisibilityChanged);
-
-            firstTimeEntryDisposable = source.FirstTimeEntry
-                .Where(nextFirstTimeEntry => nextFirstTimeEntry != firstTimeEntry)
-                .ObserveOn(SynchronizationContext.Current)
-                .Subscribe(onFirstTimeEntryChanged);
 
             ViewModel.NavigationService.AfterNavigate += onNavigate;
         }
 
         private void prepareSwipeGesturesOnboarding(IOnboardingStorage storage, IObservable<bool> tapToEditStepIsVisible)
         {
-            timeEntriesCountSubject.OnNext(ViewModel.TimeEntriesCount);
-
-            timeEntriesCountDisposable = ViewModel.WeakSubscribe(() => ViewModel.TimeEntriesCount, onTimeEntriesCountChanged);
+            var timeEntriesCount = ViewModel.TimeEntriesCount.AsDriver();
 
             var swipeRightCanBeShown =
                 UIDevice.CurrentDevice.CheckSystemVersion(11, 0)
                     ? tapToEditStepIsVisible.Select(isVisible => !isVisible)
                     : Observable.Return(false);
 
-            swipeRightStep = new SwipeRightOnboardingStep(swipeRightCanBeShown, timeEntriesCountSubject.AsObservable())
+            swipeRightStep = new SwipeRightOnboardingStep(swipeRightCanBeShown, timeEntriesCount)
                 .ToDismissable(nameof(SwipeRightOnboardingStep), storage);
 
             var swipeLeftCanBeShown = Observable.CombineLatest(
                 tapToEditStepIsVisible,
                 swipeRightStep.ShouldBeVisible,
                 (tapToEditIsVisible, swipeRightIsVisble) => !tapToEditIsVisible && !swipeRightIsVisble);
-            swipeLeftStep = new SwipeLeftOnboardingStep(swipeLeftCanBeShown, timeEntriesCountSubject.AsObservable())
+            swipeLeftStep = new SwipeLeftOnboardingStep(swipeLeftCanBeShown, timeEntriesCount)
                 .ToDismissable(nameof(SwipeLeftOnboardingStep), storage);
 
             swipeLeftStep.DismissByTapping(SwipeLeftBubbleView);
-            swipeLeftOnboardingDisposable = swipeLeftStep.ManageVisibilityOf(SwipeLeftBubbleView);
-            swipeLeftAnimationDisposable = swipeLeftStep.ManageSwipeActionAnimationOf(firstTimeEntry, Direction.Left);
+            swipeLeftStep.ManageVisibilityOf(SwipeLeftBubbleView).DisposedBy(disposeBag);
+            swipeLeftAnimationDisposable = swipeLeftStep.ManageSwipeActionAnimationOf(firstTimeEntryCell, Direction.Left);
 
             swipeRightStep.DismissByTapping(SwipeRightBubbleView);
-            swipeRightOnboardingDisposable = swipeRightStep.ManageVisibilityOf(SwipeRightBubbleView);
-            swipeRightAnimationDisposable = swipeRightStep.ManageSwipeActionAnimationOf(firstTimeEntry, Direction.Right);
+            swipeRightStep.ManageVisibilityOf(SwipeRightBubbleView).DisposedBy(disposeBag);
+            swipeRightAnimationDisposable = swipeRightStep.ManageSwipeActionAnimationOf(firstTimeEntryCell, Direction.Right);
 
-            swipeToContinueWasUsedDisposable = Observable.FromEventPattern(source, nameof(MainTableViewSource.SwipeToContinueWasUsed))
-                .VoidSubscribe(() =>
-                {
-                    swipeRightStep.Dismiss();
-                    swipeToContinueWasUsedDisposable?.Dispose();
-                    swipeToContinueWasUsedDisposable = null;
-                });
-
-            swipeToDeleteWasUsedDisposable = Observable.FromEventPattern(source, nameof(MainTableViewSource.SwipeToDeleteWasUsed))
-                .VoidSubscribe(() =>
-                {
-                    swipeLeftStep.Dismiss();
-                    swipeToDeleteWasUsedDisposable?.Dispose();
-                    swipeToDeleteWasUsedDisposable = null;
-                });
-
-            updateSwipeDismissGestures(firstTimeEntry);
+            updateSwipeDismissGestures(firstTimeEntryCell);
         }
 
-        private void onScrollableTooltipsVisibilityChanged(bool visible)
+        private void onTableScroll(CGPoint offset)
         {
-            if (visible)
-                source.OnScrolled += onScrolled;
-            else
-                source.OnScrolled -= onScrolled;
+            updateTooltipPositions();
         }
 
         private void onFirstTimeEntryChanged(TimeEntriesLogViewCell nextFirstTimeEntry)
         {
             updateSwipeDismissGestures(nextFirstTimeEntry);
-            firstTimeEntry = nextFirstTimeEntry;
-            updateTooltipPositions();
-        }
-
-        private void onEmptyChanged(object sender, PropertyChangedEventArgs args)
-        {
-            isEmptySubject.OnNext(ViewModel.IsLogEmpty);
-        }
-
-        private void onTimeEntriesCountChanged(object sender, PropertyChangedEventArgs e)
-        {
-            timeEntriesCountSubject.OnNext(ViewModel.TimeEntriesCount);
-        }
-
-        private void onScrolled(object sender, EventArgs e)
-        {
+            firstTimeEntryCell = nextFirstTimeEntry;
             updateTooltipPositions();
         }
 
@@ -617,10 +532,11 @@ namespace Toggl.Daneel.ViewControllers
 
         private void updateTooltipPositions()
         {
-            if (firstTimeEntry == null) return;
+            if (TapToEditBubbleView.Hidden && SwipeLeftBubbleView.Hidden && SwipeRightBubbleView.Hidden) return;
+            if (firstTimeEntryCell == null) return;
 
             var position = TimeEntriesLogTableView.ConvertRectToView(
-                firstTimeEntry.Frame, TimeEntriesLogTableView.Superview);
+                firstTimeEntryCell.Frame, TimeEntriesLogTableView.Superview);
 
             TapToEditBubbleViewTopConstraint.Constant = position.Bottom + tooltipOffset;
             SwipeLeftTopConstraint.Constant = position.Y - SwipeLeftBubbleView.Frame.Height - tooltipOffset;
@@ -631,7 +547,7 @@ namespace Toggl.Daneel.ViewControllers
         {
             if (swipeLeftGestureRecognizer != null)
             {
-                firstTimeEntry?.RemoveGestureRecognizer(swipeLeftGestureRecognizer);
+                firstTimeEntryCell?.RemoveGestureRecognizer(swipeLeftGestureRecognizer);
             }
 
             swipeLeftAnimationDisposable?.Dispose();

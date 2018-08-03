@@ -31,7 +31,10 @@ namespace Toggl.Giskard.Activities
               ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
     public sealed partial class StartTimeEntryActivity : MvxAppCompatActivity<StartTimeEntryViewModel>, IReactiveBindingHolder
     {
+        private static readonly TimeSpan typingThrottleDuration = TimeSpan.FromMilliseconds(300);
+
         private PopupWindow onboardingPopupWindow;
+        private IDisposable onboardingDisposable;
 
         public CompositeDisposable DisposeBag { get; } = new CompositeDisposable();
 
@@ -44,15 +47,14 @@ namespace Toggl.Giskard.Activities
             OverridePendingTransition(Resource.Animation.abc_slide_in_bottom, Resource.Animation.abc_fade_out);
 
             initializeViews();
-            setupStartTimeEntryOnboardingStep();
 
             this.Bind(ViewModel.TextFieldInfoObservable, onTextFieldInfo);
             this.Bind(durationLabel.Tapped(), _ => ViewModel.SelectTimeCommand.Execute(Duration));
 
             editText.TextObservable
                 .SubscribeOn(ThreadPoolScheduler.Instance)
+                .Throttle(typingThrottleDuration)
                 .Select(text => text.AsImmutableSpans(editText.SelectionStart))
-                .ObserveOn(SynchronizationContext.Current)
                 .Subscribe(async spans => await ViewModel.OnTextFieldInfoFromView(spans))
                 .DisposedBy(DisposeBag);
         }
@@ -61,12 +63,19 @@ namespace Toggl.Giskard.Activities
         {
             base.OnResume();
             editText.RequestFocus();
+            selectProjectToolbarButton.LayoutChange += onSelectProjectToolbarButtonLayoutChanged;
+        }
+
+        private void onSelectProjectToolbarButtonLayoutChanged(object sender, View.LayoutChangeEventArgs changeEventArgs)
+        {
+            selectProjectToolbarButton.Post(setupStartTimeEntryOnboardingStep);
         }
 
         protected override void OnStop()
         {
             base.OnStop();
-            onboardingPopupWindow.Dismiss();
+            selectProjectToolbarButton.LayoutChange -= onSelectProjectToolbarButtonLayoutChanged;
+            onboardingPopupWindow?.Dismiss();
         }
 
         public override void Finish()
@@ -88,24 +97,30 @@ namespace Toggl.Giskard.Activities
 
         private void setupStartTimeEntryOnboardingStep()
         {
-            if (onboardingPopupWindow == null)
-            {
-                onboardingPopupWindow = PopupWindowFactory.PopupWindowWithText(
-                    this,
-                    Resource.Layout.TooltipWithCenteredBottomArrow,
-                    Resource.Id.TooltipText,
-                    Resource.String.OnboardingAddProjectOrTag);
-            }
+            clearPreviousOnboardingSetup();
+
+            onboardingPopupWindow = PopupWindowFactory.PopupWindowWithText(
+                this,
+                Resource.Layout.TooltipWithCenteredBottomArrow,
+                Resource.Id.TooltipText,
+                Resource.String.OnboardingAddProjectOrTag);
 
             var storage = ViewModel.OnboardingStorage;
 
-            new AddProjectOrTagOnboardingStep(storage, ViewModel.DataSource)
+            onboardingDisposable = new AddProjectOrTagOnboardingStep(storage, ViewModel.DataSource)
                 .ManageDismissableTooltip(
                     onboardingPopupWindow,
                     selectProjectToolbarButton,
                     (popup, anchor) => popup.TopHorizontallyCenteredOffsetsTo(anchor, 8),
-                    storage)
-                .DisposedBy(DisposeBag);
+                    storage);
+        }
+
+        private void clearPreviousOnboardingSetup()
+        {
+            onboardingDisposable?.Dispose();
+            onboardingDisposable = null;
+            onboardingPopupWindow?.Dismiss();
+            onboardingPopupWindow = null;
         }
 
         protected override void Dispose(bool disposing)
@@ -115,6 +130,7 @@ namespace Toggl.Giskard.Activities
             if (!disposing) return;
 
             DisposeBag?.Dispose();
+            onboardingDisposable?.Dispose();
         }
 
         private void onTextFieldInfo(TextFieldInfo textFieldInfo)

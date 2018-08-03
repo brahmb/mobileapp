@@ -13,7 +13,7 @@
         android:layout_marginTop="?attr/actionBarSize">
         <toggl.giskard.views.MainRecyclerView
             android:id="@+id/MainRecyclerView"
-            local:MvxBind="ItemsSource TimeEntriesLogViewModel.TimeEntries; SuggestionsViewModel SuggestionsViewModel; TimeEntriesLogViewModel TimeEntriesLogViewModel; IsTimeEntryRunning IsTimeEntryRunning"
+            local:MvxBind="ItemsSource TimeEntriesLogViewModel.TimeEntries; SuggestionsViewModel SuggestionsViewModel; TimeEntriesLogViewModel TimeEntriesLogViewModel; IsTimeEntryRunning IsTimeEntryRunning; IsSyncRunning ShowSyncIndicator"
             android:scrollbars="vertical"
             local:MvxTemplateSelector="@string/MainTemplateSelector"
             android:layout_width="match_parent"

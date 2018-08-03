@@ -51,7 +51,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     DataSource,
                     DialogService,
                     UserPreferences,
-                    FeedbackService,
                     AnalyticsService,
                     InteractorFactory,
                     PlatformConstants,
@@ -67,14 +66,13 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheConstructor : SettingsViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(ElevenParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useUserAgent,
                 bool useDataSource,
                 bool useMailService,
                 bool useDialogService,
                 bool useUserPreferences,
-                bool useFeedbackService,
                 bool useAnalyticsService,
                 bool useInteractorFactory,
                 bool usePlatformConstants,
@@ -85,7 +83,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var dataSource = useDataSource ? DataSource : null;
                 var mailService = useMailService ? MailService : null;
                 var dialogService = useDialogService ? DialogService : null;
-                var feedbackService = useFeedbackService ? FeedbackService : null;
                 var userPreferences = useUserPreferences ? UserPreferences : null;
                 var analyticsService = useAnalyticsService ? AnalyticsService : null;
                 var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
@@ -100,7 +97,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         dataSource,
                         dialogService,
                         userPreferences,
-                        feedbackService,
                         analyticsService,
                         interactorFactory,
                         platformConstants,
@@ -150,7 +146,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 foreach (var state in statuses.Get)
                 {
                     observer.Messages.Clear();
-                    
+
                     ProgressSubject.OnNext(state);
 
                     var isRunningSync = observer.Messages.Single().Value.Value;
@@ -170,7 +166,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 {
                     if (state == SyncProgress.Unknown)
                         continue;
-                    
+
                     observer.Messages.Clear();
 
                     ProgressSubject.OnNext(state);
@@ -239,7 +235,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 observer.Messages.Single();
             }
-            
+
             [Fact, LogIfTooSlow]
             public async Task CallsLogoutOnTheDataSource()
             {
@@ -388,7 +384,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
             [Fact, LogIfTooSlow]
             public async Task CallsTheSelectWorkspaceViewModel()
-            {   
+            {
                 await ViewModel.PickDefaultWorkspace();
 
                 await NavigationService.Received()
@@ -484,23 +480,12 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
         }
 
-        public sealed class TheSubmitFeedbackMethod : SettingsViewModelTest
-        {
-            [Fact, LogIfTooSlow]
-            public async Task CallsTheFeedbackService()
-            {
-                await ViewModel.SubmitFeedback();
-
-                await FeedbackService.Received().SubmitFeedback();
-            }
-        }
-
         public sealed class TheVersionProperty : SettingsViewModelTest
         {
             [Fact, LogIfTooSlow]
-            public void ForwardsTheValueFromTheUserAgentUsedInConstruction()
+            public void ShouldBeConstructedFromVersionAndBuildNumber()
             {
-                ViewModel.Version.Should().Be(UserAgent.Version);
+                ViewModel.Version.Should().Be($"{UserAgent.Version} ({PlatformConstants.BuildNumber})");
             }
         }
 
@@ -771,6 +756,20 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 await ViewModel.OpenAboutView();
 
                 await NavigationService.Received().Navigate<AboutViewModel>();
+            }
+        }
+
+        public sealed class TheIsFeedBackSuccessViewShowingProperty : SettingsViewModelTest
+        {
+            [Fact, LogIfTooSlow]
+            public void EmitsTrueWhenTapOnTheView()
+            {
+                var observer = TestScheduler.CreateObserver<bool>();
+                var viewModel = CreateViewModel();
+
+                viewModel.IsFeedbackSuccessViewShowing.StartWith(true).Subscribe(observer);
+                viewModel.CloseFeedbackSuccessView();
+                observer.Messages.Last().Value.Value.Should().BeFalse();
             }
         }
     }

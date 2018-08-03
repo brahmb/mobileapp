@@ -20,7 +20,7 @@ namespace Toggl.Foundation.Tests.Interactors
         public sealed class TheConstructor : BaseInteractorTests
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(FourParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useIdProvider,
                 bool useDataSource,

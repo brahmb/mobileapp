@@ -33,7 +33,6 @@ namespace Toggl.Giskard.Adapters
                     return;
 
                 isTimeEntryRunning = value;
-                NotifyItemChanged(ItemCount - 1);
             }
         }
 
@@ -58,7 +57,7 @@ namespace Toggl.Giskard.Adapters
 
             switch (viewType)
             {
-                case MainTemplateSelector.Item:
+                case MainTemplateSelector.TimeEntry:
                     return new MainRecyclerViewLogViewHolder(inflatedView, itemBindingContext)
                     {
                         Click = TimeEntriesLogViewModel.EditCommand,
@@ -77,6 +76,8 @@ namespace Toggl.Giskard.Adapters
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
+            if (position > ItemCount) return;
+
             base.OnBindViewHolder(holder, position);
 
             if (holder is MainRecyclerViewLogViewHolder timeEntriesLogRecyclerViewHolder
@@ -101,6 +102,7 @@ namespace Toggl.Giskard.Adapters
 
         internal void ContinueTimeEntry(int viewPosition)
         {
+            NotifyItemChanged(viewPosition);
             var timeEntry = GetItem(viewPosition) as TimeEntryViewModel;
             if (timeEntry == null) return;
             TimeEntriesLogViewModel.ContinueTimeEntryCommand.ExecuteAsync(timeEntry);

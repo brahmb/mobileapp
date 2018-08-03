@@ -91,6 +91,14 @@ namespace Toggl.PrimeRadiant.Realm
                 WriteLine( "            SetPropertiesFrom(entity, realm);");
                 WriteLine( "        }\n");
 
+                if (hasModifiableId)
+                {
+                    WriteLine("        public void ChangeId(long id)");
+                    WriteLine("        {");
+                    WriteLine("            Id = id;");
+                    WriteLine("        }\n");
+                }
+
                 WriteLine($"        public void SetPropertiesFrom({updatesFromInterface} entity, Realms.Realm realm)");
                 WriteLine( "        {");
 

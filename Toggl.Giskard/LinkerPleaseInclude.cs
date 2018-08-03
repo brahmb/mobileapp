@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Windows.Input;
 using Android.App;
+using Android.Support.Constraints;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
@@ -217,6 +218,18 @@ namespace Toggl.Giskard
         public void Include(FirebaseInitProvider provider)
         {
             provider = new FirebaseInitProvider();
+        }
+
+        public void Include(ConstraintLayout constraintLayout, Guideline guideline)
+        {
+            constraintLayout = new ConstraintLayout(null);
+            constraintLayout = new ConstraintLayout(null, null);
+            constraintLayout = new ConstraintLayout(null, null, 1);
+            guideline = new Guideline(null);
+            guideline = new Guideline(null, null);
+            guideline = new Guideline(null, null, 1);
+            guideline = new Guideline(null, null, 1, 1);
+            
         }
     }
 }

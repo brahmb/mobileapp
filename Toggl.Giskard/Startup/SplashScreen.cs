@@ -13,7 +13,6 @@ using MvvmCross.Navigation;
 namespace Toggl.Giskard
 {
     [Activity(Label = "Toggl for Devs",
-              NoHistory = true,
               MainLauncher = true,
               Icon = "@mipmap/ic_launcher",
               Theme = "@style/Theme.Splash",
@@ -31,15 +30,20 @@ namespace Toggl.Giskard
         {
 
         }
-        protected override void OnCreate(Bundle bundle)
-        {
-            base.OnCreate(bundle);
 
+        protected override void RunAppStart(Bundle bundle)
+        {
+            base.RunAppStart(bundle);
             var navigationUrl = Intent.Data?.ToString();
             if (string.IsNullOrEmpty(navigationUrl))
                 return;
 
             Mvx.Resolve<IMvxNavigationService>().Navigate(navigationUrl);
+        }
+
+        protected override void OnCreate(Bundle bundle)
+        {
+            base.OnCreate(bundle);
 
             var statusBarColor = new Color(ContextCompat.GetColor(this, Resource.Color.lightGray));
             this.ChangeStatusBarColor(statusBarColor);

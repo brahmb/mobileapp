@@ -99,6 +99,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxCommand<DateRangeParameter> ChangeDateRangeCommand { get; }
 
+        public IMvxCommand<long> ChangeWorkspaceCommand { get; }
+
         public ReportsViewModel(ITogglDataSource dataSource,
                                 ITimeService timeService,
                                 IMvxNavigationService navigationService,
@@ -122,6 +124,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             HideCalendarCommand = new MvxCommand(hideCalendar);
             ToggleCalendarCommand = new MvxCommand(toggleCalendar);
             ChangeDateRangeCommand = new MvxCommand<DateRangeParameter>(changeDateRange);
+            ChangeWorkspaceCommand = new MvxCommand<long>(changeWorkspace);
         }
 
         public override void Prepare(long parameter)
@@ -226,6 +229,12 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             endDate = dateRange.EndDate;
             source = dateRange.Source;
             updateCurrentDateRangeString();
+            reportSubject.OnNext(Unit.Default);
+        }
+
+        private void changeWorkspace(long workspaceId)
+        {
+            this.workspaceId = workspaceId;
             reportSubject.OnNext(Unit.Default);
         }
 

@@ -61,7 +61,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheConstructor : ReportsViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(FiveParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(bool useDataSource,
                                                         bool useTimeService,
                                                         bool useNavigationService,
@@ -485,6 +485,24 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Where(project => project.ProjectName != "Project 1")
                     .Select(segment => segment.Percentage)
                     .ForEach(percentage => percentage.Should().BeGreaterOrEqualTo(5));
+            }
+        }
+
+        public sealed class TheChangeWorkspaceCommand : ReportsViewModelTest
+        {
+            [Fact, LogIfTooSlow]
+            public async Task ShouldTriggerAReportReload()
+            {
+                ViewModel.Prepare(0);
+                await ViewModel.Initialize();
+                var mockWorkspaceId = 6868;
+                var mockChartSegmentCount = 100;
+
+                ReportsProvider.GetProjectSummary(mockWorkspaceId, Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
+                    .Returns(Observable.Return(new ProjectSummaryReport(new ChartSegment[mockChartSegmentCount], 0)));
+                ViewModel.ChangeWorkspaceCommand.Execute(mockWorkspaceId);
+
+                ViewModel.Segments.Should().HaveCount(mockChartSegmentCount);
             }
         }
     }

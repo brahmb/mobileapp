@@ -39,6 +39,8 @@ namespace Toggl.PrimeRadiant.Settings
         bool WasDismissed(IDismissable dismissable);
         void Dismiss(IDismissable dismissable);
 
+        void SetDidShowRatingView();
+        int NumberOfTimesRatingViewWasShown();
         void SetRatingViewOutcome(RatingViewOutcome outcome, DateTimeOffset dateTime);
         RatingViewOutcome? RatingViewOutcome();
         DateTimeOffset? RatingViewOutcomeTime();

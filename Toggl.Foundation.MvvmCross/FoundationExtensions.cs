@@ -46,7 +46,16 @@ namespace Toggl.Foundation.MvvmCross
 
             ITogglDataSource createDataSource(ITogglApi api)
             {
-                var dataSource = new TogglDataSource(api, foundation.Database, foundation.TimeService, foundation.ErrorHandlingService, foundation.BackgroundService, createSyncManager(api), TimeSpan.FromMinutes(5), foundation.ShortcutCreator)
+                var dataSource = new TogglDataSource(
+                        api,
+                        foundation.Database,
+                        foundation.TimeService,
+                        foundation.ErrorHandlingService,
+                        foundation.BackgroundService,
+                        createSyncManager(api),
+                        TimeSpan.FromMinutes(5),
+                        foundation.ShortcutCreator,
+                        foundation.AnalyticsService)
                     .RegisterServices();
 
                 Mvx.ConstructAndRegisterSingleton<IInteractorFactory, InteractorFactory>();
@@ -75,7 +84,6 @@ namespace Toggl.Foundation.MvvmCross
             Mvx.RegisterSingleton(foundation.RatingService);
             Mvx.RegisterSingleton(foundation.ShortcutCreator);
             Mvx.RegisterSingleton(foundation.LicenseProvider);
-            Mvx.RegisterSingleton(foundation.FeedbackService);
             Mvx.RegisterSingleton(foundation.ShortcutCreator);
             Mvx.RegisterSingleton(foundation.AnalyticsService);
             Mvx.RegisterSingleton(foundation.PlatformConstants);

@@ -50,7 +50,7 @@ namespace Toggl.Foundation.Tests.DataSources
         public sealed class TheConstructor
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(TwoParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyArgumentIsNull(bool useRepository, bool useTimeServide)
             {
                 var repository = useRepository ? Substitute.For<ISingleObjectStorage<IDatabaseUser>>() : null;

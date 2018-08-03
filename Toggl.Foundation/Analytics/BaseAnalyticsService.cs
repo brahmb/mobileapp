@@ -98,6 +98,9 @@ namespace Toggl.Foundation.Analytics
         [AnalyticsEvent("ExceptionType", "ExceptionMessage")]
         public IAnalyticsEvent<string, string> HandledException { get; protected set; }
 
+        [AnalyticsEvent]
+        public IAnalyticsEvent TwoRunningTimeEntriesInconsistencyFixed { get; protected set; }
+
         [AnalyticsEvent("TapSource")]
         public IAnalyticsEvent<StartViewTapSource> StartViewTapped { get; protected set; }
 

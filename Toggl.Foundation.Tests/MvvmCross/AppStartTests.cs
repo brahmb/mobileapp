@@ -39,7 +39,7 @@ namespace Toggl.Foundation.Tests.MvvmCross
         public sealed class TheConstructor : AppStartTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(FiveParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useTimeService,
                 bool userLoginManager,

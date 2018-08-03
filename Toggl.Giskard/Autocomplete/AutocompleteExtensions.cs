@@ -13,6 +13,7 @@ namespace Toggl.Giskard.Extensions
 {
     public static class AutocompleteExtensions
     {
+        private const string unbreakableSpace = " ";
         private const float spanSizeProportion = 0.8f;
 
         public static IImmutableList<ISpan> AsImmutableSpans(this ICharSequence text, int cursorPosition)
@@ -21,7 +22,9 @@ namespace Toggl.Giskard.Extensions
         private static IEnumerable<ISpan> AsSpans(this ICharSequence text, int cursorPosition)
         {
             var spannable = text as SpannableStringBuilder;
-            var tokenSpans = spannable.GetSpans(0, spannable.Length(), Class.FromType(typeof(TokenSpan)));
+            var tokenSpans = spannable
+                .GetSpans(0, spannable.Length(), Class.FromType(typeof(TokenSpan)))
+                .OrderBy(spannable.GetSpanStart);
 
             var currentPosition = 0;
             var length = spannable.Length();
@@ -119,11 +122,16 @@ namespace Toggl.Giskard.Extensions
             mutableString.SetSpan(new RelativeSizeSpan(1), start, end, SpanTypes.ExclusiveExclusive);
         }
 
-        private static void AppendProjectText(this SpannableStringBuilder mutableString, ProjectSpan projectSpan)
+        private static void AppendProjectText(this SpannableStringBuilder spannable, ProjectSpan projectSpan)
         {
-            var start = mutableString.Length();
-            mutableString.Append(projectSpan.ProjectName);
-            var end = mutableString.Length();
+            /* HACK: This unbreakable space is needed because of a bug in
+             * the way android handles ReplacementSpans. It makes sure that
+             * all token boundaries can't be changed by the soft input once
+             * they are set. */
+            var start = spannable.Length();
+            spannable.Append(projectSpan.ProjectName);
+            spannable.Append(unbreakableSpace);
+            var end = spannable.Length();
 
             var projectTokenSpan = new ProjectTokenSpan(
                 projectSpan.ProjectId,
@@ -131,14 +139,19 @@ namespace Toggl.Giskard.Extensions
                 projectSpan.ProjectColor
             );
 
-            mutableString.SetSpan(projectTokenSpan, start, end, SpanTypes.ExclusiveExclusive);
-            mutableString.SetSpan(new RelativeSizeSpan(spanSizeProportion), start, end, SpanTypes.ExclusiveExclusive);
+            spannable.SetSpan(projectTokenSpan, start, end, SpanTypes.ExclusiveExclusive);
+            spannable.SetSpan(new RelativeSizeSpan(spanSizeProportion), start, end, SpanTypes.ExclusiveExclusive);
         }
 
         private static void AppendTagText(this SpannableStringBuilder spannable, TagSpan tagSpan)
         {
+            /* HACK: This unbreakable space is needed because of a bug in
+             * the way android handles ReplacementSpans. It makes sure that
+             * all token boundaries can't be changed by the soft input once
+             * they are set. */
             var start = spannable.Length();
             spannable.Append(tagSpan.TagName);
+            spannable.Append(unbreakableSpace);
             var end = spannable.Length();
 
             spannable.SetSpan(new RelativeSizeSpan(spanSizeProportion), start, end, SpanTypes.ExclusiveExclusive);

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources.Interfaces;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.Reports;
@@ -13,6 +15,7 @@ using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Models;
 using Toggl.Ultrawave;
+using Toggl.Ultrawave.ApiClients;
 
 namespace Toggl.Foundation.DataSources
 {
@@ -38,7 +41,8 @@ namespace Toggl.Foundation.DataSources
             IBackgroundService backgroundService,
             Func<ITogglDataSource, ISyncManager> createSyncManager,
             TimeSpan minimumTimeInBackgroundForFullSync,
-            IApplicationShortcutCreator shortcutCreator)
+            IApplicationShortcutCreator shortcutCreator,
+            IAnalyticsService analyticsService)
         {
             Ensure.Argument.IsNotNull(api, nameof(api));
             Ensure.Argument.IsNotNull(database, nameof(database));
@@ -47,6 +51,7 @@ namespace Toggl.Foundation.DataSources
             Ensure.Argument.IsNotNull(backgroundService, nameof(backgroundService));
             Ensure.Argument.IsNotNull(createSyncManager, nameof(createSyncManager));
             Ensure.Argument.IsNotNull(shortcutCreator, nameof(shortcutCreator));
+            Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
 
             this.database = database;
             this.errorHandlingService = errorHandlingService;
@@ -61,13 +66,15 @@ namespace Toggl.Foundation.DataSources
             Clients = new ClientsDataSource(database.IdProvider, database.Clients, timeService);
             Preferences = new PreferencesDataSource(database.Preferences);
             Projects = new ProjectsDataSource(database.IdProvider, database.Projects, timeService);
-            TimeEntries = new TimeEntriesDataSource(database.TimeEntries, timeService);
-            Workspaces = new WorkspacesDataSource(database.Workspaces);
+            TimeEntries = new TimeEntriesDataSource(database.TimeEntries, timeService, analyticsService);
+            Workspaces = new WorkspacesDataSource(database.IdProvider, database.Workspaces, timeService);
             WorkspaceFeatures = new WorkspaceFeaturesDataSource(database.WorkspaceFeatures);
 
             SyncManager = createSyncManager(this);
 
             ReportsProvider = new ReportsProvider(api, database);
+
+            FeedbackApi = api.Feedback;
 
             errorHandlingDisposable = SyncManager.ProgressObservable.Subscribe(onSyncError);
             isLoggedIn = true;
@@ -80,12 +87,14 @@ namespace Toggl.Foundation.DataSources
         public IPreferencesSource Preferences { get; }
         public IProjectsSource Projects { get; }
         public ITimeEntriesSource TimeEntries { get; }
-        public IDataSource<IThreadSafeWorkspace, IDatabaseWorkspace> Workspaces { get; }
+        public IWorkspacesSource Workspaces { get; }
         public IDataSource<IThreadSafeWorkspaceFeatureCollection, IDatabaseWorkspaceFeatureCollection> WorkspaceFeatures { get; }
 
         public ISyncManager SyncManager { get; }
 
         public IReportsProvider ReportsProvider { get; }
+
+        public IFeedbackApi FeedbackApi { get; }
 
         public IObservable<Unit> StartSyncing()
         {
@@ -123,7 +132,7 @@ namespace Toggl.Foundation.DataSources
                 .Do(_ => shortcutCreator.OnLogout())
                 .FirstAsync();
 
-        private IObservable<bool> hasUnsyncedData<TModel>(IRepository<TModel> repository)
+        private IObservable<bool> hasUnsyncedData<TModel>(IBaseStorage<TModel> repository)
             where TModel : IDatabaseSyncable
             => repository
                 .GetAll(entity => entity.SyncStatus != SyncStatus.InSync)

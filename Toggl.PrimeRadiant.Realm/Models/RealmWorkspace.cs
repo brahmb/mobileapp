@@ -33,5 +33,7 @@ namespace Toggl.PrimeRadiant.Realm
         public DateTimeOffset At { get; set; }
 
         public string LogoUrl { get; set; }
+
+        public bool IsGhost { get; set; }
     }
 }

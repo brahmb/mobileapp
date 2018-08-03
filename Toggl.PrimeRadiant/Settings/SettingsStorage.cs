@@ -33,6 +33,7 @@ namespace Toggl.PrimeRadiant.Settings
 
         private const string ratingViewOutcomeKey = "RatingViewOutcome";
         private const string ratingViewOutcomeTimeKey = "RatingViewOutcomeTime";
+        private const string ratingViewNumberOfTimesShownKey = "RatingViewNumberOfTimesShown";
 
         private const string lastSyncAttemptKey = "LastSyncAttempt";
         private const string lastSuccessfulSyncKey = "LastSuccessfulSync";
@@ -224,6 +225,16 @@ namespace Toggl.PrimeRadiant.Settings
         {
             hasEditedTimeEntrySubject.OnNext(true);
             keyValueStorage.SetBool(hasEditedTimeEntryKey, true);
+        }
+
+        public void SetDidShowRatingView()
+        {
+            keyValueStorage.SetInt(ratingViewNumberOfTimesShownKey, NumberOfTimesRatingViewWasShown() + 1);
+        }
+
+        public int NumberOfTimesRatingViewWasShown()
+        {
+            return keyValueStorage.GetInt(ratingViewOutcomeKey, 0);
         }
 
         public void SetRatingViewOutcome(RatingViewOutcome outcome, DateTimeOffset dateTime)

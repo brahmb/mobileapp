@@ -19,7 +19,7 @@ namespace Toggl.Foundation.Tests.Sync
             protected abstract TStateFactory ToStateFactory(Action action);
 
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(TwoParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyArgumentIsNull(bool useStateResult, bool useStateFactory)
             {
                 var stateResult = useStateResult ? new TStateResult() : null;

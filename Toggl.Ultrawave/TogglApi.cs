@@ -36,6 +36,7 @@ namespace Toggl.Ultrawave
             ProjectsSummary = new ProjectsSummaryApi(endpoints, apiClient, serializer, credentials);
             TimeEntries = new TimeEntriesApi(endpoints, apiClient, serializer, credentials, userAgent);
             WorkspaceFeatures = new WorkspaceFeaturesApi(endpoints, apiClient, serializer, credentials);
+            Feedback = new FeedbackApiClient(endpoints, apiClient, serializer, credentials);
         }
 
         public ITagsApi Tags { get; }
@@ -51,5 +52,6 @@ namespace Toggl.Ultrawave
         public IPreferencesApi Preferences { get; }
         public IProjectsSummaryApi ProjectsSummary { get; }
         public IWorkspaceFeaturesApi WorkspaceFeatures { get; }
+        public IFeedbackApi Feedback { get; }
     }
 }

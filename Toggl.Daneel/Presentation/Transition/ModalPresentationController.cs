@@ -1,5 +1,6 @@
 ﻿using System;
 using CoreGraphics;
+using Foundation;
 using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Multivac;
@@ -10,10 +11,20 @@ namespace Toggl.Daneel.Presentation.Transition
 {
     public sealed class ModalPresentationController : UIPresentationController
     {
-        private const int offsetFromSafeAreaTop = 20;
-
         private readonly Action onDismissedCallback;
-        private readonly nfloat maximumHeight;
+
+        private nfloat maximumHeight
+        {
+            get
+            {
+                var distanceFromTop = UIApplication.SharedApplication.StatusBarFrame.Height;
+                if (UIDevice.CurrentDevice.CheckSystemVersion(11, 0))
+                {
+                    distanceFromTop += UIApplication.SharedApplication.KeyWindow.SafeAreaInsets.Top;
+                }
+                return UIScreen.MainScreen.Bounds.Height - distanceFromTop;
+            }
+        }
 
         private readonly UIView dimmingView = new UIView
         {
@@ -35,18 +46,7 @@ namespace Toggl.Daneel.Presentation.Transition
             var recognizer = new UITapGestureRecognizer(dismiss);
             AdditionalContentView.AddGestureRecognizer(recognizer);
 
-            nfloat distanceFromTop;
-            if (UIDevice.CurrentDevice.CheckSystemVersion(11, 0))
-            {
-                var safeAreaTopInset = UIApplication.SharedApplication.KeyWindow.SafeAreaInsets.Top;
-                distanceFromTop = safeAreaTopInset + offsetFromSafeAreaTop;
-            }
-            else
-            {
-                distanceFromTop = offsetFromSafeAreaTop;
-            }
-
-            maximumHeight = UIScreen.MainScreen.Bounds.Height - distanceFromTop;
+            NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.WillChangeStatusBarFrameNotification, onStatusBarFrameChanged);
         }
 
         public override void PresentationTransitionWillBegin()
@@ -78,6 +78,16 @@ namespace Toggl.Daneel.Presentation.Transition
             }
 
             coordinator.AnimateAlongsideTransition(_ => dimmingView.Alpha = 0.0f, null);
+        }
+
+        public override void DismissalTransitionDidEnd(bool completed)
+        {
+            base.DismissalTransitionDidEnd(completed);
+
+            if (completed)
+            {
+                NSNotificationCenter.DefaultCenter.RemoveObserver(UIApplication.WillChangeStatusBarFrameNotification);
+            }
         }
 
         public override void ContainerViewWillLayoutSubviews()
@@ -117,6 +127,11 @@ namespace Toggl.Daneel.Presentation.Transition
         {
             PresentedViewController.DismissViewController(true, null);
             onDismissedCallback();
+        }
+
+        private void onStatusBarFrameChanged(NSNotification notification)
+        {
+            ContainerView?.SetNeedsLayout();
         }
     }
 }

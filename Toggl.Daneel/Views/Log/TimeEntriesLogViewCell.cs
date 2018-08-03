@@ -1,41 +1,45 @@
 ﻿using System;
+using System.Reactive;
+using System.Reactive.Disposables;
 using Foundation;
-using MvvmCross.Binding.BindingContext;
-using MvvmCross.Commands;
-using MvvmCross.Platforms.Ios.Binding;
-using MvvmCross.Platforms.Ios.Binding.Views;
-using MvvmCross.Plugin.Color;
 using MvvmCross.Plugin.Color.Platforms.Ios;
-using MvvmCross.Plugin.Visibility;
-using Toggl.Daneel.Combiners;
+using MvvmCross.UI;
+using Toggl.Daneel.Cells;
 using Toggl.Daneel.Extensions;
-using Toggl.Foundation.MvvmCross.Converters;
-using Toggl.Foundation.MvvmCross.Combiners;
+using Toggl.Daneel.Transformations;
 using Toggl.Foundation.MvvmCross.Helper;
+using Toggl.Foundation.MvvmCross.Transformations;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
 
 namespace Toggl.Daneel.Views
 {
-    public partial class TimeEntriesLogViewCell : MvxTableViewCell
+    public partial class TimeEntriesLogViewCell : BaseTableViewCell<TimeEntryViewModel>
     {
+        public static readonly string Identifier = "timeEntryCell";
+
         private const float noProjectDistance = 24;
         private const float hasProjectDistance = 14;
 
         private const float hasTagsBillableSpacing = 37;
         private const float noTagsBillableSpacing = 10;
 
+        private ProjectTaskClientToAttributedString projectTaskClientToAttributedString;
+
         public static readonly NSString Key = new NSString(nameof(TimeEntriesLogViewCell));
         public static readonly UINib Nib;
 
-        public IMvxAsyncCommand<TimeEntryViewModel> ContinueTimeEntryCommand { get; set; }
+        public CompositeDisposable DisposeBag = new CompositeDisposable();
+
+        public IObservable<Unit> ContinueButtonTap
+            => ContinueButton.Tapped();
 
         static TimeEntriesLogViewCell()
         {
             Nib = UINib.FromName(nameof(TimeEntriesLogViewCell), NSBundle.MainBundle);
         }
 
-        protected TimeEntriesLogViewCell(IntPtr handle) 
+        protected TimeEntriesLogViewCell(IntPtr handle)
             : base(handle)
         {
         }
@@ -47,118 +51,67 @@ namespace Toggl.Daneel.Views
             FadeView.FadeRight = true;
 
             TimeLabel.Font = TimeLabel.Font.GetMonospacedDigitFont();
-            ContinueButton.TouchUpInside += onContinueButtonTap;
 
-            this.DelayBind(() =>
+            projectTaskClientToAttributedString = new ProjectTaskClientToAttributedString(
+                ProjectTaskClientLabel.Font.CapHeight,
+                Color.TimeEntriesLog.ClientColor.ToNativeColor(),
+                true
+            );
+        }
+
+        public override void PrepareForReuse()
+        {
+            base.PrepareForReuse();
+            DisposeBag.Dispose();
+            DisposeBag = new CompositeDisposable();
+        }
+
+        protected override void UpdateView()
+        {
+            // Text
+            var projectColor = MvxColor.ParseHexString(Item.ProjectColor).ToNativeColor();
+            DescriptionLabel.Text = Item.Description;
+            ProjectTaskClientLabel.AttributedText = projectTaskClientToAttributedString.Convert(Item.ProjectName, Item.TaskName, Item.ClientName, projectColor);
+            TimeLabel.Text = Item.Duration.HasValue
+                ? DurationAndFormatToString.Convert(Item.Duration.Value, Item.DurationFormat)
+                : "";
+
+            // Constraints
+            DescriptionTopDistanceConstraint.Constant = Item.HasProject ? hasProjectDistance : noProjectDistance;
+            AddDescriptionTopDistanceConstraint.Constant = Item.HasProject ? hasProjectDistance : noProjectDistance;
+            FadeViewTrailingConstraint.Constant = calculateFadeViewConstraint(Item.IsBillable, Item.HasTags);
+            BillableImageViewSpacingConstraint.Constant = Item.HasTags ? hasTagsBillableSpacing : noTagsBillableSpacing;
+
+            // Visibility
+            ProjectTaskClientLabel.Hidden = !Item.HasProject;
+            AddDescriptionLabel.Hidden = Item.HasDescription;
+            SyncErrorImageView.Hidden = Item.CanSync;
+            UnsyncedImageView.Hidden = !Item.NeedsSync;
+            ContinueButton.Hidden = !Item.CanSync;
+            ContinueImageView.Hidden = !Item.CanSync;
+            BillableImageView.Hidden = !Item.IsBillable;
+            TagsImageView.Hidden = !Item.HasTags;
+        }
+
+        private nfloat calculateFadeViewConstraint(bool isBillable, bool hasTags)
+        {
+            if (isBillable && hasTags)
             {
-                var colorConverter = new MvxRGBValueConverter();
-                var visibilityConverter = new MvxVisibilityValueConverter();
-                var durationCombiner = new DurationValueCombiner();
-                var invertedVisibilityConverter = new MvxInvertedVisibilityValueConverter();
-                var fadeViewConstraintValueCombiner =
-                    new TimeEntryLogViewCellFadeViewConstraintValueCombiner();
-                var projectTaskClientCombiner = new ProjectTaskClientValueCombiner(
-                    ProjectTaskClientLabel.Font.CapHeight,
-                    Color.TimeEntriesLog.ClientColor.ToNativeColor(),
-                    true
-                );
-                var billableSpacingConstraintValueConverter = 
-                    new BoolToConstantValueConverter<nfloat>(hasTagsBillableSpacing, noTagsBillableSpacing);
-                var descriptionTopDistanceValueConverter = 
-                    new BoolToConstantValueConverter<nfloat>(hasProjectDistance, noProjectDistance);
-                
-                var bindingSet = this.CreateBindingSet<TimeEntriesLogViewCell, TimeEntryViewModel>();
+                return 136;
+            }
 
-                //Text
-                bindingSet.Bind(DescriptionLabel).To(vm => vm.Description);
-                bindingSet.Bind(ProjectTaskClientLabel)
-                          .For(v => v.AttributedText)
-                          .ByCombining(projectTaskClientCombiner, 
-                              v => v.ProjectName,
-                              v => v.TaskName,
-                              v => v.ClientName,
-                              v => v.ProjectColor);
+            if (isBillable || hasTags)
+            {
+                return 112;
+            }
 
-                bindingSet.Bind(TimeLabel)
-                          .ByCombining(durationCombiner,
-                              vm => vm.Duration,
-                              vm => vm.DurationFormat);
-
-                //Visibility
-                bindingSet.Bind(DescriptionTopDistanceConstraint)
-                          .For(v => v.Constant)
-                          .To(vm => vm.HasProject)
-                          .WithConversion(descriptionTopDistanceValueConverter);
-
-                bindingSet.Bind(ProjectTaskClientLabel)
-                          .For(v => v.BindVisibility())
-                          .To(vm => vm.HasProject)
-                          .WithConversion(visibilityConverter);
-
-                bindingSet.Bind(AddDescriptionLabel)
-                          .For(v => v.BindVisibility())
-                          .To(vm => vm.HasDescription)
-                          .WithConversion(invertedVisibilityConverter);
-
-                bindingSet.Bind(AddDescriptionTopDistanceConstraint)
-                          .For(v => v.Constant)
-                          .To(vm => vm.HasProject)
-                          .WithConversion(descriptionTopDistanceValueConverter);
-
-                bindingSet.Bind(SyncErrorImageView)
-                          .For(v => v.BindVisibility())
-                          .To(vm => vm.CanSync)
-                          .WithConversion(invertedVisibilityConverter);
-
-                bindingSet.Bind(UnsyncedImageView)
-                          .For(v => v.BindVisibility())
-                          .To(vm => vm.NeedsSync)
-                          .WithConversion(visibilityConverter);
-
-                bindingSet.Bind(ContinueButton)
-                          .For(v => v.BindVisibility())
-                          .To(vm => vm.CanSync)
-                          .WithConversion(visibilityConverter);
-
-                bindingSet.Bind(ContinueImageView)
-                          .For(v => v.BindVisibility())
-                          .To(vm => vm.CanSync)
-                          .WithConversion(visibilityConverter);
-
-                bindingSet.Bind(BillableImageView)
-                          .For(v => v.BindVisibility())
-                          .To(vm => vm.IsBillable)
-                          .WithConversion(visibilityConverter);
-
-                bindingSet.Bind(TagsImageView)
-                          .For(v => v.BindVisibility())
-                          .To(vm => vm.HasTags)
-                          .WithConversion(visibilityConverter);
-
-                bindingSet.Bind(FadeViewTrailingConstraint)
-                          .For(v => v.Constant)
-                          .ByCombining(fadeViewConstraintValueCombiner,
-                                       v => v.IsBillable,
-                                       v => v.HasTags);
-                
-                bindingSet.Bind(BillableImageViewSpacingConstraint)
-                          .For(v => v.Constant)
-                          .To(vm => vm.HasTags)
-                          .WithConversion(billableSpacingConstraintValueConverter);
-                
-                bindingSet.Apply();
-            });
+            return 96;
         }
 
         protected override void Dispose(bool disposing)
         {
+            DisposeBag.Dispose();
             base.Dispose(disposing);
-
-            if (!disposing) return;
-            ContinueButton.TouchUpInside -= onContinueButtonTap;
         }
-
-        private async void onContinueButtonTap(object sender, EventArgs e)
-            => await ContinueTimeEntryCommand.ExecuteAsync((TimeEntryViewModel)DataContext);
     }
 }

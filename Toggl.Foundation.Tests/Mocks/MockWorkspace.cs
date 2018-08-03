@@ -41,5 +41,7 @@ namespace Toggl.Foundation.Tests.Mocks
         public string LastSyncErrorMessage { get; set; }
 
         public bool IsDeleted { get; set; }
+
+        public bool IsGhost { get; set; }
     }
 }

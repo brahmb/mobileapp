@@ -44,8 +44,23 @@ namespace Toggl.Foundation.Sync.ConflictResolution
                 .Where(start => start != default(DateTimeOffset))
                 .DefaultIfEmpty(timeService.CurrentDateTime)
                 .Min();
-            long duration = (long)(stopTime - toBeStopped.Start).TotalSeconds; // truncates towards zero (floor)
-            return new TimeEntry(toBeStopped, duration);
+            var duration = (long)(stopTime - toBeStopped.Start).TotalSeconds; // truncates towards zero (floor)
+
+            return TimeEntry.Builder.Create(toBeStopped.Id)
+                .SetDescription(toBeStopped.Description)
+                .SetDuration(duration)
+                .SetTagIds(toBeStopped.TagIds)
+                .SetStart(toBeStopped.Start)
+                .SetTaskId(toBeStopped.TaskId)
+                .SetBillable(toBeStopped.Billable)
+                .SetProjectId(toBeStopped.ProjectId)
+                .SetWorkspaceId(toBeStopped.WorkspaceId)
+                .SetUserId(toBeStopped.UserId)
+                .SetIsDeleted(toBeStopped.IsDeleted)
+                .SetServerDeletedAt(toBeStopped.ServerDeletedAt)
+                .SetSyncStatus(SyncStatus.SyncNeeded)
+                .SetAt(timeService.CurrentDateTime)
+                .Build();
         }
 
         private Expression<Func<TDatabaseObject, bool>> startsAfter<TDatabaseObject>(DateTimeOffset start)

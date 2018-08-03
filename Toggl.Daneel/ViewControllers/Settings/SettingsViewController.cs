@@ -30,6 +30,7 @@ namespace Toggl.Daneel.ViewControllers
             VersionLabel.Text = ViewModel.Version;
 
             LoggingOutView.Hidden = true;
+            SendFeedbackSuccessView.Hidden = true;
 
             this.Bind(ViewModel.Email, EmailLabel.BindText());
             this.Bind(ViewModel.IsSynced, SyncedView.BindIsVisible());
@@ -46,6 +47,7 @@ namespace Toggl.Daneel.ViewControllers
                 SyncingView.Hidden = true;
                 SyncedView.Hidden = true;
             });
+            this.Bind(ViewModel.IsFeedbackSuccessViewShowing, SendFeedbackSuccessView.BindAnimatedIsVisible());
 
             this.Bind(HelpView.Tapped(), ViewModel.OpenHelpView);
             this.Bind(LogoutButton.Tapped(), ViewModel.TryLogout);
@@ -57,6 +59,7 @@ namespace Toggl.Daneel.ViewControllers
             this.Bind(DurationFormatView.Tapped(), ViewModel.SelectDurationFormat);
             this.Bind(BeginningOfWeekView.Tapped(), ViewModel.SelectBeginningOfWeek);
             this.Bind(TwentyFourHourClockView.Tapped(), ViewModel.ToggleUseTwentyFourHourClock);
+            this.BindVoid(SendFeedbackSuccessView.Tapped(), ViewModel.CloseFeedbackSuccessView);
 
             UIApplication.Notifications
                 .ObserveWillEnterForeground((sender, e) => startAnimations())

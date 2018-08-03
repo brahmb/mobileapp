@@ -55,12 +55,12 @@ namespace Toggl.Foundation.Tests.Sync
         public sealed class TheConstructor
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(TwoParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyArgumentIsNull(bool useStateMachine, bool useEntryPoints)
             {
                 var stateMachine = useStateMachine ? Substitute.For<IStateMachine>() : null;
                 var entryPoints = useEntryPoints ? new StateMachineEntryPoints() : null;
-                
+
                 // ReSharper disable once ObjectCreationAsStatement
                 Action constructing = () => new StateMachineOrchestrator(stateMachine, entryPoints);
 
@@ -76,7 +76,7 @@ namespace Toggl.Foundation.Tests.Sync
 
                 // ReSharper disable once ObjectCreationAsStatement
                 new StateMachineOrchestrator(stateMachine, new StateMachineEntryPoints());
-                
+
                 transitions.Received().Subscribe(Arg.Any<IObserver<StateMachineEvent>>());
             }
         }
@@ -89,7 +89,7 @@ namespace Toggl.Foundation.Tests.Sync
                 Orchestrator.State.Should().Be(Sleep);
             }
         }
-        
+
         public abstract class StateChangeMethodTests : StateMachineOrchestratorBaseTests
         {
             protected abstract SyncState ExpectedState { get; }
@@ -195,7 +195,7 @@ namespace Toggl.Foundation.Tests.Sync
         public abstract class PullPushSyncMethodTests : StateChangeMethodTests
         {
             protected abstract StateResult EntryPoint { get; }
-            
+
             [Fact, LogIfTooSlow]
             public void ShouldStartStateMachineWithCorrectEntryPoint()
             {
@@ -258,7 +258,7 @@ namespace Toggl.Foundation.Tests.Sync
                     StateMachine.DidNotReceive().Start(Arg.Any<ITransition>());
                 }
             }
-            
+
             public sealed class TheStartUnknown : StateMachineOrchestratorBaseTests
             {
                 [Property]

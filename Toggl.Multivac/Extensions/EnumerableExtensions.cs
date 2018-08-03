@@ -6,8 +6,7 @@ namespace Toggl.Multivac.Extensions
 {
     public static class EnumerableExtensions
     {
-        public static int IndexOf<T>(
-            this IEnumerable<T> self, Func<T, bool> predicate)
+        public static int IndexOf<T>(this IEnumerable<T> self, Func<T, bool> predicate)
         {
             int i = 0;
             foreach (var item in self)
@@ -17,6 +16,25 @@ namespace Toggl.Multivac.Extensions
                 i++;
             }
             return -1;
+        }
+
+        public static int IndexOf<T>(this IEnumerable<T> self, T item, Func<T, IComparable> indexKey)
+        {
+            var itemKey = indexKey(item);
+            return self.IndexOf(i => indexKey(i).CompareTo(itemKey) == 0);
+        }
+
+        public static IEnumerable<T> OrderBy<T>(this IEnumerable<T> self, Func<T, IComparable> orderingKey, bool isDescending)
+        {
+            return isDescending
+                ? self.OrderByDescending(orderingKey)
+                : self.OrderBy(orderingKey);
+        }
+
+        public static int GroupIndexOf<T>(this IEnumerable<IEnumerable<T>> self, T item, Func<T, IComparable> groupingKey)
+        {
+            var groupKey = groupingKey(item);
+            return self.IndexOf(g => groupingKey(g.First()).CompareTo(groupKey) == 0);
         }
 
         public static IEnumerable<TRight> SelectAllRight<TLeft, TRight>(this IEnumerable<Either<TLeft, TRight>> self)

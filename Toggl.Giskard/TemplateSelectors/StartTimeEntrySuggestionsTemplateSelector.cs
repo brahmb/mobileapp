@@ -39,11 +39,9 @@ namespace Toggl.Giskard.TemplateSelectors
                     return Resource.Layout.StartTimeEntryActivityWorkspaceHeader;
                 case CreateEntity:
                     return Resource.Layout.AbcCreateEntityCell;
-                case TimeEntrySuggestionWithPartialContent:
+                default:
                     return Resource.Layout.StartTimeEntryActivityTimeEntryWithPartialContentCell;
             }
-
-            throw new ArgumentOutOfRangeException(nameof(fromViewType));
         }
 
         public int GetItemViewType(object forItemObject)
@@ -66,11 +64,9 @@ namespace Toggl.Giskard.TemplateSelectors
                     return TimeEntrySuggestion;
                 case WorkspaceGroupedCollection<AutocompleteSuggestion> _: 
                     return WorkspaceHeader;
-                case string _:
+                default:
                     return CreateEntity;
             }
-
-            throw new ArgumentException(nameof(forItemObject));
         }
 
         private bool timeEntrySuggestionHasPartialContent(TimeEntrySuggestion timeEntrySuggestion) 

@@ -48,6 +48,13 @@ namespace Toggl.Multivac
                 throw new ArgumentException("Uri must be absolute.", argumentName);
             }
 
+            public static void IsValidEmail(Email email, string argumentName)
+            {
+                if (email.IsValid) return;
+
+                throw new ArgumentException("Email address must be valid.", argumentName);
+            }
+
             public static void IsADefinedEnumValue<T>(T value, string argumentName) where T : struct
             {
                 if (Enum.IsDefined(typeof(T), value)) return;

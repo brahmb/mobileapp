@@ -43,8 +43,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         [DependsOn(nameof(TimeEntries))]
         public bool IsEmpty => TimeEntries.None();
 
-        public bool IsWelcome { get; private set; }
-
         public IMvxAsyncCommand<TimeEntryViewModel> EditCommand { get; }
 
         public IMvxAsyncCommand<TimeEntryViewModel> DeleteCommand { get; }
@@ -81,8 +79,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             await base.Initialize();
 
-            IsWelcome = await onboardingStorage.IsNewUser.FirstAsync();
-
             await fetchSectionedTimeEntries();
 
             var deleteDisposable =
@@ -98,10 +94,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                     .Where(isNotRunning)
                     .Subscribe(safeInsertTimeEntry);
 
-            var midnightDisposable =
-                timeService.MidnightObservable
-                    .Subscribe(onMidnight);
-
             var preferencesDisposable =
                 dataSource.Preferences.Current
                     .Subscribe(onPreferencesChanged);
@@ -109,7 +101,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             disposeBag.Add(createDisposable);
             disposeBag.Add(updateDisposable);
             disposeBag.Add(deleteDisposable);
-            disposeBag.Add(midnightDisposable);
             disposeBag.Add(preferencesDisposable);
         }
 
@@ -164,8 +155,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void safeInsertTimeEntry(IThreadSafeTimeEntry timeEntry)
         {
-            IsWelcome = false;
-
             var indexDate = timeEntry.Start.LocalDateTime.Date;
             var collectionIndex = TimeEntries.IndexOf(x => x.Date.LocalDateTime == indexDate);
             var groupExists = collectionIndex >= 0;
@@ -204,11 +193,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             var item = TimeEntries[collectionIndex].First(vm => vm.Id == id);
             TimeEntries.RemoveFromChildCollection(collectionIndex, item);
             RaisePropertyChanged(nameof(IsEmpty));
-        }
-
-        private void onMidnight(DateTimeOffset midnight)
-        {
-            navigationService.ChangePresentation(new ReloadLogHint());
         }
 
         private void onPreferencesChanged(IThreadSafePreferences preferences)
@@ -260,13 +244,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                     areContineButtonsEnabled = true;
                     ContinueTimeEntryCommand.RaiseCanExecuteChanged();
                 });
-        }
-
-        private void OnIsWelcomeChanged()
-        {
-            if (IsWelcome) return;
-
-            onboardingStorage.SetIsNewUser(false);
         }
     }
 }

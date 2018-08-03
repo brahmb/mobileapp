@@ -77,6 +77,9 @@ namespace Toggl.Ultrawave.ApiClients
                     : default(T),
                 responseValidator);
 
+        protected IObservable<string> CreateObservable(Endpoint endpoint, HttpHeader header, string body = "")
+            => createObservable(endpoint, new[] { header }, body, Task.FromResult);
+
         protected IObservable<string> CreateObservable(Endpoint endpoint, IEnumerable<HttpHeader> headers, string body = "")
             => createObservable(endpoint, headers, body, Task.FromResult);
 

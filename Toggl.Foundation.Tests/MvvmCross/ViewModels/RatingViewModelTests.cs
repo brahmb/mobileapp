@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FsCheck.Xunit;
@@ -32,7 +34,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     TimeService,
                     DataSource,
                     RatingService,
-                    FeedbackService,
                     AnalyticsService,
                     OnboardingStorage,
                     NavigationService);
@@ -41,12 +42,11 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheConstructor : RatingViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(SevenParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useDataSource,
                 bool useTimeService,
                 bool useRatingService,
-                bool useFeedbackService,
                 bool useAnalyticsService,
                 bool useOnboardingStorage,
                 bool useNavigationService)
@@ -54,7 +54,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var dataSource = useDataSource ? DataSource : null;
                 var timeService = useTimeService ? TimeService : null;
                 var ratingService = useRatingService ? RatingService : null;
-                var feedbackService = useFeedbackService ? FeedbackService : null;
                 var analyticsService = useAnalyticsService ? AnalyticsService : null;
                 var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
                 var navigationService = useNavigationService ? NavigationService : null;
@@ -64,7 +63,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         timeService,
                         dataSource,
                         ratingService,
-                        feedbackService,
                         analyticsService,
                         onboardingStorage,
                         navigationService);
@@ -215,22 +213,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 }
             }
 
-            public sealed class WhenImpressionIsNegative : PerformMainActionMethodTest
-            {
-                protected override RatingViewOutcome ExpectedStoragetOutcome => RatingViewOutcome.FeedbackWasLeft;
-                protected override RatingViewSecondStepOutcome ExpectedEventParameterToTrack => RatingViewSecondStepOutcome.FeedbackWasLeft;
-
-                protected override void AdditionalViewModelSetup()
-                {
-                    ViewModel.RegisterImpression(false);
-                }
-
-                protected override void EnsureCorrectActionWasPerformed()
-                {
-                    FeedbackService.Received().SubmitFeedback().Wait();
-                }
-            }
-
             public sealed class WhenImpressionWasntLeft : RatingViewModelTest
             {
                 [Fact, LogIfTooSlow]
@@ -239,7 +221,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     await ViewModel.PerformMainAction();
 
                     RatingService.DidNotReceive().AskForRating();
-                    await FeedbackService.DidNotReceive().SubmitFeedback();
                 }
             }
         }
@@ -312,6 +293,20 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 protected override bool ImpressionIsPositive => false;
                 protected override RatingViewOutcome ExpectedStorageOutcome => RatingViewOutcome.FeedbackWasNotLeft;
                 protected override RatingViewSecondStepOutcome ExpectedEventParameterToTrack => RatingViewSecondStepOutcome.FeedbackWasNotLeft;
+            }
+
+            public sealed class TheIsFeedBackSuccessViewShowingProperty : RatingViewModelTest
+            {
+                [Fact, LogIfTooSlow]
+                public void EmitsTrueWhenTapOnTheView()
+                {
+                    var observer = TestScheduler.CreateObserver<bool>();
+                    var viewModel = CreateViewModel();
+
+                    viewModel.IsFeedbackSuccessViewShowing.StartWith(true).Subscribe(observer);
+                    viewModel.CloseFeedbackSuccessView();
+                    observer.Messages.Last().Value.Value.Should().BeFalse();
+                }
             }
         }
     }

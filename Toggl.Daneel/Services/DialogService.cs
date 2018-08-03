@@ -119,6 +119,8 @@ namespace Toggl.Daneel.Services
                     return (Resources.Discard, Resources.ContinueEditing);
                 case ActionType.DeleteExistingTimeEntry:
                     return (Resources.Delete, Resources.Cancel);
+                case ActionType.DiscardFeedback:
+                    return (Resources.Discard, Resources.ContinueEditing);
             }
 
             throw new ArgumentOutOfRangeException(nameof(type));

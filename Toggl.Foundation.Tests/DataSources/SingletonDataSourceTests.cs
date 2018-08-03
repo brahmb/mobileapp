@@ -101,25 +101,6 @@ namespace Toggl.Foundation.Tests.DataSources
             }
         }
 
-        public sealed class TheOverwriteMethod
-        {
-            [Fact]
-            public async Task UpdatesTheCurrentObservableValue()
-            {
-                var storage = Substitute.For<ISingleObjectStorage<IDatabaseTestModel>>();
-                var updatedValue = new TestModel(123, SyncStatus.InSync);
-                var storedValue = new TestModel(456, SyncStatus.InSync);
-                storage.Single().Returns(Observable.Return(storedValue));
-                storage.Update(storedValue.Id, updatedValue).Returns(Observable.Return(updatedValue));
-
-                var dataSource = new TestSingletonSource(storage, null);
-                await dataSource.Overwrite(storedValue, updatedValue);
-                var value = await dataSource.Current.FirstAsync();
-
-                value.Id.Should().Be(updatedValue.Id);
-            }
-        }
-
         public sealed class TheOverwriteIfOriginalDidNotChangeMethod
         {
             [Fact]

@@ -80,6 +80,9 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIScrollView ScrollView { get; set; }
 
 		[Outlet]
+		UIKit.UIView SendFeedbackSuccessView { get; set; }
+
+		[Outlet]
 		UIKit.UIImageView SyncedIcon { get; set; }
 
 		[Outlet]
@@ -175,6 +178,11 @@ namespace Toggl.Daneel.ViewControllers
 				FormatSettingsTitle = null;
 			}
 
+			if (HelpView != null) {
+				HelpView.Dispose ();
+				HelpView = null;
+			}
+
 			if (LoggingOutActivityIndicatorView != null) {
 				LoggingOutActivityIndicatorView.Dispose ();
 				LoggingOutActivityIndicatorView = null;
@@ -245,11 +253,6 @@ namespace Toggl.Daneel.ViewControllers
 				SyncingActivityIndicatorView = null;
 			}
 
-			if (HelpView != null) {
-				HelpView.Dispose ();
-				HelpView = null;
-			}
-
 			if (SyncingIndicator != null) {
 				SyncingIndicator.Dispose ();
 				SyncingIndicator = null;
@@ -293,6 +296,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (WorkspaceView != null) {
 				WorkspaceView.Dispose ();
 				WorkspaceView = null;
+			}
+
+			if (SendFeedbackSuccessView != null) {
+				SendFeedbackSuccessView.Dispose ();
+				SendFeedbackSuccessView = null;
 			}
 		}
 	}

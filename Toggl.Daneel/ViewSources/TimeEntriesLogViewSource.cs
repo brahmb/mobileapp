@@ -1,139 +1,148 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using CoreGraphics;
 using Foundation;
 using MvvmCross.Commands;
-using MvvmCross.Platforms.Ios.Binding.Views;
 using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Daneel.Views;
 using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Collections;
-using Toggl.Foundation.MvvmCross.Helper;
+using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Foundation.MvvmCross.Helper;
+using Toggl.Multivac.Extensions;
 using UIKit;
+
 
 namespace Toggl.Daneel.ViewSources
 {
-    public sealed class TimeEntriesLogViewSource
-        : GroupedCollectionTableViewSource<TimeEntryViewModelCollection, TimeEntryViewModel>,
-          IUITableViewDataSource
+    public sealed class TimeEntriesLogViewSource : ReactiveSectionedListTableViewSource<TimeEntryViewModel, TimeEntriesLogViewCell>
     {
+        private const int rowHeight = 64;
+        private const int headerHeight = 48;
+        private const int spaceBetweenSections = 20;
+
         public event EventHandler SwipeToContinueWasUsed;
         public event EventHandler SwipeToDeleteWasUsed;
 
-        private const int bottomPadding = 64;
-        private const int spaceBetweenSections = 20;
+        public bool IsEmptyState { get; set; }
 
-        private const string cellIdentifier = nameof(TimeEntriesLogViewCell);
-        private const string headerCellIdentifier = nameof(TimeEntriesLogHeaderViewCell);
+        public IObservable<TimeEntryViewModel> ContinueTap
+            => continueTapSubject.AsObservable();
+
+        public IObservable<TimeEntryViewModel> SwipeToContinue
+            => swipeToContinueSubject.AsObservable();
+
+        public IObservable<TimeEntryViewModel> SwipeToDelete
+            => swipeToDeleteSubject.AsObservable();
+
+        public IObservable<TimeEntriesLogViewCell> FirstCell
+            => firstCellSubject .AsObservable();
+
+        private Subject<TimeEntryViewModel> continueTapSubject = new Subject<TimeEntryViewModel>();
+        private Subject<TimeEntryViewModel> swipeToContinueSubject = new Subject<TimeEntryViewModel>();
+        private Subject<TimeEntryViewModel> swipeToDeleteSubject = new Subject<TimeEntryViewModel>();
+        private ReplaySubject<TimeEntriesLogViewCell> firstCellSubject = new ReplaySubject<TimeEntriesLogViewCell>(1);
 
         //Using the old API so that delete action would work on pre iOS 11 devices
         private readonly UITableViewRowAction deleteTableViewRowAction;
 
-        private readonly ISubject<TimeEntriesLogViewCell> firstTimeEntrySubject;
-
-        public bool IsEmptyState { get; set; }
-
-        public IObservable<TimeEntriesLogViewCell> FirstTimeEntry { get; }
-
-        public IMvxAsyncCommand<TimeEntryViewModel> ContinueTimeEntryCommand { get; set; }
-
-        public IMvxAsyncCommand<TimeEntryViewModel> DeleteTimeEntryCommand { get; set; }
-
-        public new IMvxCommand<TimeEntryViewModel> SelectionChangedCommand { get; set; }
-
-        public TimeEntriesLogViewSource(UITableView tableView)
-            : base(tableView, cellIdentifier, headerCellIdentifier)
+        public TimeEntriesLogViewSource(ObservableGroupedOrderedCollection<TimeEntryViewModel> collection, string cellIdentifier) : base(collection, cellIdentifier)
         {
-            tableView.SeparatorStyle = UITableViewCellSeparatorStyle.None;
-            tableView.RegisterNibForCellReuse(TimeEntriesLogViewCell.Nib, cellIdentifier);
-            tableView.RegisterNibForHeaderFooterViewReuse(TimeEntriesLogHeaderViewCell.Nib, headerCellIdentifier);
-
-            deleteTableViewRowAction = UITableViewRowAction.Create(
-                UITableViewRowActionStyle.Destructive,
-                Resources.Delete,
-                handleDeleteTableViewRowAction);
-            deleteTableViewRowAction.BackgroundColor = Color.TimeEntriesLog.DeleteSwipeActionBackground.ToNativeColor();
-
-            firstTimeEntrySubject = new ReplaySubject<TimeEntriesLogViewCell>(1);
-            FirstTimeEntry = firstTimeEntrySubject.AsObservable();
+            if (!UIDevice.CurrentDevice.CheckSystemVersion(11, 0))
+            {
+                deleteTableViewRowAction = UITableViewRowAction.Create(
+                    UITableViewRowActionStyle.Destructive,
+                    Resources.Delete,
+                    handleDeleteTableViewRowAction);
+                deleteTableViewRowAction.BackgroundColor = Color.TimeEntriesLog.DeleteSwipeActionBackground.ToNativeColor();
+            }
         }
 
         public override UIView GetViewForFooter(UITableView tableView, nint section)
             => new UIView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width, spaceBetweenSections));
 
+        public override nfloat GetHeightForHeader(UITableView tableView, nint section) => headerHeight;
+
+        public override nfloat GetHeightForFooter(UITableView tableView, nint section) => spaceBetweenSections;
+
+        public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath) => rowHeight;
+
+        // It needs this method, otherwise the ContentOffset will reset to 0 everytime the table reloads. ¯\_(ツ)_/¯
+        public override nfloat EstimatedHeight(UITableView tableView, NSIndexPath indexPath) => rowHeight;
+
+        public override UITableViewRowAction[] EditActionsForRow(UITableView tableView, NSIndexPath indexPath)
+        {
+            if (!UIDevice.CurrentDevice.CheckSystemVersion(11, 0))
+                return new[] { deleteTableViewRowAction };
+
+            return new UITableViewRowAction[]{};
+        }
+
         public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
         {
-            var item = GetItemAt(indexPath);
-            var cell = GetOrCreateCellFor(tableView, indexPath, item);
+            var cell = (TimeEntriesLogViewCell)base.GetCell(tableView, indexPath);
 
-            if (cell is IMvxBindable bindable)
-                bindable.DataContext = item;
+            cell.ContinueButtonTap
+                .VoidSubscribe(() => continueTapSubject.OnNext(cell.Item))
+                .DisposedBy(cell.DisposeBag);
 
-            if (cell is TimeEntriesLogViewCell logCell)
-            {
-                logCell.ContinueTimeEntryCommand = ContinueTimeEntryCommand;
-
-                if (indexPath.Section == 0 && indexPath.Row == 0)
-                    firstTimeEntrySubject.OnNext(logCell);
-            }
+            if (indexPath.Row == 0 && indexPath.Section == 0)
+                firstCellSubject.OnNext(cell);
 
             return cell;
         }
 
-        protected override IEnumerable<TimeEntryViewModel> GetGroupAt(nint section)
-            => GroupedItems.ElementAtOrDefault((int)section);
+        public override UIView GetViewForHeader(UITableView tableView, nint section)
+        {
+            var header = (TimeEntriesLogHeaderView)tableView.DequeueReusableHeaderFooterView(TimeEntriesLogHeaderView.Identifier);
+            header.Items = collection[(int)section];
+            return header;
+        }
 
-        public override nfloat GetHeightForHeader(UITableView tableView, nint section) => 48;
+        public override void RefreshHeader(UITableView tableView, int section)
+        {
+            if (tableView.GetHeaderView(section) is TimeEntriesLogHeaderView header)
+                header.UpdateView();
+        }
 
-        public override nfloat GetHeightForFooter(UITableView tableView, nint section) => spaceBetweenSections;
-
-        public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath) => 64;
-
-        public override bool ShouldScrollToTop(UIScrollView scrollView) => true;
-
-        public new object GetItemAt(NSIndexPath indexPath)
-            => base.GetItemAt(indexPath);
-        public new UITableViewCell GetOrCreateCellFor(UITableView tableView, NSIndexPath indexPath, object item)
-            => tableView.DequeueReusableCell(cellIdentifierForItem(item), indexPath);
-
-        public override UITableViewRowAction[] EditActionsForRow(UITableView tableView, NSIndexPath indexPath)
-            => new[] { deleteTableViewRowAction };
+        private void handleDeleteTableViewRowAction(UITableViewRowAction rowAction, NSIndexPath indexPath)
+        {
+            var timeEntry = collection[indexPath.Section][indexPath.Row];
+            swipeToDeleteSubject.OnNext(timeEntry);
+        }
 
         public override UISwipeActionsConfiguration GetLeadingSwipeActionsConfiguration(UITableView tableView, NSIndexPath indexPath)
         {
             if (!UIDevice.CurrentDevice.CheckSystemVersion(11, 0))
                 return null;
 
-            var item = GetItemAt(indexPath);
+            var item = collection[indexPath.Section][indexPath.Row];
             if (item == null)
                 return null;
 
             return UISwipeActionsConfiguration
-                .FromActions(new[] { continueSwipeActionFor((TimeEntryViewModel)item) });
+                .FromActions(new[] { continueSwipeActionFor(item) });
+        }
+
+        public override UISwipeActionsConfiguration GetTrailingSwipeActionsConfiguration(UITableView tableView, NSIndexPath indexPath)
+        {
+            if (!UIDevice.CurrentDevice.CheckSystemVersion(11, 0))
+                return null;
+
+            var item = collection[indexPath.Section][indexPath.Row];
+            if (item == null)
+                return null;
+
+            return UISwipeActionsConfiguration
+                .FromActions(new[] { deleteSwipeActionFor(item) });
         }
 
         public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
         {
-            var item = GetItemAt(indexPath);
-
-            if (item is TimeEntryViewModel timeEntry)
-                SelectionChangedCommand?.Execute(timeEntry);
-
+            base.RowSelected(tableView, indexPath);
             tableView.DeselectRow(indexPath, true);
-        }
-
-        public override bool ShouldHighlightRow(UITableView tableView, NSIndexPath rowIndexPath)
-            => true;
-
-        private void handleDeleteTableViewRowAction(UITableViewRowAction _, NSIndexPath indexPath)
-        {
-            SwipeToDeleteWasUsed?.Invoke(this, EventArgs.Empty);
-            var timeEntry = (TimeEntryViewModel)GetItemAt(indexPath);
-            DeleteTimeEntryCommand.Execute(timeEntry);
         }
 
         private UIContextualAction continueSwipeActionFor(TimeEntryViewModel timeEntry)
@@ -144,7 +153,7 @@ namespace Toggl.Daneel.ViewSources
                 (action, sourceView, completionHandler) =>
                 {
                     SwipeToContinueWasUsed?.Invoke(this, EventArgs.Empty);
-                    ContinueTimeEntryCommand.Execute(timeEntry);
+                    swipeToContinueSubject.OnNext(timeEntry);
                     completionHandler.Invoke(finished: true);
                 }
             );
@@ -152,15 +161,20 @@ namespace Toggl.Daneel.ViewSources
             return continueAction;
         }
 
-        private string cellIdentifierForItem(object item)
+        private UIContextualAction deleteSwipeActionFor(TimeEntryViewModel timeEntry)
         {
-            if (item is TimeEntryViewModel)
-                return cellIdentifier;
-
-            throw new ArgumentException($"Unexpected item type. Must be of type {nameof(TimeEntryViewModel)}");
+            var deleteAction = UIContextualAction.FromContextualActionStyle(
+                UIContextualActionStyle.Destructive,
+                Resources.Delete,
+                (action, sourceView, completionHandler) =>
+                {
+                    SwipeToDeleteWasUsed?.Invoke(this, EventArgs.Empty);
+                    swipeToDeleteSubject.OnNext(timeEntry);
+                    completionHandler.Invoke(finished: true);
+                }
+            );
+            deleteAction.BackgroundColor = Color.TimeEntriesLog.DeleteSwipeActionBackground.ToNativeColor();
+            return deleteAction;
         }
-
-        protected override TimeEntryViewModelCollection CloneCollection(TimeEntryViewModelCollection collection)
-            => new TimeEntryViewModelCollection(collection.Date.LocalDateTime.Date, collection, collection.DurationFormat);
     }
 }

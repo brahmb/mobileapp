@@ -33,5 +33,7 @@ namespace Toggl.PrimeRadiant.Realm
         public long? UserId => RealmUser?.Id;
 
         public IDatabaseUser User => RealmUser;
+
+        public bool IsGhost => Workspace.IsGhost;
     }
 }

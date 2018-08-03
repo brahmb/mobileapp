@@ -16,28 +16,25 @@ namespace Toggl.Foundation.DataSources
         where TDatabase : IDatabaseModel
         where TThreadsafe : IThreadSafeModel, IIdentifiable, TDatabase
     {
-        protected readonly IRepository<TDatabase> Repository;
-
         protected virtual IRivalsResolver<TDatabase> RivalsResolver { get; } = null;
 
-        protected BaseDataSource(IRepository<TDatabase> repository)
+        private readonly IBaseStorage<TDatabase> repository;
+
+        protected BaseDataSource(IBaseStorage<TDatabase> repository)
         {
             Ensure.Argument.IsNotNull(repository, nameof(repository));
 
-            Repository = repository;
+            this.repository = repository;
         }
 
         public virtual IObservable<TThreadsafe> Create(TThreadsafe entity)
-            => Repository.Create(entity).Select(Convert);
+            => repository.Create(entity).Select(Convert);
 
         public virtual IObservable<TThreadsafe> Update(TThreadsafe entity)
-            => Repository.Update(entity.Id, entity).Select(Convert);
-
-        public virtual IObservable<TThreadsafe> Overwrite(TThreadsafe original, TThreadsafe entity)
-            => Repository.Update(original.Id, entity).Select(Convert);
+            => repository.Update(entity.Id, entity).Select(Convert);
 
         public virtual IObservable<IEnumerable<IConflictResolutionResult<TThreadsafe>>> OverwriteIfOriginalDidNotChange(TThreadsafe original, TThreadsafe entity)
-            => Repository.UpdateWithConflictResolution(original.Id, entity, ignoreIfChangedLocally(original), RivalsResolver)
+            => repository.UpdateWithConflictResolution(original.Id, entity, ignoreIfChangedLocally(original), RivalsResolver)
                 .ToThreadSafeResult(Convert);
 
         private Func<TDatabase, TDatabase, ConflictResolutionMode> ignoreIfChangedLocally(TThreadsafe localEntity)

@@ -211,8 +211,8 @@ namespace Toggl.Daneel.Presentation
                             else
                                 mainViewController.ShowRatingView();
                         }
+                        break;
                     }
-                    break;
             }
 
             base.ChangePresentation(hint);

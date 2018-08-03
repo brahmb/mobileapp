@@ -50,5 +50,7 @@ namespace Toggl.PrimeRadiant.Realm
         public IQueryable<RealmTask> RealmTasks { get; }
 
         public IEnumerable<IDatabaseTask> Tasks => RealmTasks;
+
+        public bool IsGhost => Workspace.IsGhost;
     }
 }

@@ -19,7 +19,7 @@ namespace Toggl.Foundation.Tests
         public class TheCreateMethod
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(SixteenParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool userAgent,
                 bool useVersion,

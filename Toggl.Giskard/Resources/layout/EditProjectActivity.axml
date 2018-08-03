@@ -31,12 +31,12 @@
                 android:lineSpacingExtra="5sp"
                 android:textColor="@android:color/black"
                 android:background="@android:color/white"
-                tools:text="Some client with a ridiculously big name to help us test fading"
+                tools:text="Some client with a ridiculously big name to help us test fading totally"
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="56dp"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/EditProjectColorCircle" />
+                android:layout_marginRight="40dp" />
             <TextView
                 local:MvxBind="Visibility Visibility(IsNameAlreadyTaken)"
                 android:textSize="12sp"
@@ -47,6 +47,14 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/EditProjectProjectName"
                 android:layout_alignStart="@+id/EditProjectProjectName" />
+            <View
+                android:background="@drawable/TransparentToWhiteGradient"
+                android:layout_width="80dp"
+                android:layout_marginRight="40dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true" />
             <toggl.giskard.views.CircleView
                 android:id="@+id/EditProjectColorCircle"
                 local:MvxBind="CircleColor NativeColor(Color); Click PickColorCommand"
@@ -99,18 +107,17 @@
                 android:layout_marginTop="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/EditProjectFadeView"
                 android:layout_alignTop="@id/EditProjectWorkspaceImage"
-                android:layout_toRightOf="@id/EditProjectWorkspaceImage" />
+                android:layout_toRightOf="@id/EditProjectWorkspaceImage"
+                android:layout_marginRight="16dp" />
             <View
-                android:id="@+id/EditProjectFadeView"
                 android:background="@drawable/TransparentToWhiteGradient"
-                android:layout_width="68dp"
-                android:layout_marginRight="16dp"
+                android:layout_width="64dp"
                 android:layout_height="match_parent"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true" />
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="16dp" />
             <ImageView
                 android:src="@drawable/dropdown"
                 android:layout_marginRight="16dp"
@@ -151,18 +158,17 @@
                 android:layout_marginTop="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/EditProjectFadeView"
                 android:layout_alignTop="@id/EditProjectClientImage"
-                android:layout_toRightOf="@id/EditProjectClientImage" />
+                android:layout_toRightOf="@id/EditProjectClientImage"
+                android:layout_marginRight="16dp" />
             <View
-                android:id="@+id/EditProjectFadeView"
                 android:background="@drawable/TransparentToWhiteGradient"
-                android:layout_width="68dp"
-                android:layout_marginRight="16dp"
+                android:layout_width="64dp"
                 android:layout_height="match_parent"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true" />
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="16dp" />
             <ImageView
                 android:clickable="true"
                 android:src="@drawable/dropdown"
@@ -205,7 +211,6 @@
                 android:layout_marginTop="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/EditProjectFadeView"
                 android:layout_alignTop="@id/EditProjectPrivateProjectImage"
                 android:layout_toRightOf="@id/EditProjectPrivateProjectImage" />
             <TextView
@@ -218,6 +223,13 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/EditProjectPrivateProjectLabel"
                 android:layout_alignStart="@+id/EditProjectPrivateProjectLabel" />
+            <View
+                android:background="@drawable/TransparentToWhiteGradient"
+                android:layout_width="84dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true" />
             <Switch
                 local:MvxBind="Checked IsPrivate"
                 android:layout_marginRight="16dp"

@@ -41,7 +41,7 @@
             android:background="@color/blueToolbarBackground"
             android:textCursorDrawable="@drawable/EditTextWhiteCursor"
             android:textColorHint="@color/blueBackgroundTextHintColor"
-            android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
+            android:inputType="textMultiLine"
             android:layout_marginTop="64dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
@@ -143,7 +143,7 @@
                     android:text="@string/AddProjectTask"
                     android:textColor="@color/placeholderText"
                     android:layout_height="48dp"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_below="@id/EditErrorContainer"
                     android:layout_toRightOf="@id/EditTimeEntryColumnAnchor" />
                 <TextView
@@ -169,13 +169,13 @@
                     android:layout_width="wrap_content"
                     android:layout_toRightOf="@id/EditProject"
                     android:layout_alignTop="@id/EditProjectIcon" />
-                <View
-                    android:background="@color/separator"
-                    android:layout_height="0.5dp"
-                    android:layout_marginLeft="56dp"
-                    android:layout_width="match_parent"
-                    android:layout_below="@id/EditAddProjectLabel" />
             </LinearLayout>
+            <View
+                android:background="@color/separator"
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="56dp"
+                android:layout_width="match_parent"
+                android:layout_below="@id/EditTimeEntryProjectContainer" />
             <LinearLayout
                 android:id="@+id/EditTimeEntryTagsContainer"
                 local:MvxBind="Click SelectTagsCommand"
@@ -197,7 +197,7 @@
                     android:gravity="center_vertical"
                     android:textColor="@color/placeholderText"
                     android:layout_height="48dp"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_alignTop="@id/EditTagsIcon"
                     android:layout_toRightOf="@id/EditTagsIcon" />
                 <toggl.giskard.views.TagsListRecyclerView
@@ -209,13 +209,13 @@
                     android:layout_width="wrap_content"
                     android:layout_alignTop="@id/EditTagsIcon"
                     android:layout_toRightOf="@id/EditTagsIcon" />
-                <View
-                    android:background="@color/separator"
-                    android:layout_height="0.5dp"
-                    android:layout_marginLeft="56dp"
-                    android:layout_width="match_parent"
-                    android:layout_below="@id/EditTags" />
             </LinearLayout>
+            <View
+                android:background="@color/separator"
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="56dp"
+                android:layout_width="match_parent"
+                android:layout_below="@id/EditTimeEntryTagsContainer" />
             <LinearLayout
                 android:id="@+id/EditBillableRow"
                 local:MvxBind="Click ToggleBillableCommand; Visibility Visibility(IsBillableAvailable)"
@@ -380,10 +380,10 @@
                     android:textSize="15sp"
                     android:textColor="@color/darkLabel"
                     android:background="@android:color/transparent"
-                    android:layout_height="20dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginLeft="56dp"
-                    android:layout_width="match_parent" />
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
                 <TextView
                     android:id="@+id/EditTimeEntryDurationLabel"
                     android:textSize="12sp"
@@ -420,16 +420,16 @@
                     android:gravity="center_vertical"
                     android:text="@string/DeleteEntry"
                     android:textColor="@color/errorText"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_toRightOf="@id/EditTimeEntryDeleteIcon" />
-                <View
-                    android:background="@color/separator"
-                    android:layout_height="0.5dp"
-                    android:layout_marginLeft="56dp"
-                    android:layout_width="match_parent"
-                    android:layout_below="@id/EditTimeEntryDeleteLabel" />
             </LinearLayout>
+            <View
+                android:background="@color/separator"
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="56dp"
+                android:layout_width="match_parent"
+                android:layout_below="@id/EditTimeEntryDeleteContainer" />
         </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>
 </RelativeLayout>

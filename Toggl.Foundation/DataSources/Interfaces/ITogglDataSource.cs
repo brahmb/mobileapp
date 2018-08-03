@@ -5,6 +5,7 @@ using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.Reports;
 using Toggl.Foundation.Sync;
 using Toggl.PrimeRadiant.Models;
+using Toggl.Ultrawave.ApiClients;
 
 namespace Toggl.Foundation.DataSources
 {
@@ -17,13 +18,15 @@ namespace Toggl.Foundation.DataSources
         IClientsSource Clients { get; }
         IProjectsSource Projects { get; }
         ITimeEntriesSource TimeEntries { get; }
-        IDataSource<IThreadSafeWorkspace, IDatabaseWorkspace> Workspaces { get; }
+        IWorkspacesSource Workspaces { get; }
         IDataSource<IThreadSafeWorkspaceFeatureCollection, IDatabaseWorkspaceFeatureCollection> WorkspaceFeatures { get; }
 
         ISyncManager SyncManager { get; }
 
         IObservable<Unit> StartSyncing();
         IReportsProvider ReportsProvider { get; }
+
+        IFeedbackApi FeedbackApi { get; }
 
         IObservable<bool> HasUnsyncedData();
 

@@ -9,12 +9,12 @@ using System.CodeDom.Compiler;
 
 namespace Toggl.Daneel.ViewControllers
 {
-	[Register ("MainViewController")]
-	partial class MainViewController
-	{
-		[Outlet]
-		[GeneratedCode ("iOS Designer", "1.0")]
-		UIKit.UIView CurrentTimeEntryCard { get; set; }
+    [Register ("MainViewController")]
+    partial class MainViewController
+    {
+        [Outlet]
+        [GeneratedCode ("iOS Designer", "1.0")]
+        UIKit.UIView CurrentTimeEntryCard { get; set; }
 
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
@@ -34,6 +34,9 @@ namespace Toggl.Daneel.ViewControllers
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
 		Toggl.Daneel.Views.FadeView RunningEntryDescriptionFadeView { get; set; }
+
+        [Outlet]
+        UIKit.UIView SendFeedbackSuccessView { get; set; }
 
 		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
@@ -68,7 +71,7 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.NSLayoutConstraint TapToEditBubbleViewTopConstraint { get; set; }
 
 		[Outlet]
-		UIKit.UITableView TimeEntriesLogTableView { get; set; }
+        Toggl.Daneel.Views.TimeEntriesLogTableView TimeEntriesLogTableView { get; set; }
 
 		[Outlet]
 		UIKit.NSLayoutConstraint TopConstraint { get; set; }
@@ -78,7 +81,7 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.UIView WelcomeBackView { get; set; }
-		
+
 		void ReleaseDesignerOutlets ()
 		{
 			if (CurrentTimeEntryCard != null) {
@@ -160,6 +163,11 @@ namespace Toggl.Daneel.ViewControllers
 				WelcomeBackView.Dispose ();
 				WelcomeBackView = null;
 			}
+
+		    if (SendFeedbackSuccessView != null) {
+		        SendFeedbackSuccessView.Dispose ();
+		        SendFeedbackSuccessView = null;
+		    }
 
 			if (SwipeRightBubbleView != null) {
 				SwipeRightBubbleView.Dispose ();

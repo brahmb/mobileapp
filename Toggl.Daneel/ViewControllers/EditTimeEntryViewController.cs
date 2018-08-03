@@ -111,7 +111,7 @@ namespace Toggl.Daneel.ViewControllers
                       .To(vm => vm.Description);
 
             bindingSet.Bind(DescriptionTextView)
-                      .For(v => v.BindTap())
+                      .For(v => v.BindDidBecomeFirstResponder())
                       .To(vm => vm.StartEditingDescriptionCommand);
 
             bindingSet.Bind(BillableSwitch)

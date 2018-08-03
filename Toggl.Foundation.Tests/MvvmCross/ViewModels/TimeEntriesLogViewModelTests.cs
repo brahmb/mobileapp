@@ -32,7 +32,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheConstructor : TimeEntriesLogViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(SixParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useDataSource,
                 bool useTimeService,
@@ -217,30 +217,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 ViewModel.TimeEntries.Any(c => c.Any(te => te.Id == 21)).Should().BeFalse();
                 ViewModel.TimeEntries.Aggregate(0, (acc, te) => acc + te.Count).Should().Be(InitialAmountOfTimeEntries);
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask SetsTheIsWelcomePropertyToFalse()
-            {
-                var observable = Observable.Return(true);
-                OnboardingStorage.IsNewUser.Returns(observable);
-                await ViewModel.Initialize();
-
-                TimeEntryCreatedSubject.OnNext(NewTimeEntry.With((long)TimeSpan.FromHours(1).TotalSeconds));
-
-                ViewModel.IsWelcome.Should().BeFalse();
-            }
-
-            [Fact, LogIfTooSlow]
-            public async ThreadingTask SetsTheUserIsNotNewFlagToFalseInTheStorage()
-            {
-                var observable = Observable.Return(true);
-                OnboardingStorage.IsNewUser.Returns(observable);
-                await ViewModel.Initialize();
-
-                TimeEntryCreatedSubject.OnNext(NewTimeEntry.With((long)TimeSpan.FromHours(1).TotalSeconds));
-
-                OnboardingStorage.Received().SetIsNewUser(false);
             }
         }
 

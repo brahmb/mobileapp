@@ -74,7 +74,7 @@ namespace Toggl.Foundation.Tests.Login
         public sealed class Constructor : LoginManagerTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(EightParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useApiFactory,
                 bool useDatabase,

@@ -21,6 +21,7 @@ namespace Toggl.Ultrawave.Network
         public PreferencesEndpoints Preferences => new PreferencesEndpoints(baseUrl);
         public CountryEndpoints Countries => new CountryEndpoints(baseUrl);
         public LocationEndpoints Location => new LocationEndpoints(baseUrl);
+        public FeedbackEndpoints Feedback => new FeedbackEndpoints(baseUrl);
 
         public ReportsEndpoints ReportsEndpoints { get; }
 

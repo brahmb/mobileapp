@@ -43,7 +43,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     TimeService,
                     RatingService,
                     UserPreferences,
-                    FeedbackService,
                     AnalyticsService,
                     OnboardingStorage,
                     InteractorFactory,
@@ -73,13 +72,12 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheConstructor : MainViewModelTest
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(ElevenParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useDataSource,
                 bool useTimeService,
                 bool useRatingService,
                 bool useUserPreferences,
-                bool useFeedbackService,
                 bool useAnalyticsService,
                 bool useOnboardingStorage,
                 bool useInteractorFactory,
@@ -91,7 +89,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var timeService = useTimeService ? TimeService : null;
                 var ratingService = useRatingService ? RatingService : null;
                 var userPreferences = useUserPreferences ? UserPreferences : null;
-                var feedbackService = useFeedbackService ? FeedbackService : null;
                 var analyticsService = useAnalyticsService ? AnalyticsService : null;
                 var navigationService = useNavigationService ? NavigationService : null;
                 var interactorFactory = useInteractorFactory ? InteractorFactory : null;
@@ -105,7 +102,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         timeService,
                         ratingService,
                         userPreferences,
-                        feedbackService,
                         analyticsService,
                         onboardingStorage,
                         interactorFactory,
@@ -120,7 +116,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public void IsNotInManualModeByDefault()
             {
-                ViewModel.IsInManualMode.Should().BeFalse();
+                ViewModel.IsInManualMode.Should().Be(false);
             }
         }
 
@@ -498,6 +494,26 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Navigate<EditTimeEntryViewModel, long>(Arg.Any<long>());
             }
 
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask NavigatesToTheEditViewOnlyOnceOnMultipleTaps()
+            {
+                var timeEntry = Substitute.For<IThreadSafeTimeEntry>();
+                var observable = Observable.Return(timeEntry);
+                DataSource.TimeEntries.CurrentlyRunningTimeEntry.Returns(observable);
+                ViewModel.Initialize().Wait();
+                NavigationService
+                    .Navigate<EditTimeEntryViewModel, long>(Arg.Any<long>())
+                    .Returns(ThreadingTask.Delay(10));
+
+                for (int i = 0; i < 10; i++)
+                {
+                    ThreadingTask runSynchronously = ViewModel.EditTimeEntryCommand.ExecuteAsync();
+                }
+
+                await NavigationService.Received(1)
+                    .Navigate<EditTimeEntryViewModel, long>(Arg.Any<long>());
+            }
+
             [Property]
             public void PassesTheCurrentDateToTheStartTimeEntryViewModel(long id)
             {
@@ -707,30 +723,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public sealed class TheIsWelcomeProperty : MainViewModelTest
         {
-            [Theory]
-            [InlineData(0)]
-            [InlineData(1)]
-            [InlineData(28)]
-            public async ThreadingTask ReturnsTheSameValueAsTimeEntriesLogViewModel(
-                int timeEntryCount)
-            {
-                var timeEntries = Enumerable
-                    .Range(0, timeEntryCount)
-                    .Select(createTimeEntry);
-                InteractorFactory.GetAllNonDeletedTimeEntries().Execute()
-                    .Returns(Observable.Return(timeEntries));
-                DataSource
-                    .TimeEntries
-                    .Updated
-                    .Returns(Observable.Never<EntityUpdate<IThreadSafeTimeEntry>>());
-                await ViewModel.Initialize();
-
-                ViewModel
-                    .IsWelcome
-                    .Should()
-                    .Be(ViewModel.TimeEntriesLogViewModel.IsWelcome);
-            }
-
             private IThreadSafeTimeEntry createTimeEntry(int id)
             {
                 var timeEntry = Substitute.For<IThreadSafeTimeEntry>();
@@ -776,8 +768,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
             protected void PrepareIsWelcome(bool isWelcome)
             {
-                var observable = Observable.Return(isWelcome);
-                OnboardingStorage.IsNewUser.Returns(observable);
+                var subject = new BehaviorSubject<bool>(isWelcome);
+                OnboardingStorage.IsNewUser.Returns(subject.AsObservable());
             }
         }
 
@@ -789,7 +781,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 PrepareIsWelcome(true);
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowEmptyState.Should().BeTrue();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowEmptyState.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, true)
+                );
             }
 
             [Fact, LogIfTooSlow]
@@ -799,7 +798,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowEmptyState.Should().BeFalse();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowEmptyState.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false)
+                );
             }
 
             [Fact, LogIfTooSlow]
@@ -809,7 +815,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowEmptyState.Should().BeFalse();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowEmptyState.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false)
+                );
             }
 
             [Fact, LogIfTooSlow]
@@ -818,7 +831,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 PrepareIsWelcome(false);
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowEmptyState.Should().BeFalse();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowEmptyState.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false)
+                );
             }
         }
 
@@ -830,7 +850,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 PrepareIsWelcome(false);
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowWelcomeBack.Should().BeTrue();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowWelcomeBack.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false),
+                    ReactiveTest.OnNext(0, true)
+                );
             }
 
             [Fact, LogIfTooSlow]
@@ -839,7 +867,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 PrepareSuggestion();
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowWelcomeBack.Should().BeFalse();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowWelcomeBack.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false)
+                );
             }
 
             [Fact, LogIfTooSlow]
@@ -848,7 +883,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 PrepareTimeEntry();
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowWelcomeBack.Should().BeFalse();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowWelcomeBack.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false)
+                );
             }
 
             [Fact, LogIfTooSlow]
@@ -857,7 +899,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 PrepareIsWelcome(true);
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowWelcomeBack.Should().BeFalse();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowWelcomeBack.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false)
+                );
             }
         }
 

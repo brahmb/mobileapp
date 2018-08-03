@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Toggl.Multivac.Models;
 using Toggl.PrimeRadiant.Realm;
+using Toggl.PrimeRadiant.Realm.Models;
 
 namespace Toggl.PrimeRadiant.Tests.Realm
 {
@@ -24,6 +25,19 @@ namespace Toggl.PrimeRadiant.Tests.Realm
 
         public T Get(long id)
             => list.Single(entity => matchById(id)(entity));
+
+        public T ChangeId(long currentId, long newId)
+        {
+            var entity = Get(currentId);
+
+            if (entity is IModifiableId modifiableEntity)
+            {
+                modifiableEntity.ChangeId(newId);
+                return entity;
+            }
+
+            throw new InvalidOperationException($"Cannot change ID of entity of type {typeof(T)} which does not implement {nameof(IModifiableId)}");
+        }
 
         public T Create(T entity)
         {

@@ -2,7 +2,8 @@
 using System.Linq;
 using System.Reactive.Linq;
 using Toggl.Foundation.Exceptions;
-using Toggl.Multivac.Models;
+using Toggl.Foundation.Interactors;
+using Toggl.Foundation.DataSources;
 
 namespace Toggl.Foundation.Sync.States.Pull
 {
@@ -10,8 +11,15 @@ namespace Toggl.Foundation.Sync.States.Pull
     {
         public StateResult<IFetchObservables> Continue { get; } = new StateResult<IFetchObservables>();
 
+        private readonly ITogglDataSource dataSource;
+
+        public NoWorkspaceDetectingState(ITogglDataSource dataSource)
+        {
+            this.dataSource = dataSource;
+        }
+
         public IObservable<ITransition> Start(IFetchObservables fetch)
-            => fetch.GetList<IWorkspace>()
+            => dataSource.Workspaces.GetAll()
                 .Select(workspaces => workspaces.Any()
                     ? Continue.Transition(fetch)
                     : throw new NoWorkspaceException());

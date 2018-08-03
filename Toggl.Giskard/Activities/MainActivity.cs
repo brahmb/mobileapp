@@ -31,7 +31,7 @@ namespace Toggl.Giskard.Activities
     [Activity(Theme = "@style/AppTheme",
               ScreenOrientation = ScreenOrientation.Portrait,
               ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize)]
-    public sealed class MainActivity : MvxAppCompatActivity<MainViewModel>
+    public sealed partial class MainActivity : MvxAppCompatActivity<MainViewModel>
     {
         private const int snackbarDuration = 5000;
 
@@ -43,7 +43,7 @@ namespace Toggl.Giskard.Activities
         private PopupWindow playButtonTooltipPopupWindow;
         private PopupWindow stopButtonTooltipPopupWindow;
         private PopupWindow tapToEditPopup;
-        
+
         private IDisposable editTimeEntryOnboardingStepDisposable;
 
         private MainRecyclerView mainRecyclerView;
@@ -55,6 +55,8 @@ namespace Toggl.Giskard.Activities
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.MainActivity);
             OverridePendingTransition(Resource.Animation.abc_fade_in, Resource.Animation.abc_fade_out);
+
+            initializeViews();
 
             SetSupportActionBar(FindViewById<Toolbar>(Resource.Id.Toolbar));
             SupportActionBar.SetDisplayShowHomeEnabled(false);

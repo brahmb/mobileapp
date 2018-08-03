@@ -44,7 +44,7 @@ namespace Toggl.Foundation.Tests.Sync
         public sealed class TheConstuctor : SyncManagerTestBase
         {
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(FiveParameterConstructorTestData))]
+            [ConstructorData]
             public void ThrowsIfAnyArgumentIsNull(bool useQueue, bool useOrchestrator, bool useAnalyticsService, bool useLastTimeUsageStorage, bool useTimeService)
             {
                 var queue = useQueue ? Queue : null;

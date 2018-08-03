@@ -92,6 +92,8 @@ understand and agree to Toggl\'s</string>
     <string name="OnboardingTapToStopTimer">Tap to stop timer</string>
     <string name="OnboardingAddProjectOrTag">Add a project and tags on the fly</string>
     <string name="CategorizeWithProjects">Categorize your time by adding a project</string>
+    <string name="Continue">Continue</string>
+    <string name="Delete">Delete</string>
 
     <string name="MainTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.MainTemplateSelector, Toggl.Giskard</string>
     <string name="ReportsTemplateSelector" translatable="false">Toggl.Giskard.TemplateSelectors.ReportsTemplateSelector, Toggl.Giskard</string>

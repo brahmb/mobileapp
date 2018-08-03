@@ -39,7 +39,6 @@ namespace Toggl.Foundation.MvvmCross
         public IBrowserService BrowserService { get; }
         public IKeyValueStorage KeyValueStorage { get; }
         public IUserPreferences UserPreferences { get; }
-        public IFeedbackService FeedbackService { get; }
         public IOnboardingStorage OnboardingStorage { get; }
         public IMvxNavigationService NavigationService { get; }
         public IPasswordManagerService PasswordManagerService { get; }
@@ -55,7 +54,6 @@ namespace Toggl.Foundation.MvvmCross
             BrowserService = builder.BrowserService;
             KeyValueStorage = builder.KeyValueStorage;
             UserPreferences = builder.UserPreferences;
-            FeedbackService = builder.FeedbackService;
             OnboardingStorage = builder.OnboardingStorage;
             NavigationService = builder.NavigationService;
             PasswordManagerService = builder.PasswordManagerService;
@@ -89,7 +87,6 @@ namespace Toggl.Foundation.MvvmCross
             public IBrowserService BrowserService { get; private set; }
             public IKeyValueStorage KeyValueStorage { get; private set; }
             public IUserPreferences UserPreferences { get; private set; }
-            public IFeedbackService FeedbackService { get; private set; }
             public IOnboardingStorage OnboardingStorage { get; private set; }
             public IMvxNavigationService NavigationService { get; private set; }
             public IPasswordManagerService PasswordManagerService { get; private set; }
@@ -164,12 +161,6 @@ namespace Toggl.Foundation.MvvmCross
                 return this;
             }
 
-            public Builder WithFeedbackService(IFeedbackService feedbackService)
-            {
-                FeedbackService = feedbackService;
-                return this;
-            }
-
             public Builder WithDialogService<TDialogService>()
                 where TDialogService : IDialogService, new()
                 => WithDialogService(new TDialogService());
@@ -206,10 +197,6 @@ namespace Toggl.Foundation.MvvmCross
                 where TErrorHandlingService : IErrorHandlingService, new()
                 => WithErrorHandlingService(new TErrorHandlingService());
 
-            public Builder WithFeedbackService<TFeedbackService>()
-                where TFeedbackService : IFeedbackService, new()
-                => WithFeedbackService(new TFeedbackService());
-
             public MvvmCrossFoundation Build()
                 => new MvvmCrossFoundation(this);
 
@@ -219,7 +206,6 @@ namespace Toggl.Foundation.MvvmCross
                 Ensure.Argument.IsNotNull(BrowserService, nameof(BrowserService));
                 Ensure.Argument.IsNotNull(KeyValueStorage, nameof(KeyValueStorage));
                 Ensure.Argument.IsNotNull(UserPreferences, nameof(UserPreferences));
-                Ensure.Argument.IsNotNull(FeedbackService, nameof(FeedbackService));
                 Ensure.Argument.IsNotNull(OnboardingStorage, nameof(OnboardingStorage));
                 Ensure.Argument.IsNotNull(NavigationService, nameof(NavigationService));
                 Ensure.Argument.IsNotNull(ErrorHandlingService, nameof(ErrorHandlingService));
