@@ -122,7 +122,7 @@ namespace Toggl.Daneel.ViewControllers
                 tableViewSource.SwipeToContinue
             );
             this.Bind(continueTimeEntry, ViewModel.ContinueTimeEntry);
-            this.Bind(tableViewSource.SwipeToDelete, ViewModel.PreDeleteTimeEntry);
+            this.Bind(tableViewSource.SwipeToDelete, ViewModel.SoftDeleteTimeEntry);
             this.Bind(tableViewSource.ItemSelected, ViewModel.SelectTimeEntry);
 
             this.Bind(tableViewSource.SwipeToDelete, timeEntry =>
