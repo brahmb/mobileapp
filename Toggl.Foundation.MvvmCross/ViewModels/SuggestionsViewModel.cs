@@ -71,10 +71,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .Providers
                 .Select(provider => provider.GetSuggestions())
                 .Aggregate(Observable.Merge)
-                .Subscribe(addSuggestions);
+                .Subscribe(addSuggestion);
         }
 
-        private void addSuggestions(Suggestion suggestions)
+        private void addSuggestion(Suggestion suggestions)
         {
             Suggestions.Add(suggestions);
 
