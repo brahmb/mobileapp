@@ -8,12 +8,10 @@ using UIKit;
 
 namespace Toggl.Daneel.Views.StartTimeEntry
 {
-    public sealed partial class NoEntityInfoViewCell : MvxTableViewCell, INotifyPropertyChanged
+    public sealed partial class NoEntityInfoViewCell : MvxTableViewCell
     {
         public static readonly NSString Key = new NSString(nameof(NoEntityInfoViewCell));
         public static readonly UINib Nib;
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         private NoEntityInfoMessage noEntityInfoMessage;
         public NoEntityInfoMessage NoEntityInfoMessage
