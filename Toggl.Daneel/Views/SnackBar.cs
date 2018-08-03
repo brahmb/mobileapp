@@ -2,6 +2,7 @@ using System;
 using CoreGraphics;
 using Foundation;
 using ObjCRuntime;
+using Toggl.Foundation;
 using UIKit;
 
 namespace Toggl.Daneel
@@ -181,8 +182,8 @@ namespace Toggl.Daneel
 
         public static SnackBar Undo(Action onTap)
         {
-            var snackBar = SnackBar.Create("Time entry was deleted");
-            snackBar.AddButton("UNDO", onTap);
+            var snackBar = SnackBar.Create(Resources.EntryDeleted);
+            snackBar.AddButton(Resources.UndoButtonTitle, onTap);
             return snackBar;
         }
     }

@@ -16,6 +16,7 @@ using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Experiments;
 using Toggl.Foundation.Extensions;
+using Toggl.Foundation.Helper;
 using Toggl.Foundation.Interactors;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.MvvmCross.Collections;
@@ -413,7 +414,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             showUndoSubject.OnNext(true);
 
             delayedDeletionDisposable = Observable.Merge( // If 5 seconds pass or we try to delete another TE
-                    Observable.Return(timeEntry).Delay(TimeSpan.FromSeconds(5)),
+                    Observable.Return(timeEntry).Delay(Constants.UndoTime),
                     showUndoSubject.Where(t => t).Select(timeEntry)
                 )
                 .Take(1)
