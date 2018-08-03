@@ -295,7 +295,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 await interactorFactory.DeleteTimeEntry(Id).Execute();
 
                 analyticsService.DeleteTimeEntry.Track();
-                dataSource.SyncManager.PushSync();
+                var pushSync = dataSource.SyncManager.PushSync();
                 await navigationService.Close(this);
             }
             catch (Exception exception)
