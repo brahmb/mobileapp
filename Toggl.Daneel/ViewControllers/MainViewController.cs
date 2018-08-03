@@ -268,8 +268,11 @@ namespace Toggl.Daneel.ViewControllers
 
         private void toggleUndoDeletion(bool show)
         {
-            snackBar.Hide(false);
-            snackBar = null;
+            if (snackBar != null)
+            {
+                snackBar.Hide(false);
+                snackBar = null;
+            }
 
             if (!show)
                 return;
