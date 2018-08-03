@@ -116,7 +116,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [Fact, LogIfTooSlow]
             public void IsNotInManualModeByDefault()
             {
-                ViewModel.IsInManualMode.Should().BeFalse();
+                ViewModel.IsInManualMode.Should().Be(false);
             }
         }
 
@@ -688,8 +688,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
             protected void PrepareIsWelcome(bool isWelcome)
             {
-                var observable = Observable.Return(isWelcome);
-                OnboardingStorage.IsNewUser.Returns(observable);
+                var subject = new BehaviorSubject<bool>(isWelcome);
+                OnboardingStorage.IsNewUser.Returns(subject.AsObservable());
             }
         }
 
@@ -701,7 +701,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 PrepareIsWelcome(true);
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowEmptyState.Should().BeTrue();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowEmptyState.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, true)
+                );
             }
 
             [Fact, LogIfTooSlow]
@@ -711,7 +718,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowEmptyState.Should().BeFalse();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowEmptyState.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false)
+                );
             }
 
             [Fact, LogIfTooSlow]
@@ -721,7 +735,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowEmptyState.Should().BeFalse();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowEmptyState.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false)
+                );
             }
 
             [Fact, LogIfTooSlow]
@@ -730,7 +751,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 PrepareIsWelcome(false);
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowEmptyState.Should().BeFalse();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowEmptyState.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false)
+                );
             }
         }
 
@@ -742,7 +770,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 PrepareIsWelcome(false);
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowWelcomeBack.Should().BeTrue();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowWelcomeBack.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false),
+                    ReactiveTest.OnNext(0, true)
+                );
             }
 
             [Fact, LogIfTooSlow]
@@ -751,7 +787,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 PrepareSuggestion();
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowWelcomeBack.Should().BeFalse();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowWelcomeBack.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false)
+                );
             }
 
             [Fact, LogIfTooSlow]
@@ -760,7 +803,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 PrepareTimeEntry();
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowWelcomeBack.Should().BeFalse();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowWelcomeBack.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false)
+                );
             }
 
             [Fact, LogIfTooSlow]
@@ -769,7 +819,14 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 PrepareIsWelcome(true);
                 await ViewModel.Initialize();
 
-                ViewModel.ShouldShowWelcomeBack.Should().BeFalse();
+                var testScheduler = new TestScheduler();
+                var observer = testScheduler.CreateObserver<bool>();
+
+                ViewModel.ShouldShowWelcomeBack.Subscribe(observer);
+
+                observer.Messages.AssertEqual(
+                    ReactiveTest.OnNext(0, false)
+                );
             }
         }
 

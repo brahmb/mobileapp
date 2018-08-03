@@ -6,7 +6,6 @@ namespace Toggl.Foundation.MvvmCross.Collections
     public interface IGroupOrderedCollection<TItem> : IReadOnlyList<IReadOnlyList<TItem>>
     {
         bool IsEmpty { get; }
-        int TotalCount { get; }
 
         SectionedIndex? IndexOf(TItem item);
         SectionedIndex? IndexOf(IComparable itemId);

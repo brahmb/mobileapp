@@ -57,5 +57,7 @@ namespace Toggl.Foundation.Tests.Mocks
         public IThreadSafeWorkspace Workspace { get; set; }
 
         public IEnumerable<IThreadSafeTask> Tasks { get; set; }
+
+        public bool IsGhost => Workspace.IsGhost;
     }
 }

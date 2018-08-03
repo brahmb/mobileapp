@@ -35,7 +35,7 @@ namespace Toggl.Daneel.ViewControllers.Settings
 
             this.Bind(ViewModel.IsFeedbackEmpty, FeedbackPlaceholderTextView.BindIsVisible());
             this.Bind(ViewModel.ErrorViewVisible, ErrorView.BindAnimatedIsVisible());
-            this.Bind(ViewModel.SendEnabled, SendButton.BindIsEnabled());
+            this.Bind(ViewModel.SendEnabled, SendButton.BindEnabled());
 
             var isLoading = ViewModel.IsLoading.AsDriver(false);
             this.Bind(isLoading.Invert(), SendButton.BindIsVisible());

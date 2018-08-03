@@ -487,5 +487,23 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .ForEach(percentage => percentage.Should().BeGreaterOrEqualTo(5));
             }
         }
+
+        public sealed class TheChangeWorkspaceCommand : ReportsViewModelTest
+        {
+            [Fact, LogIfTooSlow]
+            public async Task ShouldTriggerAReportReload()
+            {
+                ViewModel.Prepare(0);
+                await ViewModel.Initialize();
+                var mockWorkspaceId = 6868;
+                var mockChartSegmentCount = 100;
+
+                ReportsProvider.GetProjectSummary(mockWorkspaceId, Arg.Any<DateTimeOffset>(), Arg.Any<DateTimeOffset>())
+                    .Returns(Observable.Return(new ProjectSummaryReport(new ChartSegment[mockChartSegmentCount], 0)));
+                ViewModel.ChangeWorkspaceCommand.Execute(mockWorkspaceId);
+
+                ViewModel.Segments.Should().HaveCount(mockChartSegmentCount);
+            }
+        }
     }
 }

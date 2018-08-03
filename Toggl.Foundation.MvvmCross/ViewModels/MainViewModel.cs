@@ -4,6 +4,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using MvvmCross.Commands;
 using MvvmCross.Navigation;
@@ -16,6 +17,7 @@ using Toggl.Foundation.Experiments;
 using Toggl.Foundation.Extensions;
 using Toggl.Foundation.Interactors;
 using Toggl.Foundation.Models.Interfaces;
+using Toggl.Foundation.MvvmCross.Collections;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.MvvmCross.ViewModels;
@@ -34,11 +36,51 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     [Preserve(AllMembers = true)]
     public sealed class MainViewModel : MvxViewModel
     {
-        private bool isStopButtonEnabled = false;
-        private string urlNavigationAction;
-        private bool hasStopButtonEverBeenUsed;
+        // Outputs
+        public ObservableGroupedOrderedCollection<TimeEntryViewModel> TimeEntries => timeEntriesViewModel.TimeEntries;
+        public IObservable<bool> LogEmpty => timeEntriesViewModel.Empty;
+        public IObservable<int> TimeEntriesCount => timeEntriesViewModel.Count;
+        public IObservable<SyncProgress> SyncProgressState { get; private set; }
+        public IObservable<bool> ShouldShowEmptyState { get; private set; }
+        public IObservable<bool> ShouldShowWelcomeBack { get; private set; }
 
-        private CompositeDisposable disposeBag = new CompositeDisposable();
+        public TimeSpan CurrentTimeEntryElapsedTime { get; private set; } = TimeSpan.Zero;
+        public DurationFormat CurrentTimeEntryElapsedTimeFormat { get; } = DurationFormat.Improved;
+        public long? CurrentTimeEntryId { get; private set; }
+        public string CurrentTimeEntryDescription { get; private set; }
+        public string CurrentTimeEntryProject { get; private set; }
+        public string CurrentTimeEntryProjectColor { get; private set; }
+        public string CurrentTimeEntryTask { get; private set; }
+        public string CurrentTimeEntryClient { get; private set; }
+        public IObservable<bool> CurrentTimeEntryHasDescription { get; private set; }
+        public bool IsAddDescriptionLabelVisible =>
+            string.IsNullOrEmpty(CurrentTimeEntryDescription)
+            && string.IsNullOrEmpty(CurrentTimeEntryProject);
+        public IObservable<bool> IsTimeEntryRunning { get; private set; }
+
+        public int NumberOfSyncFailures { get; private set; }
+        public bool IsInManualMode { get; set; } = false;
+
+        public SuggestionsViewModel SuggestionsViewModel { get; }
+        public RatingViewModel RatingViewModel { get; }
+        public IOnboardingStorage OnboardingStorage => onboardingStorage;
+        public IMvxNavigationService NavigationService => navigationService;
+        public IMvxAsyncCommand StartTimeEntryCommand { get; }
+        public IMvxAsyncCommand AlternativeStartTimeEntryCommand { get; }
+        public IMvxAsyncCommand StopTimeEntryCommand { get; }
+        public IMvxAsyncCommand OpenSettingsCommand { get; }
+        public IMvxAsyncCommand OpenReportsCommand { get; }
+        public IMvxAsyncCommand OpenSyncFailuresCommand { get; }
+        public IMvxCommand ToggleManualMode { get; }
+
+        // Inputs
+        public InputAction<TimeEntryViewModel> ContinueTimeEntry { get; }
+        public InputAction<TimeEntryViewModel> DeleteTimeEntry { get; }
+        public InputAction<TimeEntryViewModel> SelectTimeEntry { get; }
+        public UIAction RefreshAction { get; }
+
+        // Private
+        private const int ratingViewTimeout = 5;
 
         private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
@@ -48,91 +90,36 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IInteractorFactory interactorFactory;
         private readonly IMvxNavigationService navigationService;
 
+        private CompositeDisposable disposeBag = new CompositeDisposable();
+
+        private TimeEntriesViewModel timeEntriesViewModel;
         private RatingViewExperiment ratingViewExperiment;
 
+        private bool isStopButtonEnabled = false;
+        private string urlNavigationAction;
+        private bool hasStopButtonEverBeenUsed;
         private bool isEditViewOpen = false;
         private object isEditViewOpenLock = new object();
 
-        private readonly TimeSpan ratingViewTimeout = TimeSpan.FromMinutes(5);
-
-        public TimeSpan CurrentTimeEntryElapsedTime { get; private set; } = TimeSpan.Zero;
-
-        public DurationFormat CurrentTimeEntryElapsedTimeFormat { get; } = DurationFormat.Improved;
-
         private DateTimeOffset? currentTimeEntryStart;
 
-        public long? CurrentTimeEntryId { get; private set; }
+        // Deprecated properties
 
-        public string CurrentTimeEntryDescription { get; private set; }
-
-        public string CurrentTimeEntryProject { get; private set; }
-
-        public string CurrentTimeEntryProjectColor { get; private set; }
-
-        public string CurrentTimeEntryTask { get; private set; }
-
-        public string CurrentTimeEntryClient { get; private set; }
-
-        public SyncProgress SyncingProgress { get; private set; }
-
-        public int NumberOfSyncFailures { get; private set; }
-
-        public IObservable<bool> IsTimeEntryRunning { get; private set; }
-
-        public IObservable<bool> CurrentTimeEntryHasDescription { get; private set; }
-
-        [DependsOn(nameof(SyncingProgress))]
-        public bool ShowSyncIndicator => SyncingProgress == SyncProgress.Syncing;
-
-        public bool IsAddDescriptionLabelVisible =>
-            string.IsNullOrEmpty(CurrentTimeEntryDescription)
-            && string.IsNullOrEmpty(CurrentTimeEntryProject);
-
-        public bool IsLogEmpty
-            => TimeEntriesLogViewModel.IsEmpty;
-
-        public bool ShouldShowTimeEntriesLog
-            => !TimeEntriesLogViewModel.IsEmpty;
-
-        public bool ShouldShowEmptyState
-            => SuggestionsViewModel.IsEmpty
-            && TimeEntriesLogViewModel.IsEmpty
-            && IsWelcome;
-
-        public bool ShouldShowWelcomeBack
-            => SuggestionsViewModel.IsEmpty
-            && TimeEntriesLogViewModel.IsEmpty
-            && !IsWelcome;
-
-        public int TimeEntriesCount => TimeEntriesLogViewModel.TimeEntries?.Select(section => section.Count).Sum() ?? 0;
-
-        public bool IsWelcome { get; private set; }
-
-        public bool IsInManualMode { get; set; } = false;
-
+        [Obsolete("Use TimeEntriesViewModel and MainViewModel methods instead")]
         public TimeEntriesLogViewModel TimeEntriesLogViewModel { get; }
 
-        public SuggestionsViewModel SuggestionsViewModel { get; }
-
-        public RatingViewModel RatingViewModel { get; }
-
-        public IOnboardingStorage OnboardingStorage => onboardingStorage;
-
-        public IMvxNavigationService NavigationService => navigationService;
-
-        public IMvxAsyncCommand StartTimeEntryCommand { get; }
-
-        public IMvxAsyncCommand AlternativeStartTimeEntryCommand { get; }
-
-        public IMvxAsyncCommand StopTimeEntryCommand { get; }
-
+        [Obsolete("Use SelectTimeEntry RxAction instead")]
         public IMvxAsyncCommand EditTimeEntryCommand { get; }
 
-        public IMvxAsyncCommand OpenSyncFailuresCommand { get; }
-
+        [Obsolete("Use RefreshAction RxAction instead")]
         public IMvxCommand RefreshCommand { get; }
 
-        public IMvxCommand ToggleManualMode { get; }
+        [Obsolete("Use SyncProgressState instead")]
+        public SyncProgress SyncingProgress { get; private set; }
+
+        [Obsolete("Use SyncProgressState instead")]
+        [DependsOn(nameof(SyncingProgress))]
+        public bool ShowSyncIndicator => SyncingProgress == SyncProgress.Syncing;
 
         public MainViewModel(
             ITogglDataSource dataSource,
@@ -168,15 +155,23 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             SuggestionsViewModel = new SuggestionsViewModel(dataSource, interactorFactory, onboardingStorage, suggestionProviders);
             RatingViewModel = new RatingViewModel(timeService, dataSource, ratingService, analyticsService, onboardingStorage, navigationService);
             TimeEntriesLogViewModel = new TimeEntriesLogViewModel(timeService, dataSource, interactorFactory, onboardingStorage, analyticsService, navigationService);
+            timeEntriesViewModel = new TimeEntriesViewModel(dataSource, interactorFactory);
 
             ratingViewExperiment = new RatingViewExperiment(timeService, dataSource, onboardingStorage, remoteConfigService);
 
-            RefreshCommand = new MvxCommand(refresh);
+            RefreshCommand = new MvxCommand(Refresh);
+            OpenReportsCommand = new MvxAsyncCommand(openReports);
+            OpenSettingsCommand = new MvxAsyncCommand(openSettings);
             OpenSyncFailuresCommand = new MvxAsyncCommand(openSyncFailures);
             EditTimeEntryCommand = new MvxAsyncCommand(editTimeEntry, canExecuteEditTimeEntryCommand);
             StopTimeEntryCommand = new MvxAsyncCommand(stopTimeEntry, () => isStopButtonEnabled);
             StartTimeEntryCommand = new MvxAsyncCommand(startTimeEntry, () => CurrentTimeEntryId.HasValue == false);
             AlternativeStartTimeEntryCommand = new MvxAsyncCommand(alternativeStartTimeEntry, () => CurrentTimeEntryId.HasValue == false);
+
+            ContinueTimeEntry = new InputAction<TimeEntryViewModel>(continueTimeEntry);
+            DeleteTimeEntry = new InputAction<TimeEntryViewModel>(deleteTimeEntry);
+            SelectTimeEntry = new InputAction<TimeEntryViewModel>(timeEntrySelected);
+            RefreshAction = new UIAction(refresh);
         }
 
         public void Init(string action)
@@ -188,11 +183,31 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             await base.Initialize();
 
-            IsWelcome = await onboardingStorage.IsNewUser.FirstAsync();
-
+            await timeEntriesViewModel.Initialize();
             await TimeEntriesLogViewModel.Initialize();
             await SuggestionsViewModel.Initialize();
             await RatingViewModel.Initialize();
+
+            SyncProgressState = dataSource.SyncManager.ProgressObservable;
+
+            var isWelcome = onboardingStorage.IsNewUser;
+
+            var NoTimeEntries = timeEntriesViewModel.Empty
+                .Select( e => e && SuggestionsViewModel.IsEmpty )
+                .DistinctUntilChanged();
+
+            ShouldShowEmptyState = ObservableAddons.CombineLatestAll(
+                    isWelcome,
+                    NoTimeEntries
+                )
+                .DistinctUntilChanged();
+
+            ShouldShowWelcomeBack = ObservableAddons.CombineLatestAll(
+                    isWelcome.Select(b => !b),
+                    NoTimeEntries
+                )
+                .StartWith(false)
+                .DistinctUntilChanged();
 
             var connectableTimeEntryIsRunning =
                 dataSource
@@ -223,20 +238,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .SyncManager
                 .ProgressObservable
                 .Subscribe(progress => SyncingProgress = progress)
-                .DisposedBy(disposeBag);
-
-            Observable.Empty<Unit>()
-                .Merge(dataSource.TimeEntries.Updated.Select(_ => Unit.Default))
-                .Merge(dataSource.TimeEntries.Deleted.Select(_ => Unit.Default))
-                .Merge(dataSource.TimeEntries.Created.Select(_ => Unit.Default))
-                .Subscribe((Unit _) =>
-                {
-                    RaisePropertyChanged(nameof(ShouldShowTimeEntriesLog));
-                    RaisePropertyChanged(nameof(ShouldShowWelcomeBack));
-                    RaisePropertyChanged(nameof(ShouldShowEmptyState));
-                    RaisePropertyChanged(nameof(IsLogEmpty));
-                    RaisePropertyChanged(nameof(TimeEntriesCount));
-                })
                 .DisposedBy(disposeBag);
 
             interactorFactory
@@ -296,7 +297,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             analyticsService.RatingViewWasShown.Track();
             onboardingStorage.SetDidShowRatingView();
             onboardingStorage.SetRatingViewOutcome(RatingViewOutcome.NoInteraction, timeService.CurrentDateTime);
-            timeService.RunAfterDelay(ratingViewTimeout, () =>
+            timeService.RunAfterDelay(TimeSpan.FromMinutes(ratingViewTimeout), () =>
             {
                 navigationService.ChangePresentation(new ToggleRatingViewVisibilityHint());
             });
@@ -335,7 +336,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             RaisePropertyChanged(nameof(IsTimeEntryRunning));
         }
 
-        private void refresh()
+        public void Refresh()
         {
             dataSource.SyncManager.ForceFullSync();
         }
@@ -366,6 +367,43 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 : StartTimeEntryParameters.ForTimerMode(timeService.CurrentDateTime);
 
             return navigate<StartTimeEntryViewModel, StartTimeEntryParameters>(parameter);
+        }
+
+        private IObservable<Unit> continueTimeEntry(TimeEntryViewModel timeEntry)
+        {
+            return interactorFactory
+                .ContinueTimeEntry(timeEntry)
+                .Execute()
+                .Do( _ => {
+                    onboardingStorage.SetTimeEntryContinued();
+                })
+                .SelectUnit();
+        }
+
+        private IObservable<Unit> timeEntrySelected(TimeEntryViewModel timeEntry)
+        {
+            if (isEditViewOpen)
+                return Observable.Empty<Unit>();
+
+            onboardingStorage.TimeEntryWasTapped();
+            return navigate<EditTimeEntryViewModel, long>(timeEntry.Id).ToObservable();
+        }
+
+        private IObservable<Unit> deleteTimeEntry(TimeEntryViewModel timeEntry)
+        {
+            return interactorFactory
+                .DeleteTimeEntry(timeEntry.Id)
+                .Execute()
+                .Do( _ => {
+                    analyticsService.DeleteTimeEntry.Track();
+                    dataSource.SyncManager.PushSync();
+                });
+        }
+
+        private IObservable<Unit> refresh()
+        {
+            return dataSource.SyncManager.ForceFullSync()
+                .SelectUnit();
         }
 
         private async Task stopTimeEntry()

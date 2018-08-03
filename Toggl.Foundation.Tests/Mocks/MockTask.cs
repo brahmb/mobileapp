@@ -42,5 +42,7 @@ namespace Toggl.Foundation.Tests.Mocks
         public IThreadSafeProject Project { get; set; }
 
         public IThreadSafeWorkspace Workspace { get; set; }
+
+        public bool IsGhost => Workspace.IsGhost;
     }
 }

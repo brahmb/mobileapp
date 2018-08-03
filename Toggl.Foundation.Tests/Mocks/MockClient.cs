@@ -26,5 +26,7 @@ namespace Toggl.Foundation.Tests.Mocks
         public bool IsDeleted { get; set; }
 
         public IThreadSafeWorkspace Workspace { get; set; }
+
+        public bool IsGhost => Workspace.IsGhost;
     }
 }

@@ -24,11 +24,15 @@ namespace Toggl.Foundation.MvvmCross.Collections
                 .StartWith(IsEmpty)
                 .DistinctUntilChanged();
 
+        public IObservable<int> TotalCount
+            => collectionChangesSubject
+                .AsObservable()
+                .Select(_ => collection.TotalCount)
+                .StartWith(0)
+                .DistinctUntilChanged();
+
         public bool IsEmpty
             => collection.IsEmpty;
-
-        public int TotalCount
-            => collection.TotalCount;
 
         public int Count
             => collection.Count;

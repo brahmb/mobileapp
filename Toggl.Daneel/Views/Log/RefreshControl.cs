@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
@@ -9,65 +13,75 @@ using Toggl.Foundation;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.Sync;
 using Toggl.Multivac;
+using Toggl.Multivac.Extensions;
 using UIKit;
 using static Toggl.Daneel.Extensions.TextExtensions;
 
 namespace Toggl.Daneel.ViewSources
 {
-    public sealed class SwipeToRefreshTableViewDelegate : UITableViewDelegate
+    public sealed class RefreshControl
     {
+        private CompositeDisposable disposeBag = new CompositeDisposable();
+
         private const float syncBarHeight = 26;
         private const float activityIndicatorSize = 14;
         private const float syncLabelFontSize = 12;
 
         private static readonly float scrollThreshold = 3 * syncBarHeight;
 
-        private readonly UITableView tableView;
         private readonly UIColor pullToRefreshColor = Color.Main.PullToRefresh.ToNativeColor();
         private readonly UIColor syncingColor = Color.Main.Syncing.ToNativeColor();
         private readonly UIColor syncFailedColor = Color.Main.SyncFailed.ToNativeColor();
         private readonly UIColor offlineColor = Color.Main.Offline.ToNativeColor();
         private readonly UIColor syncCompletedColor = Color.Main.SyncCompleted.ToNativeColor();
 
-        private SyncProgress syncProgress;
         private bool wasReleased;
+        private bool isSyncing = false;
         private bool needsRefresh;
         private bool shouldCalculateOnDeceleration;
-        private bool isSyncing => syncProgress == SyncProgress.Syncing;
-        private int syncIndicatorLastShown;
         private bool shouldRefreshOnTap;
-
-        public SyncProgress SyncProgress
-        {
-            get => syncProgress;
-            set
-            {
-                if (value == syncProgress) return;
-                syncProgress = value;
-                OnSyncProgressChanged();
-            }
-        }
 
         private readonly UIView syncStateView = new UIView();
         private readonly UILabel syncStateLabel = new UILabel();
         private readonly UIButton dismissSyncBarButton = new UIButton();
         private readonly ActivityIndicatorView activityIndicatorView = new ActivityIndicatorView();
 
-        public IMvxCommand RefreshCommand { get; set; }
+        private NSLayoutConstraint heightConstraint;
 
-        public SwipeToRefreshTableViewDelegate(UITableView tableView)
+        private Subject<Unit> refreshSubject = new Subject<Unit>();
+        public IObservable<Unit> Refresh
+            => refreshSubject.AsObservable();
+
+        private UIScrollView scrollView;
+
+        public RefreshControl(IObservable<SyncProgress> syncProgress, IObservableScroll observableScroll)
         {
-            Ensure.Argument.IsNotNull(tableView, nameof(tableView));
+            syncProgress
+                .Subscribe(syncProgressChanged)
+                .DisposedBy(disposeBag);
 
-            this.tableView = tableView;
+            observableScroll.ScrollOffset
+                .Subscribe(didScroll)
+                .DisposedBy(disposeBag);
+
+            observableScroll.IsDragging
+                .Subscribe(draggingChanged)
+                .DisposedBy(disposeBag);
         }
 
-        public void Initialize()
+        public void Configure(UIScrollView scrollView)
         {
+            if (scrollView.Superview == null)
+            {
+                throw new ArgumentException("RefreshControl cannot be added to UISCrollView not in view hierarchy.");
+            }
+
+            this.scrollView = scrollView;
+
             syncStateView.AddSubview(syncStateLabel);
             syncStateView.AddSubview(activityIndicatorView);
             syncStateView.AddSubview(dismissSyncBarButton);
-            tableView.AddSubview(syncStateView);
+            scrollView.Superview.AddSubview(syncStateView);
 
             prepareSyncStateView();
             prepareSyncStateLabel();
@@ -79,10 +93,11 @@ namespace Toggl.Daneel.ViewSources
         {
             syncStateView.BackgroundColor = pullToRefreshColor;
             syncStateView.TranslatesAutoresizingMaskIntoConstraints = false;
-            syncStateView.BottomAnchor.ConstraintEqualTo(tableView.TopAnchor).Active = true;
-            syncStateView.WidthAnchor.ConstraintEqualTo(tableView.WidthAnchor).Active = true;
-            syncStateView.CenterXAnchor.ConstraintEqualTo(tableView.CenterXAnchor).Active = true;
-            syncStateView.TopAnchor.ConstraintEqualTo(tableView.Superview.TopAnchor).Active = true;
+            syncStateView.TopAnchor.ConstraintEqualTo(scrollView.Superview.TopAnchor).Active = true;
+            syncStateView.WidthAnchor.ConstraintEqualTo(scrollView.WidthAnchor).Active = true;
+            syncStateView.CenterXAnchor.ConstraintEqualTo(scrollView.CenterXAnchor).Active = true;
+            heightConstraint = syncStateView.HeightAnchor.ConstraintEqualTo(0);
+            heightConstraint.Active = true;
         }
 
         private void prepareSyncStateLabel()
@@ -119,12 +134,13 @@ namespace Toggl.Daneel.ViewSources
             dismissSyncBarButton.TouchUpInside += onDismissSyncBarButtonTap;
         }
 
-        private async void OnSyncProgressChanged()
+        private async void syncProgressChanged(SyncProgress syncProgress)
         {
             bool hideIndicator = false;
             shouldRefreshOnTap = false;
+            isSyncing = false;
 
-            switch (SyncProgress)
+            switch (syncProgress)
             {
                 case SyncProgress.Unknown:
                     return;
@@ -134,6 +150,7 @@ namespace Toggl.Daneel.ViewSources
                         new NSAttributedString(Resources.Syncing),
                         syncingColor);
                     setActivityIndicatorVisible(true);
+                    isSyncing = true;
                     break;
 
                 case SyncProgress.OfflineModeDetected:
@@ -165,21 +182,23 @@ namespace Toggl.Daneel.ViewSources
                     throw new ArgumentException(nameof(SyncProgress));
             }
 
-            int syncIndicatorShown = showSyncBar();
+            showSyncBar();
 
             if (!hideIndicator) return;
 
-            await hideSyncBar(syncIndicatorShown);
+            await hideSyncBar();
         }
 
-        public override void Scrolled(UIScrollView scrollView)
+        private void didScroll(CGPoint offset)
         {
             if (!scrollView.Dragging || wasReleased) return;
 
-            var offset = scrollView.ContentOffset.Y;
-            if (offset >= 0) return;
+            if (offset.Y >= 0) return;
 
-            var needsMorePulling = System.Math.Abs(offset) < scrollThreshold;
+            heightConstraint.Constant = -offset.Y;
+            syncStateView.SetNeedsLayout();
+
+            var needsMorePulling = System.Math.Abs(offset.Y) < scrollThreshold;
             needsRefresh = !needsMorePulling;
 
             if (isSyncing) return;
@@ -190,32 +209,31 @@ namespace Toggl.Daneel.ViewSources
                 pullToRefreshColor);
         }
 
-        public override void DraggingStarted(UIScrollView scrollView)
+        private void draggingChanged(bool isDragging)
         {
-            wasReleased = false;
-        }
+            if (isDragging)
+            {
+                wasReleased = false;
+            }
+            else
+            {
+                var offset = scrollView.ContentOffset.Y;
+                if (offset >= 0) return;
 
-        public override void DraggingEnded(UIScrollView scrollView, bool willDecelerate)
-        {
-            var offset = scrollView.ContentOffset.Y;
-            if (offset >= 0) return;
+                wasReleased = true;
 
-            shouldCalculateOnDeceleration = willDecelerate;
-            wasReleased = true;
-
-            if (shouldCalculateOnDeceleration) return;
-            refreshIfNeeded();
-        }
-
-        public override void DecelerationEnded(UIScrollView scrollView)
-        {
-            if (!shouldCalculateOnDeceleration) return;
-            refreshIfNeeded();
+                if (shouldCalculateOnDeceleration) return;
+                refreshIfNeeded();
+            }
         }
 
         private void refreshIfNeeded()
         {
-            if (!needsRefresh) return;
+            if (!needsRefresh)
+            {
+                hideSyncBar(false);
+                return;
+            }
 
             needsRefresh = false;
             shouldCalculateOnDeceleration = false;
@@ -226,7 +244,7 @@ namespace Toggl.Daneel.ViewSources
                 return;
             }
 
-            RefreshCommand?.Execute();
+            refreshSubject.OnNext(Unit.Default);
         }
 
         private void setSyncIndicatorTextAndBackground(NSAttributedString text, UIColor backgroundColor)
@@ -238,23 +256,32 @@ namespace Toggl.Daneel.ViewSources
             });
         }
 
-        private int showSyncBar()
+        private void showSyncBar()
         {
-            if (tableView.Dragging) return syncIndicatorLastShown;
-            if (tableView.ContentOffset.Y > 0) return syncIndicatorLastShown;
+            if (scrollView.Dragging) return;
+            if (scrollView.ContentOffset.Y > 0) return;
 
-            tableView.SetContentOffset(new CGPoint(0, -syncBarHeight), true);
-            return ++syncIndicatorLastShown;
+            scrollView.SetContentOffset(new CGPoint(0, -syncBarHeight), true);
+            heightConstraint.Constant = syncBarHeight;
+            UIView.Animate(Animation.Timings.EnterTiming, () =>
+            {
+                syncStateView.LayoutIfNeeded();
+            });
         }
 
-        private async Task hideSyncBar(int syncIndicatorShown)
+        private async Task hideSyncBar(bool withDelay = true)
         {
-            await Task.Delay(Animation.Timings.HideSyncStateViewDelay);
+            if (withDelay)
+                await Task.Delay(Animation.Timings.HideSyncStateViewDelay);
 
-            if (syncIndicatorShown != syncIndicatorLastShown) return;
-            if (tableView.ContentOffset.Y > 0) return;
+            if (scrollView.ContentOffset.Y > 0) return;
 
-            tableView.SetContentOffset(CGPoint.Empty, true);
+            scrollView.SetContentOffset(CGPoint.Empty, true);
+            heightConstraint.Constant = 0;
+            UIView.Animate(Animation.Timings.EnterTiming, () =>
+            {
+                syncStateView.LayoutIfNeeded();
+            });
         }
 
         private void setActivityIndicatorVisible(bool visible)
@@ -271,12 +298,12 @@ namespace Toggl.Daneel.ViewSources
         {
             if (shouldRefreshOnTap == false) return;
 
-            RefreshCommand?.Execute();
+            refreshSubject.OnNext(Unit.Default);
         }
 
         private void onDismissSyncBarButtonTap(object sender, EventArgs e)
         {
-            tableView.SetContentOffset(CGPoint.Empty, true);
+            hideSyncBar(false);
         }
     }
 }

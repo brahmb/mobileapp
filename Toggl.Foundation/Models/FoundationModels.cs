@@ -59,6 +59,8 @@ namespace Toggl.Foundation.Models
         public DateTimeOffset At { get; }
 
         public DateTimeOffset? ServerDeletedAt { get; }
+
+        public bool IsGhost => Workspace.IsGhost;
     }
 
     internal partial class Tag : IThreadSafeTag
@@ -82,6 +84,8 @@ namespace Toggl.Foundation.Models
         public DateTimeOffset At { get; }
 
         public DateTimeOffset? ServerDeletedAt { get; }
+
+        public bool IsGhost => Workspace.IsGhost;
     }
 
     internal partial class Task : IThreadSafeTask
@@ -121,6 +125,8 @@ namespace Toggl.Foundation.Models
         public string LastSyncErrorMessage { get; }
 
         public DateTimeOffset At { get; }
+
+        public bool IsGhost => Workspace.IsGhost;
     }
 
     internal partial class TimeEntry : IThreadSafeTimeEntry
@@ -174,6 +180,8 @@ namespace Toggl.Foundation.Models
         public DateTimeOffset At { get; }
 
         public DateTimeOffset? ServerDeletedAt { get; }
+
+        public bool IsGhost => Workspace.IsGhost;
     }
 
     internal partial class User : IThreadSafeUser
@@ -240,6 +248,8 @@ namespace Toggl.Foundation.Models
         public DateTimeOffset At { get; }
 
         public DateTimeOffset? ServerDeletedAt { get; }
+
+        public bool IsGhost { get; }
     }
 
     internal partial class WorkspaceFeature : IThreadSafeWorkspaceFeature

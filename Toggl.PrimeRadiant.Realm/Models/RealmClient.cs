@@ -17,5 +17,7 @@ namespace Toggl.PrimeRadiant.Realm
         public long WorkspaceId => RealmWorkspace?.Id ?? 0;
 
         public IDatabaseWorkspace Workspace => RealmWorkspace;
+
+        public bool IsGhost => Workspace.IsGhost;
     }
 }

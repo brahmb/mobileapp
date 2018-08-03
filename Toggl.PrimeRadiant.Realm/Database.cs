@@ -74,7 +74,7 @@ namespace Toggl.PrimeRadiant.Realm
         private RealmConfiguration createRealmConfiguration()
             => new RealmConfiguration
             {
-                SchemaVersion = 5,
+                SchemaVersion = 6,
                 MigrationCallback = (migration, oldSchemaVersion) =>
                 {
                     if (oldSchemaVersion < 3)
@@ -94,9 +94,9 @@ namespace Toggl.PrimeRadiant.Realm
                         }
                     }
 
-                    if (oldSchemaVersion < 5)
+                    if (oldSchemaVersion < 6)
                     {
-                        // nothing needs explicit updating when updating from schema 4 up to 5
+                        // nothing needs explicit updating when updating from schema 4 up to 6
                     }
                 }
             };

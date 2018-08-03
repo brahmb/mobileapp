@@ -460,5 +460,34 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                 );
             }
         }
+
+        public sealed class TheTotalCountObservableProperty : ReactiveTest
+        {
+            [Fact, LogIfTooSlow]
+            public void UpdatesAccordingly()
+            {
+                List<int> list = new List<int>();
+                var collection = new ObservableGroupedOrderedCollection<int>(i => i, i => i, i => i.ToString().Length);
+                collection.ReplaceWith(list);
+
+                var scheduler = new TestScheduler();
+                var observer = scheduler.CreateObserver<int>();
+
+                collection.TotalCount.Subscribe(observer);
+
+                collection.InsertItem(20);
+                collection.InsertItem(2);
+                collection.RemoveItemAt(0, 0);
+                collection.RemoveItemAt(0, 0);
+
+                observer.Messages.AssertEqual(
+                    OnNext(0, 0),
+                    OnNext(0, 1),
+                    OnNext(0, 2),
+                    OnNext(0, 1),
+                    OnNext(0, 0)
+                );
+            }
+        }
     }
 }

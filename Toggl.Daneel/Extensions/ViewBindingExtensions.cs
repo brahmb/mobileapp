@@ -5,7 +5,7 @@ using MvvmCross.Platforms.Ios.Binding.Views;
 using System.Collections.Generic;
 
 namespace Toggl.Daneel.Extensions
-{  
+{
     public static class ViewBindingExtensions
     {
 
@@ -44,9 +44,6 @@ namespace Toggl.Daneel.Extensions
 
         public static string BindCurrentPage(this UIScrollView self)
             => ScrollViewCurrentPageTargetBinding.BindingName;
-
-        public static string BindSpiderVisibility(this SpiderOnARopeView self)
-            => SpiderOnARopeViewIsVisibleTargetBinding.BindingName;
 
         public static string BindAnimatedOn(this UISwitch self)
             => SwitchAnimatedOnTargetBinding.BindingName;

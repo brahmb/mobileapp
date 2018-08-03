@@ -73,7 +73,7 @@ namespace Toggl.Foundation.Models
 
             public Builder SetBillable(bool billable)
             {
-                Billable = billable; 
+                Billable = billable;
                 return this;
             }
 
