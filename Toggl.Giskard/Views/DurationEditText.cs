@@ -174,11 +174,11 @@ namespace Toggl.Giskard.Views
 
             public ICharSequence FilterFormatted(ICharSequence source, int start, int end, ISpanned dest, int dstart, int dend)
             {
-                var empty = new Java.Lang.String(string.Empty);
+                var empty = string.Empty.AsJavaString();
                 var sourceLength = source.Length();
 
                 if (sourceLength > 1)
-                    return new Java.Lang.String(source.ToString());
+                    return source.ToString().AsJavaString();
 
                 if (sourceLength == 0)
                 {
@@ -193,7 +193,7 @@ namespace Toggl.Giskard.Views
                     int digit = int.Parse(lastChar.ToString());
                     onDigit?.Invoke(digit);
 
-                    return new Java.Lang.String(digit.ToString());
+                    return digit.ToString().AsJavaString();
                 }
 
                 return empty;
