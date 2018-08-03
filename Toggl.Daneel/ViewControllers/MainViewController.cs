@@ -256,21 +256,11 @@ namespace Toggl.Daneel.ViewControllers
 #endif
         }
 
-        public override void ViewWillDisappear(bool animated)
-        {
-            base.ViewWillDisappear(animated);
-            if (snackBar != null)
-            {
-                snackBar.Hide(true);
-                snackBar = null;
-            }
-        }
-
         private void toggleUndoDeletion(bool show)
         {
             if (snackBar != null)
             {
-                snackBar.Hide(false);
+                snackBar.Hide();
                 snackBar = null;
             }
 
