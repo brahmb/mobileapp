@@ -41,7 +41,7 @@ namespace Toggl.Daneel.ViewSources
         {
             lock (animationLock)
             {
-                if (changes.Any( c => c.Type == CollectionChangeType.Reload))
+                if (changes.Any(c => c.Type == CollectionChangeType.Reload))
                 {
                     tableView.ReloadData();
                     return;

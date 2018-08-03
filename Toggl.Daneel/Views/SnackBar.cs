@@ -108,7 +108,7 @@ namespace Toggl.Daneel
             );
         }
 
-        public void Hide(bool execute = true)
+        public void Hide()
         {
             if (!showing) return;
 
