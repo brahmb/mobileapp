@@ -64,7 +64,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public SuggestionsViewModel SuggestionsViewModel { get; }
         public RatingViewModel RatingViewModel { get; }
         public IOnboardingStorage OnboardingStorage => onboardingStorage;
-        public IMvxNavigationService NavigationService => navigationService;
+
+        public new IMvxNavigationService NavigationService => navigationService;
+
         public IMvxAsyncCommand StartTimeEntryCommand { get; }
         public IMvxAsyncCommand AlternativeStartTimeEntryCommand { get; }
         public IMvxAsyncCommand StopTimeEntryCommand { get; }

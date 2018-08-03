@@ -298,8 +298,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 var pushSync = dataSource.SyncManager.PushSync();
                 await navigationService.Close(this);
             }
-            catch (Exception exception)
+            catch
             {
+                // Intentionally left blank
             }
         }
 
