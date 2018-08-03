@@ -37,7 +37,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar
             IsToday = today.Date == dateTime.Date;
         }
 
-        public void OnSelectedRangeChanged(DateRangeParameter selectedRange)
+        public void OnSelectedRangeChanged(ReportsDateRangeParameter selectedRange)
         {
             Selected = selectedRange != null && selectedRange.StartDate.Date <= dateTime.Date && selectedRange.EndDate.Date >= dateTime.Date;
 

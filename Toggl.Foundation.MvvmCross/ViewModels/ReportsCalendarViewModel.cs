@@ -26,7 +26,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         //Fields
         private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
-        private readonly ISubject<DateRangeParameter> selectedDateRangeSubject = new Subject<DateRangeParameter>();
+        private readonly ISubject<ReportsDateRangeParameter> selectedDateRangeSubject = new Subject<ReportsDateRangeParameter>();
         private readonly string[] dayHeaders =
         {
             Resources.SundayInitial,
@@ -57,7 +57,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public List<CalendarPageViewModel> Months { get; } = new List<CalendarPageViewModel>();
 
-        public IObservable<DateRangeParameter> SelectedDateRangeObservable
+        public IObservable<ReportsDateRangeParameter> SelectedDateRangeObservable
             => selectedDateRangeSubject.AsObservable();
 
         public List<CalendarBaseQuickSelectShortcut> QuickSelectShortcuts { get; private set; }
@@ -87,7 +87,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             {
                 var date = tappedDay.DateTimeOffset;
 
-                var dateRange = DateRangeParameter
+                var dateRange = ReportsDateRangeParameter
                     .WithDates(date, date)
                     .WithSource(ReportsSource.Calendar);
                 startOfSelection = tappedDay;
@@ -98,7 +98,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 var startDate = startOfSelection.DateTimeOffset;
                 var endDate = tappedDay.DateTimeOffset;
 
-                var dateRange = DateRangeParameter
+                var dateRange = ReportsDateRangeParameter
                     .WithDates(startDate, endDate)
                     .WithSource(ReportsSource.Calendar);
                 startOfSelection = null;
@@ -145,7 +145,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             if (startOfSelection == null) return;
 
             var date = startOfSelection.DateTimeOffset;
-            var dateRange = DateRangeParameter
+            var dateRange = ReportsDateRangeParameter
                 .WithDates(date, date)
                 .WithSource(ReportsSource.Calendar);
             changeDateRange(dateRange);
@@ -173,7 +173,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private CalendarMonth convertPageIndexTocalendarMonth(int pageIndex)
             => initialMonth.AddMonths(pageIndex);
 
-        private void changeDateRange(DateRangeParameter newDateRange)
+        private void changeDateRange(ReportsDateRangeParameter newDateRange)
         {
             startOfSelection = null;
 
@@ -185,7 +185,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private void quickSelect(CalendarBaseQuickSelectShortcut quickSelectShortCut)
             => changeDateRange(quickSelectShortCut.GetDateRange());
 
-        private void highlightDateRange(DateRangeParameter dateRange)
+        private void highlightDateRange(ReportsDateRangeParameter dateRange)
         {
             Months.ForEach(month => month.Days.ForEach(day => day.OnSelectedRangeChanged(dateRange)));
         }

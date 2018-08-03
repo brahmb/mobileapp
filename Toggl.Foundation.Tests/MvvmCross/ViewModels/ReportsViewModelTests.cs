@@ -110,7 +110,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 await Initialize();
                 ViewModel.ChangeDateRangeCommand.Execute(
-                    DateRangeParameter.WithDates(start, end));
+                    ReportsDateRangeParameter.WithDates(start, end));
 
                 await delayed;
                 ViewModel.Segments.Count.Should().Be(segments.Length);
@@ -268,7 +268,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var end = new DateTimeOffset(endYear, endMonth, endDay, 0, 0, 0, TimeSpan.Zero);
                 TimeService.CurrentDateTime.Returns(currentDate);
                 ViewModel.ChangeDateRangeCommand.Execute(
-                    DateRangeParameter.WithDates(start, end).WithSource(ReportsSource.Calendar));
+                    ReportsDateRangeParameter.WithDates(start, end).WithSource(ReportsSource.Calendar));
 
                 ViewModel.CurrentDateRangeString.Should().Be($"{Resources.ThisWeek} ▾");
             }
@@ -291,7 +291,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 preferencesSubject.OnNext(preferences);
 
                 ViewModel.ChangeDateRangeCommand.Execute(
-                    DateRangeParameter.WithDates(start, end).WithSource(ReportsSource.Calendar));
+                    ReportsDateRangeParameter.WithDates(start, end).WithSource(ReportsSource.Calendar));
 
                 ViewModel.CurrentDateRangeString.Should().Be(expectedResult);
             }

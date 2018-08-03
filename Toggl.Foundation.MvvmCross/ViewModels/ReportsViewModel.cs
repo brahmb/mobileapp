@@ -97,7 +97,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public IMvxCommand ToggleCalendarCommand { get; }
 
-        public IMvxCommand<DateRangeParameter> ChangeDateRangeCommand { get; }
+        public IMvxCommand<ReportsDateRangeParameter> ChangeDateRangeCommand { get; }
 
         public IMvxCommand<long> ChangeWorkspaceCommand { get; }
 
@@ -123,7 +123,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             HideCalendarCommand = new MvxCommand(hideCalendar);
             ToggleCalendarCommand = new MvxCommand(toggleCalendar);
-            ChangeDateRangeCommand = new MvxCommand<DateRangeParameter>(changeDateRange);
+            ChangeDateRangeCommand = new MvxCommand<ReportsDateRangeParameter>(changeDateRange);
             ChangeWorkspaceCommand = new MvxCommand<long>(changeWorkspace);
         }
 
@@ -223,7 +223,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             calendarViewModel.OnHideCalendar();
         }
 
-        private void changeDateRange(DateRangeParameter dateRange)
+        private void changeDateRange(ReportsDateRangeParameter dateRange)
         {
             startDate = dateRange.StartDate;
             endDate = dateRange.EndDate;

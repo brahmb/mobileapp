@@ -23,7 +23,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar.QuickSelectShortcuts
             Title = title;
         }
 
-        public void OnDateRangeChanged(DateRangeParameter dateRange)
+        public void OnDateRangeChanged(ReportsDateRangeParameter dateRange)
         {
             var thisActionDateRange = GetDateRange();
 
@@ -31,6 +31,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Calendar.QuickSelectShortcuts
                     && dateRange.EndDate.Date == thisActionDateRange.EndDate.Date;
         }
 
-        public abstract DateRangeParameter GetDateRange();
+        public abstract ReportsDateRangeParameter GetDateRange();
     }
 }

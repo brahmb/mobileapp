@@ -3,7 +3,7 @@ using Toggl.Foundation.Analytics;
 
 namespace Toggl.Foundation.MvvmCross.Parameters
 {
-    public sealed class DateRangeParameter
+    public sealed class ReportsDateRangeParameter
     {
         public DateTimeOffset StartDate { get; set; }
 
@@ -11,7 +11,7 @@ namespace Toggl.Foundation.MvvmCross.Parameters
 
         public ReportsSource Source { get; set; }
 
-        public static DateRangeParameter WithDates(
+        public static ReportsDateRangeParameter WithDates(
             DateTimeOffset start,
             DateTimeOffset end
         )
@@ -19,12 +19,12 @@ namespace Toggl.Foundation.MvvmCross.Parameters
             if (start > end)
                 (start, end) = (end, start);
 
-            return new DateRangeParameter { StartDate = start, EndDate = end, Source = ReportsSource.Other };
+            return new ReportsDateRangeParameter { StartDate = start, EndDate = end, Source = ReportsSource.Other };
         }
 
-        public DateRangeParameter WithSource(ReportsSource source)
+        public ReportsDateRangeParameter WithSource(ReportsSource source)
         {
-            return new DateRangeParameter { StartDate = this.StartDate, EndDate = this.EndDate, Source = source };
+            return new ReportsDateRangeParameter { StartDate = this.StartDate, EndDate = this.EndDate, Source = source };
         }
     }
 }

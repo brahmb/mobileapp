@@ -65,7 +65,7 @@ namespace Toggl.Giskard.Fragments
             return view;
         }
 
-        private void onDateRangeChanged(DateRangeParameter dateRange)
+        private void onDateRangeChanged(ReportsDateRangeParameter dateRange)
         {
             var anyShortcutIsSelected = ViewModel.QuickSelectShortcuts.Any(shortcut => shortcut.Selected);
             if (!anyShortcutIsSelected) return;
