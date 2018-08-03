@@ -128,11 +128,15 @@ namespace Toggl.Daneel.ViewControllers
             this.Bind(tableViewSource.SwipeToDelete, timeEntry =>
             {
                 if (snackBar != null)
-                    snackBar.Hide();
+                {
+                    snackBar.Hide(true);
+                    snackBar = null;
+                }
 
                 snackBar = SnackBar.Undo(
-                    () => { ViewModel.UndoDeleteTimeEntry.Execute(timeEntry);},
-                    () => { ViewModel.DeleteTimeEntry.Execute(timeEntry); });
+                        () => { ViewModel.UndoDeleteTimeEntry.Execute(timeEntry); },
+                        () => { ViewModel.DeleteTimeEntry.Execute(timeEntry); });
+
                 snackBar.SnackBottomAnchor = StartTimeEntryButton.TopAnchor;
                 snackBar.Show(View);
             });

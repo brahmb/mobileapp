@@ -1,6 +1,9 @@
 using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using Toggl.Foundation.MvvmCross.Extensions;
+using System.Threading;
 using CoreGraphics;
 using Foundation;
 using ObjCRuntime;
@@ -35,7 +38,11 @@ namespace Toggl.Daneel
         private NSLayoutYAxisAnchor bottomAnchor;
         private NSLayoutConstraint bottomConstraint;
         private ButtonPositionType buttonPosition = ButtonPositionType.Right;
-        private Func<Task> startTimer;
+
+        private Subject<Unit> timerSubject = new Subject<Unit>();
+        private IDisposable timerDisposable;
+        private Action timerAction;
+
         private bool showing = false;
         private string text;
 
@@ -68,7 +75,8 @@ namespace Toggl.Daneel
             var button = new UIButton(UIButtonType.Plain);
             button.TouchUpInside += (sender, e) =>
             {
-                Hide();
+                timerDisposable.Dispose();
+                Hide(false);
                 onTap();
             };
             button.SetAttributedTitle(new NSAttributedString(title, ButtonAttributes), UIControlState.Normal);
@@ -79,15 +87,17 @@ namespace Toggl.Daneel
             SetNeedsLayout();
         }
 
-        public void SetTimer(float seconds, Action onTimer)
+        public void SetTimer(double seconds, Action onTimer)
         {
-            startTimer = async () =>
-            {
-                await Task.Delay((int) seconds * 1000);
-                if (!showing) return;
-                Hide();
-                onTimer();
-            };
+            timerAction = onTimer;
+
+            timerDisposable = timerSubject
+                .Delay(TimeSpan.FromSeconds(seconds))
+                .ObserveOn(SynchronizationContext.Current)
+                .VoidSubscribe(() =>
+                {
+                    Hide(true);
+                });
         }
 
         public void Show(UIView superView)
@@ -96,6 +106,8 @@ namespace Toggl.Daneel
             {
                 return;
             }
+
+            if (showing) return;
 
             showing = true;
             Alpha = 0;
@@ -118,11 +130,13 @@ namespace Toggl.Daneel
                 }
             );
 
-            startTimer?.Invoke();
+            startTimer();
         }
 
-        public void Hide()
+        public void Hide(bool execute = true)
         {
+            if (!showing) return;
+
             showing = false;
             UIView.Animate(
                 0.3,
@@ -134,6 +148,13 @@ namespace Toggl.Daneel
                 () =>
                 {
                     RemoveFromSuperview();
+
+                    if (execute && timerAction != null)
+                    {
+                        timerAction.Invoke();
+                    }
+
+                    stopTimer();
                 }
             );
         }
@@ -189,6 +210,17 @@ namespace Toggl.Daneel
             }
 
             SetNeedsLayout();
+        }
+
+        private void startTimer()
+        {
+            timerSubject.OnNext(Unit.Default);
+        }
+
+        private void stopTimer()
+        {
+            timerDisposable.Dispose();
+            timerAction = null;
         }
 
         public static SnackBar Undo(Action onTap, Action onTimer)
