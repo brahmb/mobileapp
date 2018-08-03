@@ -40,7 +40,7 @@ namespace Toggl.Foundation.MvvmCross.Parameters
             };
 
             if (!allowedParameters.Keys.Contains(origin))
-                throw new ArgumentException("SelectTimeCommand binding must have one of the following (case sensitive) parameters: StartTimeClock|StartTimeCalendar|StopTimeClock|StopTimeCalendar|Duration");
+                throw new ArgumentException("SelectTimeCommand binding must have one of the following (case sensitive) parameters: StartTime|StartDate|StopTime|StopDate|Duration");
 
             var (tabIndex, shouldStartOnCalendar) = allowedParameters[origin];
 
