@@ -1,4 +1,5 @@
 ﻿using System;
+using Toggl.Multivac;
 
 namespace Toggl.Foundation.Autocomplete.Suggestions
 {
@@ -20,12 +21,7 @@ namespace Toggl.Foundation.Autocomplete.Suggestions
             Description = $"Search {suggestionName}";
         }
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (Symbol.GetHashCode() * 397) ^ Description.GetHashCode();
-            }
-        }
+        public override int GetHashCode() 
+            => HashCode.From(Symbol, Description);
     }
 }

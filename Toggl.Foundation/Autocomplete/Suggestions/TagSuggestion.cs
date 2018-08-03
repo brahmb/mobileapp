@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Toggl.Foundation.Models.Interfaces;
+using Toggl.Multivac;
 
 namespace Toggl.Foundation.Autocomplete.Suggestions
 {
@@ -22,11 +23,6 @@ namespace Toggl.Foundation.Autocomplete.Suggestions
         }
 
         public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (TagId.GetHashCode() * 397) ^ Name.GetHashCode();
-            }
-        }
+            => HashCode.From(TagId, Name);
     }
 }

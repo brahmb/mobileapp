@@ -75,6 +75,6 @@ namespace Toggl.Multivac
         }
 
         public override int GetHashCode()
-            => (Year * 12 + Month).GetHashCode();
+            => HashCode.From(Year, Month);
     }
 }

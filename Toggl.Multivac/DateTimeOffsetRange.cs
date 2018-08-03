@@ -28,8 +28,7 @@ namespace Toggl.Multivac
             => !range.Equals(other);
 
         public override int GetHashCode()
-            => 19387 * Minimum.GetHashCode()
-             ^ 24691 * Maximum.GetHashCode();
+            => HashCode.From(Minimum, Maximum);
 
         public override string ToString()
             => $"[{Minimum}, {Maximum}]";

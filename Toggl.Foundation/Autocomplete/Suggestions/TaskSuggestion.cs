@@ -1,5 +1,6 @@
 ﻿using Toggl.Foundation.Extensions;
 using Toggl.Foundation.Models.Interfaces;
+using Toggl.Multivac;
 
 namespace Toggl.Foundation.Autocomplete.Suggestions
 {
@@ -25,14 +26,7 @@ namespace Toggl.Foundation.Autocomplete.Suggestions
             ProjectColor = task.Project?.DisplayColor() ?? "";
         }
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (TaskId.GetHashCode() * 397) ^
-                       (ProjectId.GetHashCode() * 397) ^
-                        Name.GetHashCode();
-            }
-        }
+        public override int GetHashCode() 
+            => HashCode.From(TaskId, ProjectId, Name);
     }
 }

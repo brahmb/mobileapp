@@ -2,6 +2,7 @@
 using System.Linq;
 using Toggl.Foundation.Extensions;
 using Toggl.Foundation.Models.Interfaces;
+using Toggl.Multivac;
 
 namespace Toggl.Foundation.Autocomplete.Suggestions
 {
@@ -49,15 +50,7 @@ namespace Toggl.Foundation.Autocomplete.Suggestions
             }
         }
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (Description.GetHashCode() * 397) ^
-                       (ProjectName.GetHashCode() * 397) ^
-                       (ProjectColor.GetHashCode() * 397) ^
-                       ClientName.GetHashCode();
-            }
-        }
+        public override int GetHashCode() 
+            => HashCode.From(Description, ProjectName, ProjectColor, ClientName);
     }
 }
