@@ -34,9 +34,6 @@ namespace Toggl.Giskard.Adapters
         {
         }
 
-        public override int ItemCount 
-            => base.ItemCount;
-
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
             base.OnBindViewHolder(holder, position);
