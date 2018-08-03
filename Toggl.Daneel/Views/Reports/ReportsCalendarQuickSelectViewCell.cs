@@ -12,7 +12,6 @@ namespace Toggl.Daneel.Views.Reports
 {
     public sealed partial class ReportsCalendarQuickSelectViewCell : MvxCollectionViewCell
     {
-
         public static readonly NSString Key = new NSString(nameof(ReportsCalendarQuickSelectViewCell));
         public static readonly UINib Nib;
 
@@ -21,7 +20,7 @@ namespace Toggl.Daneel.Views.Reports
             Nib = UINib.FromName(nameof(ReportsCalendarQuickSelectViewCell), NSBundle.MainBundle);
         }
 
-        protected ReportsCalendarQuickSelectViewCell(IntPtr handle)
+        private ReportsCalendarQuickSelectViewCell(IntPtr handle)
             : base(handle)
         {
             // Note: this .ctor should not contain any initialization logic.
