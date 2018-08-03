@@ -112,8 +112,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public string CurrentQuery { get; private set; }
 
-        public bool IsEditingTime { get; private set; }
-
         public bool IsSuggestingTags { get; private set; }
 
         public bool IsSuggestingProjects { get; private set; }
@@ -505,8 +503,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             if (getTapSourceFromBindingParameter(origin) is StartViewTapSource tapSource)
                 analyticsService.StartViewTapped.Track(tapSource);
 
-            IsEditingTime = true;
-
             var stopTime = Duration.HasValue ? (DateTimeOffset?)StartTime + Duration.Value : null;
 
             var preferences = await dataSource.Preferences.Current.FirstAsync();
@@ -527,15 +523,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             {
                 Duration = result.Stop - result.Start;
             }
-
-            IsEditingTime = false;
         }
 
         private async Task changeTime()
         {
             analyticsService.StartViewTapped.Track(StartViewTapSource.StartTime);
-
-            IsEditingTime = true;
 
             var currentDuration = DurationParameter.WithStartAndDuration(StartTime, Duration);
 
@@ -545,8 +537,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             StartTime = selectedDuration.Start;
             Duration = selectedDuration.Duration ?? Duration;
-
-            IsEditingTime = false;
         }
 
         private async Task setStartDate()

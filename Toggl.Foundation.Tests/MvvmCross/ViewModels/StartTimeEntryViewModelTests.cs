@@ -921,26 +921,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
 
             [Fact, LogIfTooSlow]
-            public async Task SetsTheIsEditingDurationDateToTrueWhileTheViewDoesNotReturnAndThenSetsItBackToFalse()
-            {
-                var now = DateTimeOffset.UtcNow;
-                var parameter = new StartTimeEntryParameters(now, "", null);
-                var parameterToReturn = DurationParameter.WithStartAndDuration(now.AddHours(-2), null);
-                var tcs = new TaskCompletionSource<DurationParameter>();
-                NavigationService
-                    .Navigate<EditDurationViewModel, EditDurationParameters, DurationParameter>(Arg.Any<EditDurationParameters>())
-                    .Returns(tcs.Task);
-                ViewModel.Prepare(parameter);
-
-                var toWait = ViewModel.ChangeTimeCommand.ExecuteAsync();
-                ViewModel.IsEditingTime.Should().BeTrue();
-                tcs.SetResult(parameterToReturn);
-                await toWait;
-
-                ViewModel.IsEditingTime.Should().BeFalse();
-            }
-
-            [Fact, LogIfTooSlow]
             public async Task SetsTheStopDateToTheValueReturnedByTheEditDurationViewModelIfUserStoppsTheTimeEntry()
             {
                 var now = DateTimeOffset.UtcNow;
@@ -957,11 +937,9 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.Prepare(parameter);
 
                 var toWait = ViewModel.ChangeTimeCommand.ExecuteAsync();
-                ViewModel.IsEditingTime.Should().BeTrue();
                 tcs.SetResult(parameterToReturn);
                 await toWait;
 
-                ViewModel.IsEditingTime.Should().BeFalse();
                 ViewModel.DisplayedTime.Should().Be(parameterToReturn.Duration.Value);
 
                 currentTimeSubject.OnNext(now.AddHours(10));
@@ -1710,22 +1688,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 NavigationService
                     .Navigate<SelectTimeViewModel, SelectTimeParameters, SelectTimeResultsParameters>(Arg.Any<SelectTimeParameters>())
                     .Returns(tcs.Task);
-            }
-
-            [Fact, LogIfTooSlow]
-            public void SetsIsEditingTimeToTrueWhenItStarts()
-            {
-                ViewModel.SelectTimeCommand.ExecuteAsync(origin);
-
-                ViewModel.IsEditingTime.Should().BeTrue();
-            }
-
-            [Fact, LogIfTooSlow]
-            public async Task SetsIsEditingTimeToFalseWhenItEnds()
-            {
-                await callCommandCorrectly();
-
-                ViewModel.IsEditingTime.Should().BeFalse();
             }
 
             [Fact, LogIfTooSlow]
