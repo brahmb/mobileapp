@@ -224,7 +224,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
 
             [Fact, LogIfTooSlow]
-            public async Task TracksLogoutEvent()
+            public void TracksLogoutEvent()
             {
                 ViewModel.SignOutCommand.Execute();
 

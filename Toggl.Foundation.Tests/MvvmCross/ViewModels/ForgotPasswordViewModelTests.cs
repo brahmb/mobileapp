@@ -138,6 +138,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.ResetCommand.CanExecute().Should().BeFalse();
             }
 
+            [Fact, LogIfTooSlow]
             public void CannotExecuteIfIsLoading()
             {
                 ViewModel.Email = ValidEmail;

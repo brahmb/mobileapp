@@ -39,7 +39,7 @@ namespace Toggl.Foundation.Tests.Interactors
             }
             
             [Fact]
-            public async Task ThrowsIfDataSourceThrows()
+            public void ThrowsIfDataSourceThrows()
             {
                 DataSource.TimeEntries.GetAll(Arg.Any<Func<IDatabaseTimeEntry, bool>>())
                     .Returns(Observable.Throw<IEnumerable<IThreadSafeTimeEntry>>(new Exception()));

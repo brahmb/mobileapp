@@ -76,7 +76,7 @@ namespace Toggl.Foundation.Tests.Sync.States
             var transition = (Transition<IFetchObservables>)(await state.Start(observables).SingleAsync());
 
             transition.Result.Should().Be(state.FinishedPersisting);
-            dataSource.DidNotReceive().UpdateWithConflictResolution(Arg.Any<IThreadSafeTestModel>());
+            await dataSource.DidNotReceive().UpdateWithConflictResolution(Arg.Any<IThreadSafeTestModel>());
         }
 
         [Fact, LogIfTooSlow]

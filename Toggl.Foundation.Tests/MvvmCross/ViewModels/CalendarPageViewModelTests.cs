@@ -106,7 +106,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         .Should()
                         .OnlyContain(day => !day.IsInCurrentMonth);
             }
-            
+
             [Property]
             public void MarksTheCurrentDayAndNoOtherDayAsToday(
                 int year,

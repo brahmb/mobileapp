@@ -290,7 +290,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     await ViewModel.DeleteCommand.ExecuteAsync();
 
                     InteractorFactory.Received().DeleteTimeEntry(Arg.Any<long>());
-                    InteractorFactory.DeleteTimeEntry(Arg.Any<long>()).Received().Execute();
+                    await InteractorFactory.DeleteTimeEntry(Arg.Any<long>()).Received().Execute();
                 }
 
                 [Fact, LogIfTooSlow]

@@ -382,7 +382,7 @@ namespace Toggl.Foundation.Tests.DataSources
             }
 
             [Fact, LogIfTooSlow]
-            public async ThreadingTask SetsTheUnauthorizedAccessFlag()
+            public void SetsTheUnauthorizedAccessFlag()
             {
                 var exception = new UnauthorizedException(request, response);
                 ErrorHandlingService.TryHandleUnauthorizedError(Arg.Any<UnauthorizedException>()).Returns(true);

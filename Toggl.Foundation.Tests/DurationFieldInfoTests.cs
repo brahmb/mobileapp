@@ -125,7 +125,6 @@ namespace Toggl.Foundation.Tests
             [Theory, LogIfTooSlow]
             [InlineData("")]
             [InlineData("12345")]
-            [InlineData("12345")]
             [InlineData("661")]
             public void StopsPoppingWhenEmpty(string inputSequence)
             {

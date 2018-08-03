@@ -31,7 +31,6 @@ namespace Toggl.Foundation.Tests.Sync.States.Push
         }
 
         [Fact, LogIfTooSlow]
-        [MemberData(nameof(ClientErrorExceptions))]
         public async Task ReturnsCheckServerStatusTransitionWhenTheErrorIsTooManyRequestsException()
         {
             var exception = new TooManyRequestsException(Substitute.For<IRequest>(), Substitute.For<IResponse>());
