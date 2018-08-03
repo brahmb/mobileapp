@@ -596,7 +596,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
         }
 
-        public sealed class TheSuggestCreationproperty : SelectTagsViewModelTest
+        public sealed class TheSuggestCreationProperty : SelectTagsViewModelTest
         {
             [Theory, LogIfTooSlow]
             [InlineData("")]
