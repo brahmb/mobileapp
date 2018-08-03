@@ -5,6 +5,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
+using System.Threading;
 using System.Threading.Tasks;
 using MvvmCross.Commands;
 using MvvmCross.Navigation;
@@ -406,17 +407,20 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private IObservable<Unit> delayDeleteTimeEntry(TimeEntryViewModel timeEntry)
         {
-            timeEntriesViewModel.RemoveTimeEntryFromVieWModel(timeEntry);
-
-            showUndoSubject.OnNext(true);
             timeEntryToDelete = timeEntry;
 
-            delayedDeletionDisposable = Observable.Return(timeEntry)
-                .Delay(TimeSpan.FromSeconds(5))
+            timeEntriesViewModel.RemoveTimeEntryFromVieWModel(timeEntry);
+            showUndoSubject.OnNext(true);
+
+            delayedDeletionDisposable = Observable.Merge( // If 5 seconds pass or we try to delete another TE
+                    Observable.Return(timeEntry).Delay(TimeSpan.FromSeconds(5)),
+                    showUndoSubject.Where(t => t).Select(timeEntry)
+                )
+                .Take(1)
                 .SelectMany(deleteTimeEntry)
                 .Do(te =>
                 {
-                    if (te == timeEntryToDelete)
+                    if (te == timeEntryToDelete) // Hide bar if there isn't other TE trying to be deleted
                         showUndoSubject.OnNext(false);
                 })
                 .Subscribe();
@@ -427,7 +431,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private IObservable<Unit> cancelDeleteTimeEntry()
         {
             timeEntriesViewModel.AddTimeEntryToViewModel(timeEntryToDelete);
+            timeEntryToDelete = null;
             delayedDeletionDisposable.Dispose();
+            showUndoSubject.OnNext(false);
             return Observable.Return(Unit.Default);
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading;
@@ -40,6 +41,12 @@ namespace Toggl.Daneel.ViewSources
         {
             lock (animationLock)
             {
+                if (changes.Any( c => c.Type == CollectionChangeType.Reload))
+                {
+                    tableView.ReloadData();
+                    return;
+                }
+
                 tableView.BeginUpdates();
 
                 foreach (var change in changes)
@@ -77,11 +84,6 @@ namespace Toggl.Daneel.ViewSources
 
                         case CollectionChangeType.RemoveSection:
                             tableView.DeleteSections(indexSet, UITableViewRowAnimation.Automatic);
-                            break;
-
-                        case CollectionChangeType.Reload:
-                            tableView.ReloadData();
-
                             break;
                     }
 

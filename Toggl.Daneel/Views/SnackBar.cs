@@ -66,7 +66,6 @@ namespace Toggl.Daneel
             var button = new UIButton(UIButtonType.Plain);
             button.TouchUpInside += (sender, e) =>
             {
-                Hide(false);
                 onTap();
             };
             button.SetAttributedTitle(new NSAttributedString(title, ButtonAttributes), UIControlState.Normal);
