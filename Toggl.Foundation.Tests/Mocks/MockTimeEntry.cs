@@ -8,8 +8,6 @@ namespace Toggl.Foundation.Tests.Mocks
 {
     public sealed class MockTimeEntry : IThreadSafeTimeEntry
     {
-        private IThreadSafeTimeEntry entity;
-
         public MockTimeEntry() { }
 
         public MockTimeEntry(IThreadSafeTimeEntry entity)

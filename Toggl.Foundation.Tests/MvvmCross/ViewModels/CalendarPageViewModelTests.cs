@@ -44,6 +44,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 viewModel = new CalendarPageViewModel(calendarMonth, beginningOfWeek, today ?? DateTimeOffset.Now);
             }
 
+#pragma warning disable xUnit1026
             [Theory, LogIfTooSlow]
             [ClassData(typeof(CalendarPageTestData))]
             public void ContainsFewDaysFromPreviousMonthAtTheBeginning(
@@ -83,6 +84,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     .Should()
                     .OnlyContain(day => day.IsInCurrentMonth);
             }
+#pragma warning restore xUnit1026
 
             [Theory, LogIfTooSlow]
             [ClassData(typeof(CalendarPageTestData))]

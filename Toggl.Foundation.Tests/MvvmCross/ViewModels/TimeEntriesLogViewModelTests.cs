@@ -155,7 +155,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         public abstract class TimeEntryDataSourceObservableTest : TimeEntriesLogViewModelTest
         {
-            private static readonly DateTimeOffset now = new DateTimeOffset(2017, 01, 19, 07, 10, 00, TimeZone.CurrentTimeZone.GetUtcOffset(new DateTime(2017, 01, 19)));
+            private static readonly DateTimeOffset now = new DateTimeOffset(2017, 01, 19, 07, 10, 00, TimeZoneInfo.Local.GetUtcOffset(new DateTime(2017, 01, 19)));
 
             protected const int InitialAmountOfTimeEntries = 20;
 

@@ -30,8 +30,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
     {
         public abstract class MainViewModelTest : BaseViewModelTests<MainViewModel>
         {
-            private IDisposable disposable;
-
             protected ISubject<SyncProgress> ProgressSubject { get; } = new Subject<SyncProgress>();
 
             protected TestScheduler Scheduler { get; } = new TestScheduler();

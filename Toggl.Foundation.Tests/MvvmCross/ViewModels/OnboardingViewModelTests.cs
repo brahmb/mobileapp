@@ -157,11 +157,11 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [InlineData(OnboardingViewModel.ReportsPage, OnboardingViewModel.MostUsedPage)]
             public void ReturnsToThePreviousPage(int from, int to)
             {
-                ViewModel.CurrentPage = OnboardingViewModel.MostUsedPage;
+                ViewModel.CurrentPage = from;
 
                 ViewModel.PreviousCommand.Execute();
 
-                ViewModel.CurrentPage.Should().Be(OnboardingViewModel.TrackPage);
+                ViewModel.CurrentPage.Should().Be(to);
             }
 
             [Fact, LogIfTooSlow]

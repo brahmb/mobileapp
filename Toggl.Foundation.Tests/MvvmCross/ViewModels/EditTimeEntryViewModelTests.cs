@@ -35,8 +35,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
             protected IThreadSafeTimeEntry TheTimeEntry;
 
-            protected IAnalyticsService AnalyticsService { get; } = Substitute.For<IAnalyticsService>();
-
             protected void ConfigureEditedTimeEntry(DateTimeOffset now, bool isRunning = false)
             {
                 var te = TimeEntry.Builder.Create(Id)

@@ -15,7 +15,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public abstract class TimeEntryViewModelTest : BaseMvvmCrossTests
         {
             protected IThreadSafeProject Project = Substitute.For<IThreadSafeProject>();
-            protected ITimeService TimeService { get; } = Substitute.For<ITimeService>();
             protected IThreadSafeTimeEntry MockTimeEntry = Substitute.For<IThreadSafeTimeEntry>();
 
             protected Subject<DateTimeOffset> TickSubject = new Subject<DateTimeOffset>();
