@@ -19,7 +19,6 @@ using Toggl.Foundation.Interactors;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.MvvmCross.Collections;
 using Toggl.Foundation.MvvmCross.Parameters;
-using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.MvvmCross.ViewModels.Hints;
 using Toggl.Foundation.Services;
@@ -43,6 +42,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public IObservable<SyncProgress> SyncProgressState { get; private set; }
         public IObservable<bool> ShouldShowEmptyState { get; private set; }
         public IObservable<bool> ShouldShowWelcomeBack { get; private set; }
+        public IObservable<bool> ShouldShowUndo => showUndoSubject.AsObservable();
 
         public TimeSpan CurrentTimeEntryElapsedTime { get; private set; } = TimeSpan.Zero;
         public DurationFormat CurrentTimeEntryElapsedTimeFormat { get; } = DurationFormat.Improved;
@@ -75,9 +75,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         // Inputs
         public InputAction<TimeEntryViewModel> ContinueTimeEntry { get; }
-        public InputAction<TimeEntryViewModel> DeleteTimeEntry { get; }
-        public InputAction<TimeEntryViewModel> SoftDeleteTimeEntry { get; }
-        public InputAction<TimeEntryViewModel> UndoDeleteTimeEntry { get; }
+        public InputAction<TimeEntryViewModel> DelayDeleteTimeEntry { get; }
+        public UIAction CancelDeleteTimeEntry { get; }
         public InputAction<TimeEntryViewModel> SelectTimeEntry { get; }
         public UIAction RefreshAction { get; }
 
@@ -104,6 +103,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private object isEditViewOpenLock = new object();
 
         private DateTimeOffset? currentTimeEntryStart;
+
+        private readonly Subject<bool> showUndoSubject = new Subject<bool>();
+        private IDisposable delayedDeletionDisposable;
+        private TimeEntryViewModel timeEntryToDelete;
 
         // Deprecated properties
 
@@ -171,9 +174,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             AlternativeStartTimeEntryCommand = new MvxAsyncCommand(alternativeStartTimeEntry, () => CurrentTimeEntryId.HasValue == false);
 
             ContinueTimeEntry = new InputAction<TimeEntryViewModel>(continueTimeEntry);
-            DeleteTimeEntry = new InputAction<TimeEntryViewModel>(deleteTimeEntry);
-            SoftDeleteTimeEntry = new InputAction<TimeEntryViewModel>(softDeleteTimeEntry);
-            UndoDeleteTimeEntry = new InputAction<TimeEntryViewModel>(undoDeleteTimeEntry);
+            DelayDeleteTimeEntry = new InputAction<TimeEntryViewModel>(delayDeleteTimeEntry);
+            CancelDeleteTimeEntry = new UIAction(cancelDeleteTimeEntry);
             SelectTimeEntry = new InputAction<TimeEntryViewModel>(timeEntrySelected);
             RefreshAction = new UIAction(refresh);
         }
@@ -402,27 +404,44 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             return navigate<EditTimeEntryViewModel, long>(timeEntry.Id).ToObservable();
         }
 
-        private IObservable<Unit> softDeleteTimeEntry(TimeEntryViewModel timeEntry)
+        private IObservable<Unit> delayDeleteTimeEntry(TimeEntryViewModel timeEntry)
         {
             timeEntriesViewModel.RemoveTimeEntryFromVieWModel(timeEntry);
+
+            showUndoSubject.OnNext(true);
+            timeEntryToDelete = timeEntry;
+
+            delayedDeletionDisposable = Observable.Return(timeEntry)
+                .Delay(TimeSpan.FromSeconds(5))
+                .SelectMany(deleteTimeEntry)
+                .Do(te =>
+                {
+                    if (te == timeEntryToDelete)
+                        showUndoSubject.OnNext(false);
+                })
+                .Subscribe();
+
             return Observable.Return(Unit.Default);
         }
 
-        private IObservable<Unit> undoDeleteTimeEntry(TimeEntryViewModel timeEntry)
+        private IObservable<Unit> cancelDeleteTimeEntry()
         {
-            timeEntriesViewModel.AddTimeEntryToViewModel(timeEntry);
+            timeEntriesViewModel.AddTimeEntryToViewModel(timeEntryToDelete);
+            delayedDeletionDisposable.Dispose();
             return Observable.Return(Unit.Default);
         }
 
-        private IObservable<Unit> deleteTimeEntry(TimeEntryViewModel timeEntry)
+        private IObservable<TimeEntryViewModel> deleteTimeEntry(TimeEntryViewModel timeEntry)
         {
             return interactorFactory
                 .DeleteTimeEntry(timeEntry.Id)
                 .Execute()
-                .Do( _ => {
+                .Do(_ =>
+                {
                     analyticsService.DeleteTimeEntry.Track();
                     dataSource.SyncManager.PushSync();
-                });
+                })
+                .Select(timeEntry);
         }
 
         private IObservable<Unit> refresh()

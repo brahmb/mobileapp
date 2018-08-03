@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using CoreGraphics;
 using Foundation;
@@ -21,7 +21,6 @@ using Toggl.Foundation.MvvmCross.Extensions;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.Onboarding.MainView;
 using Toggl.Foundation.MvvmCross.ViewModels;
-using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
 using Toggl.PrimeRadiant.Extensions;
 using Toggl.PrimeRadiant.Onboarding;
@@ -122,25 +121,9 @@ namespace Toggl.Daneel.ViewControllers
                 tableViewSource.SwipeToContinue
             );
             this.Bind(continueTimeEntry, ViewModel.ContinueTimeEntry);
-            this.Bind(tableViewSource.SwipeToDelete, ViewModel.SoftDeleteTimeEntry);
+            this.Bind(tableViewSource.SwipeToDelete, ViewModel.DelayDeleteTimeEntry);
             this.Bind(tableViewSource.ItemSelected, ViewModel.SelectTimeEntry);
-
-            this.Bind(tableViewSource.SwipeToDelete, timeEntry =>
-            {
-                if (snackBar != null)
-                {
-                    snackBar.Hide(true);
-                    snackBar = null;
-                }
-
-                snackBar = SnackBar.Undo(
-                        () => { ViewModel.UndoDeleteTimeEntry.Execute(timeEntry); },
-                        () => { ViewModel.DeleteTimeEntry.Execute(timeEntry); });
-
-                snackBar.SnackBottomAnchor = StartTimeEntryButton.TopAnchor;
-                snackBar.Show(View);
-            });
-
+            this.Bind(ViewModel.ShouldShowUndo, toggleUndoDeletion);
 
             tableViewSource.SwipeToContinue
                 .VoidSubscribe(() =>
@@ -276,11 +259,27 @@ namespace Toggl.Daneel.ViewControllers
         public override void ViewWillDisappear(bool animated)
         {
             base.ViewWillDisappear(animated);
-            if (snackBar != null) 
+            if (snackBar != null)
             {
                 snackBar.Hide(true);
                 snackBar = null;
-            }                
+            }
+        }
+
+        private void toggleUndoDeletion(bool show)
+        {
+            snackBar.Hide(false);
+            snackBar = null;
+
+            if (!show)
+                return;
+
+            snackBar = SnackBar.Undo(
+                () => { ViewModel.CancelDeleteTimeEntry.Execute(Unit.Default); }
+            );
+
+            snackBar.SnackBottomAnchor = StartTimeEntryButton.TopAnchor;
+            snackBar.Show(View);
         }
 
         protected override void Dispose(bool disposing)

@@ -1,9 +1,4 @@
 using System;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using Toggl.Foundation.MvvmCross.Extensions;
-using System.Threading;
 using CoreGraphics;
 using Foundation;
 using ObjCRuntime;
@@ -39,10 +34,6 @@ namespace Toggl.Daneel
         private NSLayoutConstraint bottomConstraint;
         private ButtonPositionType buttonPosition = ButtonPositionType.Right;
 
-        private Subject<Unit> timerSubject = new Subject<Unit>();
-        private IDisposable timerDisposable;
-        private Action timerAction;
-
         private bool showing = false;
         private string text;
 
@@ -75,7 +66,6 @@ namespace Toggl.Daneel
             var button = new UIButton(UIButtonType.Plain);
             button.TouchUpInside += (sender, e) =>
             {
-                timerDisposable.Dispose();
                 Hide(false);
                 onTap();
             };
@@ -85,19 +75,6 @@ namespace Toggl.Daneel
             buttonsStackView.AddArrangedSubview(button);
 
             SetNeedsLayout();
-        }
-
-        public void SetTimer(double seconds, Action onTimer)
-        {
-            timerAction = onTimer;
-
-            timerDisposable = timerSubject
-                .Delay(TimeSpan.FromSeconds(seconds))
-                .ObserveOn(SynchronizationContext.Current)
-                .VoidSubscribe(() =>
-                {
-                    Hide(true);
-                });
         }
 
         public void Show(UIView superView)
@@ -129,8 +106,6 @@ namespace Toggl.Daneel
                     Alpha = 1;
                 }
             );
-
-            startTimer();
         }
 
         public void Hide(bool execute = true)
@@ -148,13 +123,6 @@ namespace Toggl.Daneel
                 () =>
                 {
                     RemoveFromSuperview();
-
-                    if (execute && timerAction != null)
-                    {
-                        timerAction.Invoke();
-                    }
-
-                    stopTimer();
                 }
             );
         }
@@ -212,22 +180,10 @@ namespace Toggl.Daneel
             SetNeedsLayout();
         }
 
-        private void startTimer()
-        {
-            timerSubject.OnNext(Unit.Default);
-        }
-
-        private void stopTimer()
-        {
-            timerDisposable.Dispose();
-            timerAction = null;
-        }
-
-        public static SnackBar Undo(Action onTap, Action onTimer)
+        public static SnackBar Undo(Action onTap)
         {
             var snackBar = SnackBar.Create("Time entry was deleted");
             snackBar.AddButton("UNDO", onTap);
-            snackBar.SetTimer(5, onTimer);
             return snackBar;
         }
     }
