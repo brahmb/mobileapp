@@ -133,10 +133,7 @@ namespace Toggl.Daneel.ViewControllers
 
         private void onCalendarSizeChanged(NSObservedChange change)
         {
-            if (CalendarIsVisible)
-                TopCalendarConstraint.Constant = 0;
-            else
-                TopCalendarConstraint.Constant = calendarHeight;
+            TopCalendarConstraint.Constant = CalendarIsVisible ? 0 : calendarHeight;
         }
     }
 }
