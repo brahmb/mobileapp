@@ -121,9 +121,9 @@ namespace Toggl.Daneel.ViewControllers
                 tableViewSource.SwipeToContinue
             );
             this.Bind(continueTimeEntry, ViewModel.ContinueTimeEntry);
-            this.Bind(tableViewSource.SwipeToDelete, ViewModel.DelayDeleteTimeEntry);
+            this.Bind(tableViewSource.SwipeToDelete, ViewModel.TimeEntriesViewModel.DelayDeleteTimeEntry);
             this.Bind(tableViewSource.ItemSelected, ViewModel.SelectTimeEntry);
-            this.Bind(ViewModel.ShouldShowUndo, toggleUndoDeletion);
+            this.Bind(ViewModel.TimeEntriesViewModel.ShouldShowUndo, toggleUndoDeletion);
 
             tableViewSource.SwipeToContinue
                 .VoidSubscribe(() =>
@@ -268,7 +268,7 @@ namespace Toggl.Daneel.ViewControllers
                 return;
 
             snackBar = SnackBar.Undo(
-                () => { ViewModel.CancelDeleteTimeEntry.Execute(Unit.Default); }
+                () => { ViewModel.TimeEntriesViewModel.CancelDeleteTimeEntry.Execute(Unit.Default); }
             );
 
             snackBar.SnackBottomAnchor = StartTimeEntryButton.TopAnchor;
