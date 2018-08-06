@@ -21,7 +21,7 @@ namespace Toggl.PrimeRadiant.Realm
         public IObservable<TModel> GetById(long _)
             => Single();
 
-        public IObservable<TModel> Create(TModel entity)
+        public new IObservable<TModel> Create(TModel entity)
         {
             Ensure.Argument.IsNotNull(entity, nameof(entity));
 
@@ -36,7 +36,7 @@ namespace Toggl.PrimeRadiant.Realm
             });
         }
 
-        public IObservable<IEnumerable<IConflictResolutionResult<TModel>>> BatchUpdate(
+        public new IObservable<IEnumerable<IConflictResolutionResult<TModel>>> BatchUpdate(
             IEnumerable<(long Id, TModel Entity)> entities,
             Func<TModel, TModel, ConflictResolutionMode> conflictResolution,
             IRivalsResolver<TModel> rivalsResolver = null)
