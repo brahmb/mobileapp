@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using Toggl.Foundation.Calendar;
 using Toggl.Foundation.DataSources;
+using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.Services;
 using Toggl.Multivac;
 
@@ -15,16 +17,37 @@ namespace Toggl.Foundation.Interactors.Calendar
         private readonly DateTime date;
 
         public GetCalendarItemsForDateInteractor(
-            ITimeEntriesSource timeEntriesSource,
+            ITimeEntriesSource timeEntriesDataSource,
             ICalendarService calendarService,
             DateTime date)
         {
-            Ensure.Argument.IsNotNull(timeEntriesSource, nameof(timeEntriesSource));
+            Ensure.Argument.IsNotNull(timeEntriesDataSource, nameof(timeEntriesDataSource));
             Ensure.Argument.IsNotNull(calendarService, nameof(calendarService));
             Ensure.Argument.IsNotNull(date, nameof(date));
+
+            this.timeEntriesDataSource = timeEntriesDataSource;
+            this.calendarService = calendarService;
+            this.date = date;
         }
 
         public IObservable<IEnumerable<CalendarItem>> Execute()
-            => Observable.Return(new List<CalendarItem>());
+            => Observable.CombineLatest(
+                    calendarItemsFromTimeEntries(),
+                    calendarItemsFromEvents(),
+                    (timeEntries, events) => timeEntries.Concat(events))
+                .Select(orderByStartTime);
+
+        private IObservable<IEnumerable<CalendarItem>> calendarItemsFromTimeEntries()
+            => timeEntriesDataSource.GetAll(timeEntry => timeEntry.Start > date.Date && timeEntry.Start < date.AddDays(1).Date && timeEntry.Duration != null)
+                .Select(convertTimeEntriesToCalendarItems);
+
+        private IObservable<IEnumerable<CalendarItem>> calendarItemsFromEvents()
+            => calendarService.GetEventsForDate(date);
+
+        private IEnumerable<CalendarItem> convertTimeEntriesToCalendarItems(IEnumerable<IThreadSafeTimeEntry> timeEntries)
+            => timeEntries.Select(timeEntry => new CalendarItem(timeEntry));
+
+        private IEnumerable<CalendarItem> orderByStartTime(IEnumerable<CalendarItem> calendarItems)
+            => calendarItems.OrderBy(calendarItem => calendarItem.StartTime);
     }
 }

@@ -39,9 +39,12 @@ namespace Toggl.Foundation.Calendar
                 timeEntry.Start,
                 TimeSpan.FromSeconds(timeEntry.Duration.Value),
                 timeEntry.Description,
-                timeEntry.Project.Color,
+                timeEntry.Project?.Color ?? string.Empty,
                 timeEntry.Id)
         {
         }
+
+        public static CalendarItem From(IThreadSafeTimeEntry timeEntry)
+            => new CalendarItem(timeEntry);
     }
 }

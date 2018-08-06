@@ -2,6 +2,7 @@
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Interactors;
+using Toggl.Foundation.Services;
 using Toggl.Foundation.Shortcuts;
 using Toggl.PrimeRadiant;
 using Toggl.PrimeRadiant.Settings;
@@ -21,6 +22,7 @@ namespace Toggl.Foundation.Tests
         protected IApplicationShortcutCreator ApplicationShortcutCreator { get; }
             = Substitute.For<IApplicationShortcutCreator>();
         protected UserAgent UserAgent { get; } = new UserAgent("Tests", "0.0");
+        protected ICalendarService CalendarService { get; } = Substitute.For<ICalendarService>();
 
         protected IInteractorFactory InteractorFactory { get; }
 
@@ -35,7 +37,8 @@ namespace Toggl.Foundation.Tests
                 ApplicationShortcutCreator,
                 LastTimeUsageStorage,
                 PlatformConstants,
-                UserAgent
+                UserAgent,
+                CalendarService
             );
         }
     }
