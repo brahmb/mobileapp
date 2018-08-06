@@ -418,8 +418,22 @@ time entries will appear here.</string>
                     </userDefinedRuntimeAttributes>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fge-d2-Ud2">
-                    <rect key="frame" x="8" y="557.5" width="359" height="85.5"/>
+                    <rect key="frame" x="8" y="485.5" width="359" height="85.5"/>
                     <subviews>
+                        <visualEffectView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dOM-nz-0rF">
+                            <rect key="frame" x="0.0" y="0.0" width="359" height="85.5"/>
+                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="HB5-OD-DUF">
+                                <rect key="frame" x="0.0" y="0.0" width="359" height="85.5"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </view>
+                            <color key="backgroundColor" red="0.83137254900000002" green="0.94509803920000002" blue="0.99607843139999996" alpha="0.82999999999999996" colorSpace="custom" customColorSpace="sRGB"/>
+                            <blurEffect style="light"/>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="8"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </visualEffectView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="confirmation" translatesAutoresizingMaskIntoConstraints="NO" id="Gjw-bd-2cj">
                             <rect key="frame" x="14" y="14" width="16" height="16"/>
                         </imageView>
@@ -436,20 +450,23 @@ time entries will appear here.</string>
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" red="0.83137254900000002" green="0.94509803920000002" blue="0.99607843139999996" alpha="0.82999999999999996" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="FOL-Gh-maB" secondAttribute="trailing" constant="12" id="6Dd-yp-QCw"/>
+                        <constraint firstItem="dOM-nz-0rF" firstAttribute="top" secondItem="fge-d2-Ud2" secondAttribute="top" id="84C-Bv-xVo"/>
                         <constraint firstItem="FOL-Gh-maB" firstAttribute="leading" secondItem="fge-d2-Ud2" secondAttribute="leading" constant="42" id="Bnz-fA-d79"/>
                         <constraint firstItem="Gjw-bd-2cj" firstAttribute="leading" secondItem="fge-d2-Ud2" secondAttribute="leading" constant="14" id="DsW-Gq-Cpc"/>
+                        <constraint firstAttribute="bottom" secondItem="dOM-nz-0rF" secondAttribute="bottom" id="OlZ-Ef-Iq7"/>
                         <constraint firstAttribute="bottom" secondItem="FOL-Gh-maB" secondAttribute="bottom" constant="16" id="ZLa-bD-L9I"/>
                         <constraint firstItem="Gjw-bd-2cj" firstAttribute="top" secondItem="fge-d2-Ud2" secondAttribute="top" constant="14" id="bKA-VH-ZMZ"/>
                         <constraint firstItem="SNw-4A-zNm" firstAttribute="leading" secondItem="fge-d2-Ud2" secondAttribute="leading" constant="42" id="kfA-2h-jud"/>
                         <constraint firstItem="FOL-Gh-maB" firstAttribute="top" secondItem="SNw-4A-zNm" secondAttribute="bottom" constant="6" id="tJ7-R1-s9F"/>
                         <constraint firstItem="SNw-4A-zNm" firstAttribute="top" secondItem="fge-d2-Ud2" secondAttribute="top" constant="13" id="u3z-ke-f2z"/>
+                        <constraint firstAttribute="trailing" secondItem="dOM-nz-0rF" secondAttribute="trailing" id="vEZ-Bu-QMD"/>
+                        <constraint firstItem="dOM-nz-0rF" firstAttribute="leading" secondItem="fge-d2-Ud2" secondAttribute="leading" id="wdu-Mw-PMb"/>
                     </constraints>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                            <integer key="value" value="9"/>
+                            <integer key="value" value="8"/>
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </view>
@@ -457,6 +474,7 @@ time entries will appear here.</string>
             <color key="backgroundColor" red="0.98039215686274506" green="0.98431372549019602" blue="0.9882352941176471" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="fge-d2-Ud2" secondAttribute="trailing" constant="8" id="1SE-ip-Wha"/>
+                <constraint firstItem="4Kk-Hz-RBS" firstAttribute="top" secondItem="fge-d2-Ud2" secondAttribute="bottom" constant="16" id="25m-1j-RN6"/>
                 <constraint firstAttribute="trailing" secondItem="vou-B4-go4" secondAttribute="trailing" id="83s-7t-oAW"/>
                 <constraint firstAttribute="trailing" secondItem="4Kk-Hz-RBS" secondAttribute="trailing" id="90o-lU-zgz"/>
                 <constraint firstItem="4Kk-Hz-RBS" firstAttribute="leading" secondItem="jpn-gJ-vFB" secondAttribute="trailing" constant="15" id="9bb-2W-Ulw"/>
@@ -470,7 +488,6 @@ time entries will appear here.</string>
                 <constraint firstItem="Jhd-oR-xIN" firstAttribute="top" secondItem="S4t-q9-ct9" secondAttribute="top" constant="3" id="cO8-xe-txr"/>
                 <constraint firstAttribute="bottom" secondItem="vou-B4-go4" secondAttribute="bottom" id="eTc-gF-8yE"/>
                 <constraint firstAttribute="bottom" secondItem="Jhd-oR-xIN" secondAttribute="bottom" id="jk0-Wh-1za"/>
-                <constraint firstItem="S4t-q9-ct9" firstAttribute="bottom" secondItem="fge-d2-Ud2" secondAttribute="bottom" constant="24" id="jpF-5q-TFK"/>
                 <constraint firstItem="vou-B4-go4" firstAttribute="leading" secondItem="2" secondAttribute="leading" id="q3O-7e-AfR"/>
                 <constraint firstItem="fge-d2-Ud2" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="8" id="r4o-tI-pyA"/>
                 <constraint firstItem="Ddo-IW-xE3" firstAttribute="top" secondItem="vou-B4-go4" secondAttribute="top" constant="8" id="rDp-HB-uui"/>

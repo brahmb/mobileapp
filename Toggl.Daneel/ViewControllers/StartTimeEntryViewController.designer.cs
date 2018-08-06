@@ -34,7 +34,15 @@ namespace Toggl.Daneel.ViewControllers
 
 
         [Outlet]
+        UIKit.NSLayoutConstraint TimeInputTrailingConstraint { get; set; }
+
+
+        [Outlet]
         UIKit.UILabel TimeLabel { get; set; }
+
+
+        [Outlet]
+        UIKit.NSLayoutConstraint TimeLabelTrailingConstraint { get; set; }
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
@@ -162,9 +170,19 @@ namespace Toggl.Daneel.ViewControllers
                 TimeInput = null;
             }
 
+            if (TimeInputTrailingConstraint != null) {
+                TimeInputTrailingConstraint.Dispose ();
+                TimeInputTrailingConstraint = null;
+            }
+
             if (TimeLabel != null) {
                 TimeLabel.Dispose ();
                 TimeLabel = null;
+            }
+
+            if (TimeLabelTrailingConstraint != null) {
+                TimeLabelTrailingConstraint.Dispose ();
+                TimeLabelTrailingConstraint = null;
             }
         }
     }

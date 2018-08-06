@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -104,6 +105,43 @@ namespace Toggl.Daneel.Services
                 topViewControllerProvider
                     .TopViewController
                     .PresentViewController(alert, true, null);
+
+                return Disposable.Empty;
+            });
+        }
+
+        public IObservable<T> Select<T>(string title, IDictionary<string, T> options)
+            where T : class
+        {
+            return Observable.Create<T>(observer =>
+            {
+                var actionSheet = UIAlertController.Create(
+                    title,
+                    message: null,
+                    preferredStyle : UIAlertControllerStyle.ActionSheet);
+
+                foreach (var (key, value) in options)
+                {
+                    var action = UIAlertAction.Create(key, UIAlertActionStyle.Default, _ =>
+                    {
+                        observer.OnNext(value);
+                        observer.OnCompleted();
+                    });
+
+                    actionSheet.AddAction(action);
+                }
+
+                var cancelAction = UIAlertAction.Create(Resources.Cancel, UIAlertActionStyle.Cancel, _ =>
+                {
+                    observer.OnNext(null);
+                    observer.OnCompleted();
+                });
+
+                actionSheet.AddAction(cancelAction);
+
+                topViewControllerProvider
+                    .TopViewController
+                    .PresentViewController(actionSheet, true, null);
 
                 return Disposable.Empty;
             });

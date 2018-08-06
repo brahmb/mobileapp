@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -55,6 +56,12 @@ namespace Toggl.Giskard.Services
 
                 return Disposable.Empty;
             });
+        }
+
+        public IObservable<T> Select<T>(string title, IDictionary<string, T> options)
+            where T : class
+        {
+            throw new NotImplementedException("This feature has not been implemented in Giskard yet.");
         }
 
         public IObservable<Unit> Alert(string title, string message, string buttonTitle)

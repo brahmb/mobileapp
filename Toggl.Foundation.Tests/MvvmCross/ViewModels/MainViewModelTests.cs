@@ -279,6 +279,86 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 => ViewModel.AlternativeStartTimeEntryCommand.ExecuteAsync();
         }
 
+        public sealed class TheOpenSettingsCommand : MainViewModelTest
+        {
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask NavigatesToTheSettingsViewModel()
+            {
+                await ViewModel.OpenSettingsCommand.ExecuteAsync();
+
+                await NavigationService.Received().Navigate<SettingsViewModel>();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask MarksTheActionBeforeStopButtonForOnboardingPurposes()
+            {
+                OnboardingStorage.StopButtonWasTappedBefore.Returns(Observable.Return(false));
+                ViewModel.Initialize().Wait();
+
+                await ViewModel.OpenSettingsCommand.ExecuteAsync();
+
+                OnboardingStorage.DidNotReceive().SetNavigatedAwayFromMainViewAfterStopButton();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask MarksTheActionAfterStopButtonForOnboardingPurposes()
+            {
+                OnboardingStorage.StopButtonWasTappedBefore.Returns(Observable.Return(true));
+                ViewModel.Initialize().Wait();
+
+                await ViewModel.OpenSettingsCommand.ExecuteAsync();
+
+                OnboardingStorage.Received().SetNavigatedAwayFromMainViewAfterStopButton();
+            }
+        }
+
+        public sealed class TheOpenReportsCommand : MainViewModelTest
+        {
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask NavigatesToTheReportsViewModel()
+            {
+                const long workspaceId = 10;
+                var workspace = Substitute.For<IThreadSafeWorkspace>();
+                workspace.Id.Returns(workspaceId);
+                InteractorFactory.GetDefaultWorkspace().Execute().Returns(Observable.Return(workspace));
+                OnboardingStorage.StopButtonWasTappedBefore.Returns(Observable.Return(false));
+
+                await ViewModel.OpenReportsCommand.ExecuteAsync();
+
+                await NavigationService.Received().Navigate<ReportsViewModel>();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask MarksTheActionBeforeStopButtonForOnboardingPurposes()
+            {
+                const long workspaceId = 10;
+                var workspace = Substitute.For<IThreadSafeWorkspace>();
+                workspace.Id.Returns(workspaceId);
+                InteractorFactory.GetDefaultWorkspace().Execute().Returns(Observable.Return(workspace));
+                OnboardingStorage.StopButtonWasTappedBefore.Returns(Observable.Return(false));
+                ViewModel.Initialize().Wait();
+
+                await ViewModel.OpenReportsCommand.ExecuteAsync();
+
+                OnboardingStorage.DidNotReceive().SetNavigatedAwayFromMainViewAfterStopButton();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask MarksTheActionAfterStopButtonForOnboardingPurposes()
+            {
+                const long workspaceId = 10;
+                var workspace = Substitute.For<IThreadSafeWorkspace>();
+                workspace.Id.Returns(workspaceId);
+                InteractorFactory.GetDefaultWorkspace().Execute().Returns(Observable.Return(workspace));
+                OnboardingStorage.StopButtonWasTappedBefore.Returns(Observable.Return(true));
+                ViewModel.Initialize().Wait();
+
+                await ViewModel.OpenReportsCommand.ExecuteAsync();
+
+                OnboardingStorage.Received().SetNavigatedAwayFromMainViewAfterStopButton();
+            }
+        }
+
         public sealed class TheOpenSyncFailuresCommand : MainViewModelTest
         {
             [Fact, LogIfTooSlow]

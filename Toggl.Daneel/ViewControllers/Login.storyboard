@@ -221,6 +221,7 @@
                     </view>
                     <connections>
                         <outlet property="ActivityIndicator" destination="vXI-BS-Qvf" id="TKO-iq-6zh"/>
+                        <outlet property="EmailFieldTopConstraint" destination="sA8-cL-MsZ" id="Oxn-j1-fZw"/>
                         <outlet property="EmailTextField" destination="Lsa-g7-i4M" id="dFM-Qy-QQQ"/>
                         <outlet property="ErrorLabel" destination="mES-7Q-qsS" id="8S7-Rk-UOh"/>
                         <outlet property="ForgotPasswordButton" destination="FOx-xg-Ol7" id="Uo1-eh-g8x"/>

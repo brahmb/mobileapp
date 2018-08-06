@@ -26,6 +26,15 @@ namespace Toggl.Daneel.ViewControllers
 
 		[Outlet]
 		UIKit.NSLayoutConstraint TopConstraint { get; set; }
+
+		[Outlet]
+		UIKit.UIView WorkspaceButton { get; set; }
+
+		[Outlet]
+		Toggl.Daneel.Views.FadeView WorkspaceFadeView { get; set; }
+
+		[Outlet]
+		UIKit.UILabel WorkspaceLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
@@ -44,14 +53,29 @@ namespace Toggl.Daneel.ViewControllers
 				ReportsTableView = null;
 			}
 
+			if (TopCalendarConstraint != null) {
+				TopCalendarConstraint.Dispose ();
+				TopCalendarConstraint = null;
+			}
+
 			if (TopConstraint != null) {
 				TopConstraint.Dispose ();
 				TopConstraint = null;
 			}
 
-			if (TopCalendarConstraint != null) {
-				TopCalendarConstraint.Dispose ();
-				TopCalendarConstraint = null;
+			if (WorkspaceButton != null) {
+				WorkspaceButton.Dispose ();
+				WorkspaceButton = null;
+			}
+
+			if (WorkspaceLabel != null) {
+				WorkspaceLabel.Dispose ();
+				WorkspaceLabel = null;
+			}
+
+			if (WorkspaceFadeView != null) {
+				WorkspaceFadeView.Dispose ();
+				WorkspaceFadeView = null;
 			}
 		}
 	}

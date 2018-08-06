@@ -21,7 +21,14 @@ namespace Toggl.Daneel.ViewControllers
     public sealed partial class LoginViewController : ReactiveViewController<LoginViewModel>
     {
         private const int iPhoneSeScreenHeight = 568;
-        private const int topConstraintForBiggerScreens = 92;
+
+        private bool keyboardIsOpen = false;
+
+        private const int topConstraintForBiggerScreens = 72;
+        private const int topConstraintForBiggerScreensWithKeyboard = 40;
+
+        private const int emailTopConstraint = 42;
+        private const int emailTopConstraintWithKeyboard = 12;
 
         public LoginViewController(IntPtr handle) : base(handle)
         {
@@ -33,6 +40,9 @@ namespace Toggl.Daneel.ViewControllers
 
             NavigationController.NavigationBarHidden = true;
             PasswordManagerButton.Hidden = !ViewModel.IsPasswordManagerAvailable;
+
+            UIKeyboard.Notifications.ObserveWillShow(KeyboardWillShow);
+            UIKeyboard.Notifications.ObserveWillHide(KeyboardWillHide);
 
             //Text
             this.Bind(ViewModel.Email, EmailTextField.BindText());
@@ -62,11 +72,11 @@ namespace Toggl.Daneel.ViewControllers
             this.Bind(ViewModel.LoginEnabled.Select(loginButtonTitleColor), LoginButton.BindTitleColor());
 
             //Animation
-            this.Bind(ViewModel.Shake, shakeTargets => 
+            this.Bind(ViewModel.Shake, shakeTargets =>
             {
                 if (shakeTargets.HasFlag(LoginViewModel.ShakeTargets.Email))
                     EmailTextField.Shake();
-                
+
                 if (shakeTargets.HasFlag(LoginViewModel.ShakeTargets.Password))
                     PasswordTextField.Shake();
             });
@@ -85,7 +95,7 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLayoutSubviews();
 
-            if (View.Frame.Height > iPhoneSeScreenHeight)
+            if (View.Frame.Height > iPhoneSeScreenHeight && !keyboardIsOpen)
                 TopConstraint.Constant = topConstraintForBiggerScreens;
 
             SignupCard.SetupBottomCard();
@@ -98,6 +108,34 @@ namespace Toggl.Daneel.ViewControllers
             ActivityIndicator.Alpha = 0;
             ActivityIndicator.StartAnimation();
             PasswordTextField.ResignFirstResponder();
+        }
+
+        private void KeyboardWillShow(object sender, UIKeyboardEventArgs e)
+        {
+            keyboardIsOpen = true;
+            if (View.Frame.Height > iPhoneSeScreenHeight)
+            {
+                TopConstraint.Constant = topConstraintForBiggerScreensWithKeyboard;
+            }
+            else
+            {
+                EmailFieldTopConstraint.Constant = emailTopConstraintWithKeyboard;
+            }
+            UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
+        }
+
+        private void KeyboardWillHide(object sender, UIKeyboardEventArgs e)
+        {
+            keyboardIsOpen = false;
+            if (View.Frame.Height > iPhoneSeScreenHeight)
+            {
+                TopConstraint.Constant = topConstraintForBiggerScreens;
+            }
+            else
+            {
+                EmailFieldTopConstraint.Constant = emailTopConstraint;
+            }
+            UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
         }
 
         private void prepareViews()

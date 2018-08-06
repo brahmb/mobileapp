@@ -344,6 +344,14 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             navigationService.ChangePresentation(new ReloadLogHint());
         }
 
+        private Task openSettings()
+            => navigate<SettingsViewModel>();
+
+        private async Task openReports()
+        {
+            await navigate<ReportsViewModel>();
+        }
+
         private Task openSyncFailures()
             => navigate<SyncFailuresViewModel>();
 
