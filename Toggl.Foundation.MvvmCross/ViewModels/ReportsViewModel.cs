@@ -45,7 +45,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private DateTimeOffset endDate;
         private int totalDays => (endDate - startDate).Days + 1;
         private ReportsSource source;
-        private int projectsNotSyncedCount;
+        [Obsolete("This should be removed, replaced by something that is actually used or turned into a constant.")]
+        private int projectsNotSyncedCount = 0;
         private DateTime reportSubjectStartTime;
         private long workspaceId;
         private DateFormat dateFormat;
