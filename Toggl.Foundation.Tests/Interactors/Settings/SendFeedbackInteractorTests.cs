@@ -165,7 +165,7 @@ namespace Toggl.Foundation.Tests.Interactors.Settings
                 executeInteractor().Wait();
 
                 feedbackApi.Received().Send(Arg.Any<Email>(), Arg.Any<string>(), Arg.Is<Dictionary<string, string>>(
-                    data => data[ManualModeIsOn] == (isManualModeEnabled ? "yes" : "no")));
+                    data => data[ManualModeIsOn] == (isManualModeEnabled ? "yes" : "no"))).Wait();
             }
 
             [Fact, LogIfTooSlow]
@@ -173,7 +173,7 @@ namespace Toggl.Foundation.Tests.Interactors.Settings
             {
                 await executeInteractor();
 
-                feedbackApi.Received().Send(Arg.Any<Email>(), Arg.Any<string>(), Arg.Is<Dictionary<string, string>>(
+                await feedbackApi.Received().Send(Arg.Any<Email>(), Arg.Any<string>(), Arg.Is<Dictionary<string, string>>(
                     data => data[NumberOfWorkspaces] == "4"));
             }
 
@@ -182,7 +182,7 @@ namespace Toggl.Foundation.Tests.Interactors.Settings
             {
                 await executeInteractor();
 
-                feedbackApi.Received().Send(Arg.Any<Email>(), Arg.Any<string>(), Arg.Is<Dictionary<string, string>>(
+                await feedbackApi.Received().Send(Arg.Any<Email>(), Arg.Any<string>(), Arg.Is<Dictionary<string, string>>(
                     data => data[NumberOfTimeEntries] == "6"
                         && data[NumberOfUnsyncedTimeEntries] == "1"
                         && data[NumberOfUnsyncableTimeEntries] == "2"));

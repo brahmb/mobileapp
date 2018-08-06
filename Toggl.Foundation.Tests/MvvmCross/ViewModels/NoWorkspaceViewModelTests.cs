@@ -92,7 +92,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 await ViewModel.CreateWorkspaceWithDefaultName();
 
-                workspacesDataSource.Received().Create(Arg.Is($"{name}'s Workspace"));
+                await workspacesDataSource.Received().Create(Arg.Is($"{name}'s Workspace"));
             }
 
             [Fact, LogIfTooSlow]
