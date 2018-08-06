@@ -5,7 +5,9 @@ using MvvmCross;
 using MvvmCross.Binding;
 using MvvmCross.Droid.Support.V7.AppCompat;
 using MvvmCross.Navigation;
+using MvvmCross.Platforms.Android;
 using MvvmCross.Platforms.Android.Presenters;
+using MvvmCross.Platforms.Android.Views;
 using MvvmCross.Plugin;
 using MvvmCross.ViewModels;
 using MvvmCross.Views;
@@ -112,6 +114,14 @@ namespace Toggl.Giskard
             foundation.RevokeNewUserIfNeeded().Initialize();
 
             base.InitializeApp(pluginManager, app);
+        }
+
+        protected override IMvxAndroidCurrentTopActivity CreateAndroidCurrentTopActivity()
+        {
+            var mvxApplication = MvxAndroidApplication.Instance;
+            var activityLifecycleCallbacksManager = new QueryableMvxLifecycleMonitorCurrentTopActivity();
+            mvxApplication.RegisterActivityLifecycleCallbacks(activityLifecycleCallbacksManager);
+            return activityLifecycleCallbacksManager;
         }
     }
 }

@@ -16,6 +16,9 @@ namespace Toggl.Daneel.ViewControllers
 		Toggl.Daneel.Views.ActivityIndicatorView ActivityIndicator { get; set; }
 
 		[Outlet]
+		UIKit.NSLayoutConstraint EmailFieldTopConstraint { get; set; }
+
+		[Outlet]
 		[GeneratedCode ("iOS Designer", "1.0")]
 		Toggl.Daneel.Views.LoginTextField EmailTextField { get; set; }
 
@@ -111,6 +114,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (TopConstraint != null) {
 				TopConstraint.Dispose ();
 				TopConstraint = null;
+			}
+
+			if (EmailFieldTopConstraint != null) {
+				EmailFieldTopConstraint.Dispose ();
+				EmailFieldTopConstraint = null;
 			}
 		}
 	}

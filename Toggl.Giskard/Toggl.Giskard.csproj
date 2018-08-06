@@ -262,6 +262,7 @@
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
+    <Compile Include="Startup\QueryableMvxLifecycleMonitorCurrentTopActivity.cs" />
     <Compile Include="Startup\Setup.cs" />
     <Compile Include="Startup\SplashScreen.cs" />
     <Compile Include="Services\GoogleService.cs" />
@@ -274,6 +275,7 @@
 	</Compile>
     <Compile Include="Services\SharedPreferencesStorage.cs" />
     <Compile Include="Activities\MainActivity.cs" />
+    <Compile Include="Startup\TogglApplication.cs" />
     <Compile Include="TemplateSelectors\SelectTagsTemplateSelector.cs" />
     <Compile Include="Views\SelectProjectRecyclerView.cs" />
     <Compile Include="TemplateSelectors\MainTemplateSelector.cs" />

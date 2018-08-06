@@ -20,7 +20,14 @@ namespace Toggl.Daneel.ViewControllers
     public sealed partial class SignupViewController : MvxViewController<SignupViewModel>
     {
         private const int iPhoneSeScreenHeight = 568;
-        private const int topConstraintForBiggerScreens = 92;
+
+        private bool keyboardIsOpen = false;
+
+        private const int topConstraintForBiggerScreens = 72;
+        private const int topConstraintForBiggerScreensWithKeyboard = 40;
+
+        private const int emailTopConstraint = 42;
+        private const int emailTopConstraintWithKeyboard = 12;
 
         public SignupViewController() : base(nameof(SignupViewController), null)
         {
@@ -34,6 +41,9 @@ namespace Toggl.Daneel.ViewControllers
             var invertedVisibilityConverter = new MvxInvertedVisibilityValueConverter();
 
             var bindingSet = this.CreateBindingSet<SignupViewController, SignupViewModel>();
+
+            UIKeyboard.Notifications.ObserveWillShow(KeyboardWillShow);
+            UIKeyboard.Notifications.ObserveWillHide(KeyboardWillHide);
 
             //Text
             bindingSet.Bind(ErrorLabel).To(vm => vm.ErrorText);
@@ -98,11 +108,39 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.ViewDidLayoutSubviews();
 
-            if (View.Frame.Height > iPhoneSeScreenHeight)
+            if (View.Frame.Height > iPhoneSeScreenHeight && !keyboardIsOpen)
                 TopConstraint.Constant = topConstraintForBiggerScreens;
 
             LoginCard.SetupBottomCard();
             GoogleSignupButton.SetupGoogleButton();
+        }
+
+        private void KeyboardWillShow(object sender, UIKeyboardEventArgs e)
+        {
+            keyboardIsOpen = true;
+            if (View.Frame.Height > iPhoneSeScreenHeight)
+            {
+                TopConstraint.Constant = topConstraintForBiggerScreensWithKeyboard;
+            }
+            else
+            {
+                EmailFieldTopConstraint.Constant = emailTopConstraintWithKeyboard;
+            }
+            UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
+        }
+
+        private void KeyboardWillHide(object sender, UIKeyboardEventArgs e)
+        {
+            keyboardIsOpen = false;
+            if (View.Frame.Height > iPhoneSeScreenHeight)
+            {
+                TopConstraint.Constant = topConstraintForBiggerScreens;
+            }
+            else
+            {
+                EmailFieldTopConstraint.Constant = emailTopConstraint;
+            }
+            UIView.Animate(Animation.Timings.EnterTiming, () => View.LayoutIfNeeded());
         }
 
         private void prepareViews()

@@ -408,4 +408,7 @@ account is not set up</value>
     <data name="Success">
         <value>Success</value>
     </data>
+    <data name="SelectWorkspace">
+        <value>Select workspace</value>
+    </data>
 </root>

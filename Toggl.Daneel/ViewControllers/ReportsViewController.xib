@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,6 +15,9 @@
                 <outlet property="CalendarContainer" destination="X3Z-yh-5bj" id="Ru0-0R-Od4"/>
                 <outlet property="ReportsTableView" destination="2L8-Wo-D6t" id="XRh-uZ-odE"/>
                 <outlet property="TopCalendarConstraint" destination="n2c-Zc-JQ4" id="gUx-CG-OR6"/>
+                <outlet property="WorkspaceButton" destination="eOn-bU-NQ3" id="3lv-wo-6ce"/>
+                <outlet property="WorkspaceFadeView" destination="aWZ-cY-YUv" id="AT7-WC-si7"/>
+                <outlet property="WorkspaceLabel" destination="m1j-gc-5S9" id="thc-Sw-dr0"/>
                 <outlet property="view" destination="2" id="RRd-Eg-VrN"/>
             </connections>
         </placeholder>
@@ -41,11 +44,57 @@
                         <constraint firstAttribute="height" constant="128" id="Vyy-oT-0oF"/>
                     </constraints>
                 </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eOn-bU-NQ3">
+                    <rect key="frame" x="16" y="506" width="130.5" height="48"/>
+                    <subviews>
+                        <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="icWorkspace" translatesAutoresizingMaskIntoConstraints="NO" id="bPg-wc-ffe">
+                            <rect key="frame" x="16" y="16" width="16" height="16"/>
+                        </imageView>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aWZ-cY-YUv" customClass="FadeView">
+                            <rect key="frame" x="44" y="16" width="74" height="17"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Workspace" textAlignment="natural" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m1j-gc-5S9">
+                                    <rect key="frame" x="0.0" y="0.0" width="74" height="17"/>
+                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                    <color key="textColor" red="0.023529411764705882" green="0.66666666666666663" blue="0.96078431372549022" alpha="1" colorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstItem="m1j-gc-5S9" firstAttribute="leading" secondItem="aWZ-cY-YUv" secondAttribute="leading" id="2UY-AA-6pF"/>
+                                <constraint firstItem="m1j-gc-5S9" firstAttribute="top" secondItem="aWZ-cY-YUv" secondAttribute="top" id="6L5-zQ-Kiz"/>
+                                <constraint firstAttribute="trailing" secondItem="m1j-gc-5S9" secondAttribute="trailing" id="SCc-MH-0v7"/>
+                                <constraint firstAttribute="bottom" secondItem="m1j-gc-5S9" secondAttribute="bottom" id="aRP-29-x8E"/>
+                                <constraint firstAttribute="width" relation="lessThanOrEqual" constant="144" id="hJE-N6-4K3"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="aWZ-cY-YUv" firstAttribute="leading" secondItem="bPg-wc-ffe" secondAttribute="trailing" constant="12" id="16F-3i-yRs"/>
+                        <constraint firstItem="bPg-wc-ffe" firstAttribute="leading" secondItem="YRc-NG-stW" secondAttribute="leading" constant="16" id="3k5-gM-Y3u"/>
+                        <constraint firstItem="YRc-NG-stW" firstAttribute="bottom" secondItem="bPg-wc-ffe" secondAttribute="bottom" constant="16" id="7Oo-eu-83H"/>
+                        <constraint firstAttribute="height" constant="48" id="CXv-2u-TTy"/>
+                        <constraint firstItem="aWZ-cY-YUv" firstAttribute="top" secondItem="eOn-bU-NQ3" secondAttribute="top" constant="16" id="I2i-QX-i5M"/>
+                        <constraint firstItem="aWZ-cY-YUv" firstAttribute="trailing" secondItem="eOn-bU-NQ3" secondAttribute="trailing" constant="-12.5" id="ghH-Fc-sCg"/>
+                        <constraint firstItem="bPg-wc-ffe" firstAttribute="top" secondItem="YRc-NG-stW" secondAttribute="top" constant="16" id="mMx-th-wtT"/>
+                        <constraint firstItem="m1j-gc-5S9" firstAttribute="centerY" secondItem="bPg-wc-ffe" secondAttribute="centerY" id="sUR-KM-ANL"/>
+                    </constraints>
+                    <viewLayoutGuide key="safeArea" id="YRc-NG-stW"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="6"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
             </subviews>
             <constraints>
                 <constraint firstItem="FLH-vi-fXY" firstAttribute="trailing" secondItem="2L8-Wo-D6t" secondAttribute="trailing" id="2au-jd-8Pf"/>
                 <constraint firstAttribute="bottom" secondItem="2L8-Wo-D6t" secondAttribute="bottom" id="8Nf-bB-Kqw"/>
                 <constraint firstItem="2L8-Wo-D6t" firstAttribute="top" secondItem="X3Z-yh-5bj" secondAttribute="bottom" id="GdQ-Vr-HJp"/>
+                <constraint firstItem="FLH-vi-fXY" firstAttribute="bottom" secondItem="eOn-bU-NQ3" secondAttribute="bottom" constant="14" id="HR8-hm-9tt"/>
+                <constraint firstItem="eOn-bU-NQ3" firstAttribute="leading" secondItem="2" secondAttribute="leading" constant="16" id="L0A-Vb-i9c"/>
                 <constraint firstItem="X3Z-yh-5bj" firstAttribute="leading" secondItem="FLH-vi-fXY" secondAttribute="leading" id="PAA-hl-Dri"/>
                 <constraint firstItem="2L8-Wo-D6t" firstAttribute="leading" secondItem="FLH-vi-fXY" secondAttribute="leading" id="Z11-yA-OYF"/>
                 <constraint firstItem="FLH-vi-fXY" firstAttribute="trailing" secondItem="Yjk-ld-WFo" secondAttribute="trailing" id="ZfS-l1-QpD"/>
@@ -58,4 +107,7 @@
             <viewLayoutGuide key="safeArea" id="FLH-vi-fXY"/>
         </view>
     </objects>
+    <resources>
+        <image name="icWorkspace" width="16" height="16"/>
+    </resources>
 </document>
