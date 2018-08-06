@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive;
 using Toggl.Foundation.Autocomplete.Suggestions;
+using Toggl.Foundation.Calendar;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.Suggestions;
@@ -86,6 +87,12 @@ namespace Toggl.Foundation.Interactors
         #region Settings
 
         IInteractor<IObservable<Unit>> SendFeedback(string message);
+
+        #endregion
+
+        #region Calendar
+
+        IInteractor<IObservable<IEnumerable<CalendarItem>>> GetCalendarItemsForDate(DateTime date);
 
         #endregion
     }
