@@ -7,6 +7,7 @@ using FluentAssertions;
 using FsCheck;
 using FsCheck.Xunit;
 using NSubstitute;
+using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Interactors;
 using Toggl.Foundation.Models;
@@ -27,11 +28,12 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         {
             protected ITogglDataSource DataSource { get; } = Substitute.For<ITogglDataSource>();
             protected IInteractorFactory InteractorFactory { get; } = Substitute.For<IInteractorFactory>();
+            protected IAnalyticsService AnalyticsService { get; } = Substitute.For<IAnalyticsService>();
 
             protected TimeEntriesViewModel ViewModel { get; private set; }
 
             protected TimeEntriesViewModel CreateViewModel()
-                => new TimeEntriesViewModel(DataSource, InteractorFactory);
+                => new TimeEntriesViewModel(DataSource, InteractorFactory, AnalyticsService);
 
             protected TimeEntriesViewModelTest()
             {
@@ -45,13 +47,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             [ConstructorData]
             public void ThrowsIfAnyOfTheArgumentsIsNull(
                 bool useDataSource,
-                bool useInteractorFactory)
+                bool useInteractorFactory,
+                bool useAnalyticsService)
             {
                 var dataSource = useDataSource ? DataSource : null;
                 var interactorFactory = useInteractorFactory ? InteractorFactory : null;
+                var analyticsService = useAnalyticsService ? AnalyticsService : null;
 
                 Action tryingToConstructWithEmptyParameters =
-                    () => new TimeEntriesViewModel(dataSource, interactorFactory);
+                    () => new TimeEntriesViewModel(dataSource, interactorFactory, analyticsService);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
