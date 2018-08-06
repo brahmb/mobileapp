@@ -74,7 +74,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 timeService,
                 navigationService,
                 interactorFactory,
-                analyticsService);
+                analyticsService,
+                dialogService);
 
             settingsViewModel = new SettingsViewModel(
                 userAgent,
