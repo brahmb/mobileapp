@@ -116,7 +116,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private IObservable<Unit> cancelDeleteTimeEntry()
         {
-            add(timeEntryToDelete);
+            if (!TimeEntries.IndexOf(timeEntryToDelete.Id).HasValue)
+            {
+                TimeEntries.InsertItem(timeEntryToDelete);
+            }
+
             timeEntryToDelete = null;
             delayedDeletionDisposable.Dispose();
             showUndoSubject.OnNext(false);
@@ -141,6 +145,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             var groupedEntries = await interactorFactory.GetAllNonDeletedTimeEntries().Execute()
                 .Select(entries => entries
                     .Where(isNotRunning)
+                    .Where(timeEntry => timeEntry.Id != timeEntryToDelete?.Id)
                     .Select(te => new TimeEntryViewModel(te, durationFormat))
                 );
 
@@ -159,7 +164,16 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             else
             {
                 var timeEntryViewModel = new TimeEntryViewModel(timeEntry, durationFormat);
-                TimeEntries.UpdateItem(timeEntryViewModel);
+                if (timeEntry.Id == timeEntryToDelete?.Id)
+                {
+                    // Ignore this update because the entity is hidden and might be deleted unless the user
+                    // undoes the action. In that case bring the time entry but with the updated data.
+                    timeEntryToDelete = timeEntryViewModel;
+                }
+                else
+                {
+                    TimeEntries.UpdateItem(timeEntryViewModel);
+                }
             }
         }
 
@@ -178,18 +192,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void onPreferencesChanged(IThreadSafePreferences preferences)
         {
-            durationFormat = preferences.DurationFormat;
-            fetchSectionedTimeEntries();
+            if (durationFormat != preferences.DurationFormat)
+            {
+                durationFormat = preferences.DurationFormat;
+                fetchSectionedTimeEntries();
+            }
         }
 
         private bool isNotRunning(IThreadSafeTimeEntry timeEntry) => !timeEntry.IsRunning();
-
-        private void add(TimeEntryViewModel timeEntryViewModel)
-        {
-            if (!TimeEntries.IndexOf(timeEntryViewModel.Id).HasValue)
-            {
-                TimeEntries.InsertItem(timeEntryViewModel);
-            }
-        }
     }
 }
