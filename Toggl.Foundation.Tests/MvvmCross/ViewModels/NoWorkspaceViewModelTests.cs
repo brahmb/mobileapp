@@ -17,8 +17,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
     {
         public abstract class NoWorkspaceViewModelTest : BaseViewModelTests<NoWorkspaceViewModel>
         {
-            protected TestScheduler TestScheduler { get; } = new TestScheduler();
-
             protected override NoWorkspaceViewModel CreateViewModel()
                 => new NoWorkspaceViewModel(NavigationService, DataSource);
         }

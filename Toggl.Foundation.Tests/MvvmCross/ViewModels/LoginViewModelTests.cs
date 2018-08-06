@@ -33,8 +33,6 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             protected Password ValidPassword { get; } = Password.From("T0t4lly s4afe p4$$");
             protected Password InvalidPassword { get; } = Password.From("123");
 
-            protected TestScheduler TestScheduler { get; } = new TestScheduler();
-
             protected ILastTimeUsageStorage LastTimeUsageStorage { get; } = Substitute.For<ILastTimeUsageStorage>();
 
             protected override LoginViewModel CreateViewModel()
