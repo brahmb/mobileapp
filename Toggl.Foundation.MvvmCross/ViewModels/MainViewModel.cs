@@ -409,7 +409,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             timeEntryToDelete = timeEntry;
 
-            timeEntriesViewModel.RemoveTimeEntryFromVieWModel(timeEntry);
+            timeEntriesViewModel.RemoveTimeEntryFromViewModel(timeEntry);
             showUndoSubject.OnNext(true);
 
             delayedDeletionDisposable = Observable.Merge( // If 5 seconds pass or we try to delete another TE
