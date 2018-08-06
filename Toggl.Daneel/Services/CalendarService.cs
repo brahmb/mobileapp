@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using Toggl.Foundation.Calendar;
-using Toggl.Foundation.MvvmCross.Services;
+using Toggl.Foundation.Services;
 
 namespace Toggl.Daneel.Services
 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Toggl.Foundation.Calendar;
 
-namespace Toggl.Foundation.MvvmCross.Services
+namespace Toggl.Foundation.Services
 {
     public interface ICalendarService
     {
