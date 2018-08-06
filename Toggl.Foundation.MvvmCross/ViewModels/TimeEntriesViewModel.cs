@@ -95,7 +95,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             timeEntryToDelete = timeEntry;
 
-            remove(timeEntry.Id);
+            onTimeEntryRemoved(timeEntry.Id);
             showUndoSubject.OnNext(true);
 
             delayedDeletionDisposable = Observable.Merge( // If 5 seconds pass or we try to delete another TE
@@ -154,7 +154,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             if (timeEntry.IsDeleted || timeEntry.IsRunning())
             {
-                remove(timeEntry.Id);
+                onTimeEntryRemoved(timeEntry.Id);
             }
             else
             {
@@ -183,13 +183,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         }
 
         private bool isNotRunning(IThreadSafeTimeEntry timeEntry) => !timeEntry.IsRunning();
-
-        private void remove(long id)
-        {
-            var index = TimeEntries.IndexOf(id);
-            if (index.HasValue)
-                TimeEntries.RemoveItemAt(index.Value.Section, index.Value.Row);
-        }
 
         private void add(TimeEntryViewModel timeEntryViewModel)
         {
