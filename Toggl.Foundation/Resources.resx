@@ -414,4 +414,7 @@ account is not set up</value>
     <data name="UndoButtonTitle">
         <value>UNDO</value>
     </data>    
+    <data name="SelectWorkspace">
+        <value>Select workspace</value>
+    </data>
 </root>

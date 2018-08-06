@@ -524,6 +524,10 @@
     <ImageAsset Include="Resources\Images.xcassets\icWarning.imageset\icWarning.png" />
     <ImageAsset Include="Resources\Images.xcassets\icWarning.imageset\icWarning%402x.png" />
     <ImageAsset Include="Resources\Images.xcassets\icWarning.imageset\icWarning%403x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icWorkspace.imageset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\icWorkspace.imageset\icWorkspace.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icWorkspace.imageset\icWorkspace%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\icWorkspace.imageset\icWorkspace%403x.png" />
     <ImageAsset Include="Resources\Images.xcassets\icIllustrationErrorWorkspace.imageset\Contents.json" />
     <ImageAsset Include="Resources\Images.xcassets\icIllustrationErrorWorkspace.imageset\icIllustrationErrorWorkspace.png" />
     <ImageAsset Include="Resources\Images.xcassets\icIllustrationErrorWorkspace.imageset\icIllustrationErrorWorkspace%402x.png" />
@@ -1002,6 +1006,7 @@
       <DependentUpon>SendFeedbackViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="Binding\TextViewWithPlaceholderDidBecomeFirstResponderTargetBinding.cs" />
+    <Compile Include="Converters\LambdaConverter.cs" />
     <Compile Include="Views\SnackBar.cs" />
     <Compile Include="Views\SnackBar.designer.cs">
       <DependentUpon>SnackBar.cs</DependentUpon>

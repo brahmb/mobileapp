@@ -22,6 +22,9 @@ namespace Toggl.Daneel.ViewControllers
 		UIKit.UIImageView CountryNotSelectedImageView { get; set; }
 
 		[Outlet]
+		UIKit.NSLayoutConstraint EmailFieldTopConstraint { get; set; }
+
+		[Outlet]
 		Toggl.Daneel.Views.LoginTextField EmailTextField { get; set; }
 
 		[Outlet]
@@ -58,14 +61,14 @@ namespace Toggl.Daneel.ViewControllers
 				ActivityIndicator = null;
 			}
 
-			if (CountryNotSelectedImageView != null) {
-				CountryNotSelectedImageView.Dispose ();
-				CountryNotSelectedImageView = null;
-			}
-
 			if (CountryDropDownCaretImageView != null) {
 				CountryDropDownCaretImageView.Dispose ();
 				CountryDropDownCaretImageView = null;
+			}
+
+			if (CountryNotSelectedImageView != null) {
+				CountryNotSelectedImageView.Dispose ();
+				CountryNotSelectedImageView = null;
 			}
 
 			if (EmailTextField != null) {
@@ -116,6 +119,11 @@ namespace Toggl.Daneel.ViewControllers
 			if (TopConstraint != null) {
 				TopConstraint.Dispose ();
 				TopConstraint = null;
+			}
+
+			if (EmailFieldTopConstraint != null) {
+				EmailFieldTopConstraint.Dispose ();
+				EmailFieldTopConstraint = null;
 			}
 		}
 	}

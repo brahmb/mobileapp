@@ -325,7 +325,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
                 await ViewModel.OpenReportsCommand.ExecuteAsync();
 
-                await NavigationService.Received().Navigate<ReportsViewModel, long>(workspaceId);
+                await NavigationService.Received().Navigate<ReportsViewModel>();
             }
 
             [Fact, LogIfTooSlow]

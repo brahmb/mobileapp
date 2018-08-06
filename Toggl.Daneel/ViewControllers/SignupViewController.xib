@@ -17,6 +17,7 @@
                 <outlet property="ActivityIndicator" destination="k7q-nl-nCH" id="K7q-pl-Qgd"/>
                 <outlet property="CountryDropDownCaretImageView" destination="vul-4E-5bP" id="Tw3-bX-LsP"/>
                 <outlet property="CountryNotSelectedImageView" destination="X67-rL-fUe" id="IjF-pt-t8k"/>
+                <outlet property="EmailFieldTopConstraint" destination="f5b-gb-fjb" id="FOi-iR-DZy"/>
                 <outlet property="EmailTextField" destination="l9R-60-VBL" id="V8Z-gb-EPS"/>
                 <outlet property="ErrorLabel" destination="rbq-cx-c1j" id="eE6-Kv-7Me"/>
                 <outlet property="GoogleSignupButton" destination="NK2-6U-6cX" id="5BZ-l7-8Ts"/>
@@ -46,10 +47,10 @@
                     </state>
                 </button>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="togglLogoBig" translatesAutoresizingMaskIntoConstraints="NO" id="1Kw-mQ-ODE">
-                    <rect key="frame" x="109.5" y="84" width="101" height="31"/>
+                    <rect key="frame" x="109.5" y="60" width="101" height="31"/>
                 </imageView>
                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="l9R-60-VBL" customClass="LoginTextField">
-                    <rect key="frame" x="16" y="157" width="288" height="56"/>
+                    <rect key="frame" x="16" y="133" width="288" height="56"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="56" id="uN1-Sc-9gG"/>
                     </constraints>
@@ -58,7 +59,7 @@
                     <textInputTraits key="textInputTraits" keyboardType="emailAddress" returnKeyType="next" textContentType="email"/>
                 </textField>
                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Tbg-EL-dza" customClass="LoginTextField">
-                    <rect key="frame" x="16" y="225" width="288" height="56"/>
+                    <rect key="frame" x="16" y="201" width="288" height="56"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="56" id="GQS-iS-edi"/>
                     </constraints>
@@ -67,16 +68,16 @@
                     <textInputTraits key="textInputTraits" returnKeyType="done" secureTextEntry="YES" textContentType="password"/>
                 </textField>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zkA-aZ-W3h" userLabel="Show Password Button">
-                    <rect key="frame" x="264" y="237" width="40" height="40"/>
+                    <rect key="frame" x="264" y="213" width="40" height="40"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="zkA-aZ-W3h" secondAttribute="height" multiplier="1:1" id="1Se-Xy-yvn"/>
                     </constraints>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lsf-rK-ajN">
-                    <rect key="frame" x="16" y="321" width="288" height="40"/>
+                    <rect key="frame" x="16" y="297" width="288" height="40"/>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4U6-rc-Cap">
-                    <rect key="frame" x="16" y="321" width="288" height="40"/>
+                    <rect key="frame" x="16" y="297" width="288" height="40"/>
                     <color key="backgroundColor" red="0.023529411764705882" green="0.66666666666666663" blue="0.96078431372549022" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="40" id="g1T-bA-zza"/>
@@ -92,14 +93,14 @@
                     </userDefinedRuntimeAttributes>
                 </button>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="k7q-nl-nCH" customClass="ActivityIndicatorView">
-                    <rect key="frame" x="140" y="321" width="40" height="40"/>
+                    <rect key="frame" x="140" y="297" width="40" height="40"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="40" id="kpz-01-gSw"/>
                         <constraint firstAttribute="height" constant="40" id="srr-8k-ciz"/>
                     </constraints>
                 </imageView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hpd-gv-toK" userLabel="OR">
-                    <rect key="frame" x="16" y="385" width="288" height="14.5"/>
+                    <rect key="frame" x="16" y="361" width="288" height="14.5"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z4P-YM-3Id">
                             <rect key="frame" x="0.0" y="7.5" width="127.5" height="1"/>
@@ -136,7 +137,7 @@
                     </constraints>
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NK2-6U-6cX">
-                    <rect key="frame" x="16" y="415.5" width="288" height="40"/>
+                    <rect key="frame" x="16" y="391.5" width="288" height="40"/>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="40" id="hX8-3z-nGV"/>
@@ -200,7 +201,7 @@
                     </userDefinedRuntimeAttributes>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password should be at least 6 characters." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rbq-cx-c1j">
-                    <rect key="frame" x="16" y="287" width="288" height="14.5"/>
+                    <rect key="frame" x="16" y="263" width="288" height="14.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" red="0.96862745098039216" green="0.25098039215686274" blue="0.28627450980392155" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
@@ -239,7 +240,7 @@
                 <constraint firstItem="zkA-aZ-W3h" firstAttribute="bottom" secondItem="Tbg-EL-dza" secondAttribute="bottom" constant="-4" id="WE0-eg-i7D"/>
                 <constraint firstItem="Mjk-wm-alH" firstAttribute="top" secondItem="aqp-41-XzD" secondAttribute="top" id="Xd9-Ml-Jxd"/>
                 <constraint firstItem="rbq-cx-c1j" firstAttribute="leading" secondItem="aqp-41-XzD" secondAttribute="leading" constant="16" id="Yny-PT-a4B"/>
-                <constraint firstItem="1Kw-mQ-ODE" firstAttribute="top" secondItem="aqp-41-XzD" secondAttribute="top" constant="84" id="ZMo-YL-6bU"/>
+                <constraint firstItem="1Kw-mQ-ODE" firstAttribute="top" secondItem="aqp-41-XzD" secondAttribute="top" constant="40" id="ZMo-YL-6bU"/>
                 <constraint firstItem="Hpd-gv-toK" firstAttribute="top" secondItem="4U6-rc-Cap" secondAttribute="bottom" constant="24" id="bpK-lM-adc"/>
                 <constraint firstItem="lsf-rK-ajN" firstAttribute="top" secondItem="4U6-rc-Cap" secondAttribute="top" id="cgt-Ga-W2D"/>
                 <constraint firstItem="aqp-41-XzD" firstAttribute="trailing" secondItem="rbq-cx-c1j" secondAttribute="trailing" constant="16" id="cx5-LZ-vsY"/>
