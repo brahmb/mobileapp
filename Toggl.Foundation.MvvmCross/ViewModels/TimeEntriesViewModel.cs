@@ -23,7 +23,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IInteractorFactory interactorFactory;
 
         private CompositeDisposable disposeBag = new CompositeDisposable();
-        private bool areContineButtonsEnabled = true;
         private DurationFormat durationFormat;
 
         public ObservableGroupedOrderedCollection<TimeEntryViewModel> TimeEntries { get; }
