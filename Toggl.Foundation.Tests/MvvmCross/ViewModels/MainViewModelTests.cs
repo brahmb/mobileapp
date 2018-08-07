@@ -48,7 +48,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     InteractorFactory,
                     NavigationService,
                     RemoteConfigService,
-                    SuggestionProviderContainer);
+                    SuggestionProviderContainer,
+                    Scheduler);
 
                 vm.Prepare();
 
@@ -83,7 +84,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 bool useInteractorFactory,
                 bool useNavigationService,
                 bool useRemoteConfigService,
-                bool useSuggestionProviderContainer)
+                bool useSuggestionProviderContainer,
+                bool useScheduler)
             {
                 var dataSource = useDataSource ? DataSource : null;
                 var timeService = useTimeService ? TimeService : null;
@@ -95,6 +97,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
                 var remoteConfigService = useRemoteConfigService ? RemoteConfigService : null;
                 var suggestionProviderContainer = useSuggestionProviderContainer ? SuggestionProviderContainer : null;
+                var scheduler = useScheduler ? Scheduler : null;
 
                 Action tryingToConstructWithEmptyParameters =
                     () => new MainViewModel(
@@ -107,7 +110,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         interactorFactory,
                         navigationService,
                         remoteConfigService,
-                        suggestionProviderContainer);
+                        suggestionProviderContainer,
+                        scheduler);
 
                 tryingToConstructWithEmptyParameters
                     .Should().Throw<ArgumentNullException>();
