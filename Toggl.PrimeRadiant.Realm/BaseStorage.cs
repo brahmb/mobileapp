@@ -18,7 +18,7 @@ namespace Toggl.PrimeRadiant.Realm
             Adapter = adapter;
         }
 
-        public IObservable<TModel> Create(TModel entity)
+        public virtual IObservable<TModel> Create(TModel entity)
         {
             Ensure.Argument.IsNotNull(entity, nameof(entity));
 
@@ -27,7 +27,7 @@ namespace Toggl.PrimeRadiant.Realm
                 .Catch<TModel, Exception>(ex => Observable.Throw<TModel>(new DatabaseException(ex)));
         }
 
-        public IObservable<IEnumerable<IConflictResolutionResult<TModel>>> BatchUpdate(
+        public virtual IObservable<IEnumerable<IConflictResolutionResult<TModel>>> BatchUpdate(
             IEnumerable<(long Id, TModel Entity)> entities,
             Func<TModel, TModel, ConflictResolutionMode> conflictResolution,
             IRivalsResolver<TModel> rivalsResolver = null)
@@ -38,28 +38,28 @@ namespace Toggl.PrimeRadiant.Realm
             return CreateObservable(() => Adapter.BatchUpdate(entities, conflictResolution, rivalsResolver));
         }
 
-        public IObservable<TModel> Update(long id, TModel entity)
+        public virtual IObservable<TModel> Update(long id, TModel entity)
         {
             Ensure.Argument.IsNotNull(entity, nameof(entity));
 
             return CreateObservable(() => Adapter.Update(id, entity));
         }
 
-        public IObservable<Unit> Delete(long id)
+        public virtual IObservable<Unit> Delete(long id)
             => CreateObservable(() =>
             {
                 Adapter.Delete(id);
                 return Unit.Default;
             });
 
-        public IObservable<IEnumerable<TModel>> GetAll(Func<TModel, bool> predicate)
+        public virtual IObservable<IEnumerable<TModel>> GetAll(Func<TModel, bool> predicate)
         {
             Ensure.Argument.IsNotNull(predicate, nameof(predicate));
 
             return CreateObservable(() => Adapter.GetAll().Where(predicate));
         }
 
-        public IObservable<IEnumerable<TModel>> GetAll()
+        public virtual IObservable<IEnumerable<TModel>> GetAll()
             => CreateObservable(() => Adapter.GetAll());
 
         protected static IObservable<T> CreateObservable<T>(Func<T> getFunction)
