@@ -634,7 +634,6 @@
     </Compile>
     <Compile Include="Extensions\AnimationExtensions.cs" />
     <Compile Include="Binding\ScrollViewAnimatedCurrentPageTargetBinding.cs" />
-    <Compile Include="Transformations\DateToTitleString.cs" />
     <Compile Include="Transformations\ProjectTaskClientToAttributedString.cs" />
     <Compile Include="ViewControllers\OnboardingViewController.cs" />
     <Compile Include="ViewControllers\OnboardingViewController.designer.cs">
