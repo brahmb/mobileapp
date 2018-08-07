@@ -264,6 +264,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
             ratingViewExperiment
                 .RatingViewShouldBeVisible
+                .StartWith(true)
+                .Delay(TimeSpan.FromSeconds(3))
                 .Subscribe(presentRatingViewIfNeeded)
                 .DisposedBy(disposeBag);
 
@@ -274,25 +276,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void presentRatingViewIfNeeded(bool shouldBevisible)
         {
-            if (!shouldBevisible) return;
-
-            var wasShownMoreThanOnce = onboardingStorage.NumberOfTimesRatingViewWasShown() > 1;
-            if (wasShownMoreThanOnce) return;
-
-            var lastOutcome = onboardingStorage.RatingViewOutcome();
-            if (lastOutcome != null)
-            {
-                var thereIsInteractionFormLastTime = lastOutcome != RatingViewOutcome.NoInteraction;
-                if (thereIsInteractionFormLastTime) return;
-            }
-
-            var lastOutcomeTime = onboardingStorage.RatingViewOutcomeTime();
-            if (lastOutcomeTime != null)
-            {
-                var oneDayHasNotPassedSinceLastTime = lastOutcomeTime + TimeSpan.FromHours(24) > timeService.CurrentDateTime;
-                if (oneDayHasNotPassedSinceLastTime && !wasShownMoreThanOnce) return;
-            }
-
             navigationService.ChangePresentation(new ToggleRatingViewVisibilityHint());
             analyticsService.RatingViewWasShown.Track();
             onboardingStorage.SetDidShowRatingView();

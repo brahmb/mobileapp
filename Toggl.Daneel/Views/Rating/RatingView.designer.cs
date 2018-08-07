@@ -25,6 +25,9 @@ namespace Toggl.Daneel
 		UIKit.UIView CtaView { get; set; }
 
 		[Outlet]
+		UIKit.NSLayoutConstraint CtaViewToTopConstraint { get; set; }
+
+		[Outlet]
 		UIKit.UIButton DismissButton { get; set; }
 
 		[Outlet]
@@ -100,6 +103,11 @@ namespace Toggl.Daneel
 			if (YesView != null) {
 				YesView.Dispose ();
 				YesView = null;
+			}
+
+			if (CtaViewToTopConstraint != null) {
+				CtaViewToTopConstraint.Dispose ();
+				CtaViewToTopConstraint = null;
 			}
 		}
 	}

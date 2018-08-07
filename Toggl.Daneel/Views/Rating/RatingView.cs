@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using CoreGraphics;
@@ -7,6 +8,7 @@ using MvvmCross.Commands;
 using MvvmCross.Platforms.Ios.Binding.Views;
 using ObjCRuntime;
 using Toggl.Foundation.MvvmCross.ViewModels;
+using Toggl.Multivac.Extensions;
 using UIKit;
 using static Toggl.Daneel.Extensions.UIKitRxExtensions;
 using static Toggl.Multivac.Extensions.CommonFunctions;
@@ -69,7 +71,7 @@ namespace Toggl.Daneel
                 DataContext.Impression.Select(impression => impression.HasValue),
                 CtaView.BindIsVisibleWithFade());
             this.Bind(
-                DataContext.CtaDescription.Select(attributedDescription),
+                DataContext.CtaDescription.Select(attributedDescription).Debug("Updating desc"),
                 CtaDescription.BindAttributedText());
             this.Bind(
                 DataContext
@@ -77,11 +79,24 @@ namespace Toggl.Daneel
                     .Select(impression => impression.HasValue)
                     .Select(Invert),
                 QuestionView.BindIsVisibleWithFade());
+
             this.Bind(
                 DataContext
                     .Impression
                     .Select(impression => impression.HasValue)
-                    .Select(gotImpression => (nfloat)(gotImpression ? 289 : 262)),
+                    .Select(gotImpression =>
+                    {
+                        SetNeedsLayout();
+                        LayoutIfNeeded();
+
+                        var ctaHeight = CtaView.Frame;
+                        var questionFrame = QuestionView.Frame;
+                        var height = (gotImpression ? ctaHeight.Height : questionFrame.Height) +
+                                     CtaViewToTopConstraint.Constant * 2;
+                        Console.WriteLine($"Text {CtaTitle.Text}");
+                        Console.WriteLine($"SOMETHING {height}");
+                        return height;
+                    }),
                 heightConstraint.BindConstant());
 
             this.BindVoid(YesView.Tapped(), () => DataContext.RegisterImpression(true));
@@ -118,5 +133,6 @@ namespace Toggl.Daneel
             view.Layer.ShadowOffset = new CGSize(0, 2);
             view.Layer.ShadowColor = UIColor.Black.CGColor;
         }
+
     }
 }
