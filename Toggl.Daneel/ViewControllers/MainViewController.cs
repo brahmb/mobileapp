@@ -267,12 +267,11 @@ namespace Toggl.Daneel.ViewControllers
             if (!show)
                 return;
 
-            snackBar = SnackBar.Undo(
-                () => { ViewModel.TimeEntriesViewModel.CancelDeleteTimeEntry.Execute(Unit.Default); }
-            );
+            snackBar = SnackBar.Factory.CreateUndoSnackBar(
+                onUndo: () => ViewModel.TimeEntriesViewModel.CancelDeleteTimeEntry.Execute(Unit.Default));
 
             snackBar.SnackBottomAnchor = StartTimeEntryButton.TopAnchor;
-            snackBar.Show(View);
+            snackBar.Show(superView: View);
         }
 
         protected override void Dispose(bool disposing)

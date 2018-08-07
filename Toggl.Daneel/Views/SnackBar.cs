@@ -180,11 +180,14 @@ namespace Toggl.Daneel
             SetNeedsLayout();
         }
 
-        public static SnackBar Undo(Action onTap)
+        public static class Factory
         {
-            var snackBar = SnackBar.Create(Resources.EntryDeleted);
-            snackBar.AddButton(Resources.UndoButtonTitle, onTap);
-            return snackBar;
+            public static SnackBar CreateUndoSnackBar(Action onUndo)
+            {
+                var snackBar = SnackBar.Create(Resources.EntryDeleted);
+                snackBar.AddButton(Resources.UndoButtonTitle, onUndo);
+                return snackBar;
+            }
         }
     }
 }
