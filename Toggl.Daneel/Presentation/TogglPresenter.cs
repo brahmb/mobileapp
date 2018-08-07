@@ -168,13 +168,6 @@ namespace Toggl.Daneel.Presentation
                 return;
             }
 
-            if (request.ViewModelType == typeof(SettingsViewModel))
-            {
-                mainTabBarController.SelectedIndex = 2;
-                (mainTabBarController.ViewControllers[2] as UINavigationController).PopToRootViewController(false);
-                return;
-            }
-
             base.Show(request);
         }
 

@@ -46,6 +46,7 @@ namespace Toggl.Daneel.ViewControllers
 
         private readonly UIView spiderContainerView = new UIView();
         private readonly SpiderOnARopeView spiderBroView = new SpiderOnARopeView();
+        private readonly UIButton settingsButton = new UIButton(new CGRect(0, 0, 30, 40));
         private readonly UIButton syncFailuresButton = new UIButton(new CGRect(0, 0, 30, 40));
         private readonly UIImageView titleImage = new UIImageView(UIImage.FromBundle("togglLogo"));
         private readonly TimeEntriesEmptyLogView emptyStateView = TimeEntriesEmptyLogView.Create();
@@ -142,6 +143,7 @@ namespace Toggl.Daneel.ViewControllers
             TimeEntriesLogTableView.CustomRefreshControl = refreshControl;
 
             //Commands
+            bindingSet.Bind(settingsButton).To(vm => vm.OpenSettingsCommand);
             bindingSet.Bind(StopTimeEntryButton).To(vm => vm.StopTimeEntryCommand);
             bindingSet.Bind(StartTimeEntryButton).To(vm => vm.StartTimeEntryCommand);
             bindingSet.Bind(EditTimeEntryButton).To(vm => vm.EditTimeEntryCommand);
@@ -237,6 +239,10 @@ namespace Toggl.Daneel.ViewControllers
             base.ViewWillAppear(animated);
 
             NavigationItem.TitleView = titleImage;
+            NavigationItem.RightBarButtonItems = new[]
+            {
+                new UIBarButtonItem(settingsButton),
+            };
 
 #if DEBUG
             NavigationItem.LeftBarButtonItems = new[]
@@ -332,6 +338,7 @@ namespace Toggl.Daneel.ViewControllers
             StartTimeEntryButton.Transform = CGAffineTransform.MakeScale(0.01f, 0.01f);
 
             //Prepare Navigation bar images
+            settingsButton.SetImage(UIImage.FromBundle("icSettings"), UIControlState.Normal);
             syncFailuresButton.SetImage(UIImage.FromBundle("icWarning"), UIControlState.Normal);
 
             RunningEntryDescriptionFadeView.FadeLeft = true;

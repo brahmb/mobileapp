@@ -37,10 +37,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             IMvxNavigationService navigationService,
             IRemoteConfigService remoteConfigService,
             ISuggestionProviderContainer suggestionProviders,
-            UserAgent userAgent,
-            IMailService mailService,
-            IDialogService dialogService,
-            IPlatformConstants platformConstants)
+            IDialogService dialogService)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
@@ -52,10 +49,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(remoteConfigService, nameof(remoteConfigService));
             Ensure.Argument.IsNotNull(suggestionProviders, nameof(suggestionProviders));
-            Ensure.Argument.IsNotNull(userAgent, nameof(userAgent));
-            Ensure.Argument.IsNotNull(mailService, nameof(mailService));
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
-            Ensure.Argument.IsNotNull(platformConstants, nameof(platformConstants));
 
             mainViewModel = new MainViewModel(
                 dataSource,
@@ -76,25 +70,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 interactorFactory,
                 analyticsService,
                 dialogService);
-
-            settingsViewModel = new SettingsViewModel(
-                userAgent,
-                mailService,
-                dataSource,
-                dialogService,
-                userPreferences,
-                analyticsService,
-                interactorFactory,
-                platformConstants,
-                onboardingStorage,
-                navigationService);
         }
 
         public override async Task Initialize()
         {
             await base.Initialize();
 
-            ViewModels = new MvxViewModel[] { mainViewModel, reportsViewModel, settingsViewModel }.Do(async vm => await vm.Initialize());
+            ViewModels = new MvxViewModel[] { mainViewModel, reportsViewModel }.Do(async vm => await vm.Initialize());
         }
     }
 }

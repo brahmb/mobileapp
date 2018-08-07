@@ -15,8 +15,7 @@ namespace Toggl.Daneel.ViewControllers
         private Dictionary<Type, String> imageNameForType = new Dictionary<Type, String>
         {
             {typeof(MainViewModel), "icTime"},
-            {typeof(ReportsViewModel), "icReports"},
-            {typeof(SettingsViewModel), "icSettings"}
+            {typeof(ReportsViewModel), "icReports"}
         };
 
         public MainTabBarController()
