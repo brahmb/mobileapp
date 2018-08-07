@@ -38,14 +38,14 @@ namespace Toggl.Foundation.Interactors.Calendar
                 .Select(orderByStartTime);
 
         private IObservable<IEnumerable<CalendarItem>> calendarItemsFromTimeEntries()
-            => timeEntriesDataSource.GetAll(timeEntry => timeEntry.Start > date.Date && timeEntry.Start < date.AddDays(1).Date && timeEntry.Duration != null)
+            => timeEntriesDataSource.GetAll(timeEntry => timeEntry.Start >= date.Date && timeEntry.Start <= date.AddDays(1).Date && timeEntry.Duration != null)
                 .Select(convertTimeEntriesToCalendarItems);
 
         private IObservable<IEnumerable<CalendarItem>> calendarItemsFromEvents()
             => calendarService.GetEventsForDate(date);
 
         private IEnumerable<CalendarItem> convertTimeEntriesToCalendarItems(IEnumerable<IThreadSafeTimeEntry> timeEntries)
-            => timeEntries.Select(timeEntry => new CalendarItem(timeEntry));
+            => timeEntries.Select(CalendarItem.From);
 
         private IEnumerable<CalendarItem> orderByStartTime(IEnumerable<CalendarItem> calendarItems)
             => calendarItems.OrderBy(calendarItem => calendarItem.StartTime);
