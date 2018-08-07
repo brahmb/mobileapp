@@ -92,6 +92,15 @@ namespace Toggl.Daneel
             this.BindVoid(DismissButton.Tapped(), DataContext.Dismiss);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (!disposing) return;
+
+            DisposeBag.Dispose();
+        }
+
         public override void LayoutSubviews()
         {
             base.LayoutSubviews();
