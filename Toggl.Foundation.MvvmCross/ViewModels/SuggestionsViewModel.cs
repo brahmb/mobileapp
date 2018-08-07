@@ -74,9 +74,9 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .Subscribe(addSuggestion);
         }
 
-        private void addSuggestion(Suggestion suggestions)
+        private void addSuggestion(Suggestion suggestion)
         {
-            Suggestions.Add(suggestions);
+            Suggestions.Add(suggestion);
 
             RaisePropertyChanged();
         }
