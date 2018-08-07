@@ -587,6 +587,7 @@
     <InterfaceDefinition Include="Cells\Settings\LicensesHeaderViewCell.xib" />
     <InterfaceDefinition Include="Cells\Settings\LicensesViewCell.xib" />
     <InterfaceDefinition Include="ViewControllers\Settings\SendFeedbackViewController.xib" />
+    <InterfaceDefinition Include="Views\CalendarItemView.xib" />
     <InterfaceDefinition Include="ViewControllers\CalendarViewController.xib" />
   </ItemGroup>
   <ItemGroup>
@@ -833,7 +834,7 @@
     <Compile Include="ReportsCalendarCollectionViewLayout.cs" />
     <Compile Include="Binding\ScrollViewCurrentPageTargetBinding.cs" />
     <Compile Include="Binding\LayoutConstraintAnimatedConstantTargetBinding.cs" />
-    <Compile Include="Converters\CalendarRowCountToCalendarHeightConverter.cs" />
+    <Compile Include="Converters\ReportsCalendarRowCountToCalendarHeightConverter.cs" />
     <Compile Include="Views\Reports\ReportsCalendarViewCell.cs" />
     <Compile Include="Views\Reports\ReportsCalendarViewCell.designer.cs">
       <DependentUpon>ReportsCalendarViewCell.cs</DependentUpon>
@@ -844,7 +845,7 @@
       <DependentUpon>ReportsCalendarQuickSelectViewCell.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\RoundedView.cs" />
-    <Compile Include="Combiners\CalendarCellTextColorValueCombiner.cs" />
+    <Compile Include="Combiners\ReportsCalendarCellTextColorValueCombiner.cs" />
     <Compile Include="Views\Reports\PieChartView.cs" />
     <Compile Include="Converters\ReportTimeSpanLabelValueConverter.cs" />
     <Compile Include="Converters\ReportPercentageLabelValueConverter.cs" />
@@ -1000,6 +1001,11 @@
       <DependentUpon>SendFeedbackViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="Binding\TextViewWithPlaceholderDidBecomeFirstResponderTargetBinding.cs" />
+    <Compile Include="Views\CalendarItemView.cs" />
+    <Compile Include="Views\CalendarItemView.designer.cs">
+      <DependentUpon>CalendarItemView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ReactiveCollectionViewCell.cs" />
     <Compile Include="ViewControllers\CalendarViewController.cs" />
     <Compile Include="ViewControllers\CalendarViewController.designer.cs">
       <DependentUpon>CalendarViewController.cs</DependentUpon>

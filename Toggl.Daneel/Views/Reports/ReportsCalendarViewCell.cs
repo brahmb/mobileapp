@@ -9,7 +9,7 @@ using MvvmCross.Plugin.Visibility;
 using Toggl.Daneel.Combiners;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
-using Toggl.Foundation.MvvmCross.ViewModels.Calendar;
+using Toggl.Foundation.MvvmCross.ViewModels.ReportsCalendar;
 using UIKit;
 
 namespace Toggl.Daneel.Views
@@ -26,7 +26,7 @@ namespace Toggl.Daneel.Views
             Nib = UINib.FromName(nameof(ReportsCalendarViewCell), NSBundle.MainBundle);
         }
 
-        public IMvxCommand<CalendarDayViewModel> CellTappedCommand { get; set; }
+        public IMvxCommand<ReportsCalendarDayViewModel> CellTappedCommand { get; set; }
 
         public ReportsCalendarViewCell(IntPtr handle) : base(handle)
         {
@@ -43,12 +43,12 @@ namespace Toggl.Daneel.Views
             {
                 var backgroundColorConverter
                     = new BoolToConstantValueConverter<UIColor>(
-                        Color.Calendar.SelectedDayBackgoundColor.ToNativeColor(),
+                        Color.ReportsCalendar.SelectedDayBackgoundColor.ToNativeColor(),
                         Color.Common.Transparent.ToNativeColor());
 
                 var todayVisibilityConverter = new MvxVisibilityValueConverter();
 
-                var bindingSet = this.CreateBindingSet<ReportsCalendarViewCell, CalendarDayViewModel>();
+                var bindingSet = this.CreateBindingSet<ReportsCalendarViewCell, ReportsCalendarDayViewModel>();
 
                 //Text
                 bindingSet.Bind(Text).To(vm => vm.Day);
@@ -56,7 +56,7 @@ namespace Toggl.Daneel.Views
                 //Color
                 bindingSet.Bind(Text)
                           .For(v => v.TextColor)
-                          .ByCombining(new CalendarCellTextColorValueCombiner(),
+                          .ByCombining(new ReportsCalendarCellTextColorValueCombiner(),
                                        v => v.IsInCurrentMonth,
                                        v => v.Selected);
 
@@ -79,25 +79,25 @@ namespace Toggl.Daneel.Views
                     .For(v => v.BindVisibility())
                     .To(vm => vm.IsToday)
                     .WithConversion(todayVisibilityConverter);
-                
+
                 bindingSet.Apply();
 
             });
 
             AddGestureRecognizer(new UITapGestureRecognizer(
-                () => CellTappedCommand?.Execute((CalendarDayViewModel)DataContext)));
+                () => CellTappedCommand?.Execute((ReportsCalendarDayViewModel)DataContext)));
         }
-        
+
         private void prepareViews()
         {
             //Background view
             BackgroundView.CornerRadius = cornerRadius;
-            
+
             //Today background indicator
             TodayBackgroundView.CornerRadius = cornerRadius;
             TodayBackgroundView.RoundLeft = true;
             TodayBackgroundView.RoundRight = true;
-            TodayBackgroundView.BackgroundColor = Color.Calendar.Today.ToNativeColor();
+            TodayBackgroundView.BackgroundColor = Color.ReportsCalendar.Today.ToNativeColor();
         }
 
     }

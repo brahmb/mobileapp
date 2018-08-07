@@ -5,16 +5,16 @@ using System.Linq;
 using FluentAssertions;
 using FsCheck;
 using FsCheck.Xunit;
-using Toggl.Foundation.MvvmCross.ViewModels.Calendar;
+using Toggl.Foundation.MvvmCross.ViewModels.ReportsCalendar;
 using Toggl.Multivac;
 using Xunit;
 using Math = System.Math;
 
 namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 {
-    public sealed class CalendarPageViewModelTests
+    public sealed class ReportsCalendarPageViewModelTests
     {
-        private sealed class CalendarPageTestData : IEnumerable<object[]>
+        private sealed class ReportsCalendarPageTestData : IEnumerable<object[]>
         {
             private List<object[]> data = new List<object[]>
             {
@@ -35,17 +35,17 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
         public sealed class TheDaysProperty
         {
             private CalendarMonth calendarMonth;
-            private CalendarPageViewModel viewModel;
+            private ReportsCalendarPageViewModel viewModel;
 
             private void prepare(
                 int year, int month, BeginningOfWeek beginningOfWeek, DateTimeOffset? today = null)
             {
                 calendarMonth = new CalendarMonth(year, month);
-                viewModel = new CalendarPageViewModel(calendarMonth, beginningOfWeek, today ?? DateTimeOffset.Now);
+                viewModel = new ReportsCalendarPageViewModel(calendarMonth, beginningOfWeek, today ?? DateTimeOffset.Now);
             }
 
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(CalendarPageTestData))]
+            [ClassData(typeof(ReportsCalendarPageTestData))]
             public void ContainsFewDaysFromPreviousMonthAtTheBeginning(
                 int year,
                 int month,
@@ -66,7 +66,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
 
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(CalendarPageTestData))]
+            [ClassData(typeof(ReportsCalendarPageTestData))]
             public void ConainsAllDaysFromCurrentMonthInTheMiddle(
                 int year,
                 int month,
@@ -85,7 +85,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             }
 
             [Theory, LogIfTooSlow]
-            [ClassData(typeof(CalendarPageTestData))]
+            [ClassData(typeof(ReportsCalendarPageTestData))]
             public void ContainsFewDaysFromNextMonthAtTheEnd(
                 int year,
                 int month,
@@ -106,7 +106,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         .Should()
                         .OnlyContain(day => !day.IsInCurrentMonth);
             }
-            
+
             [Property]
             public void MarksTheCurrentDayAndNoOtherDayAsToday(
                 int year,

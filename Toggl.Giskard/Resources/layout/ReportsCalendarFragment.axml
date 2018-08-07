@@ -92,7 +92,7 @@
         android:id="@+id/ReportsCalendarFragmentShortcuts"
         local:MvxBind="ItemsSource QuickSelectShortcuts; ItemClick QuickSelectCommand"
         android:scrollbars="vertical"
-        local:MvxTemplateSelector="@string/CalendarShortcutsTemplateSelector"
+        local:MvxTemplateSelector="@string/ReportsCalendarShortcutsTemplateSelector"
         android:layout_marginTop="16dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"

@@ -148,7 +148,7 @@ namespace Toggl.Daneel.Presentation
             //Don't show the same view twice
             if (topViewController?.ViewModel?.GetType() == request.ViewModelType)
                 return;
-                
+
             base.Show(request);
         }
 
@@ -188,7 +188,7 @@ namespace Toggl.Daneel.Presentation
                     return;
                 }
 
-                case ToggleCalendarVisibilityHint calendarHint:
+                case ToggleReportsCalendarVisibilityHint calendarHint:
                     if (MasterNavigationController?.TopViewController is ReportsViewController reportsViewController)
                     {
                         if (calendarHint.ForceHide || reportsViewController.CalendarIsVisible)

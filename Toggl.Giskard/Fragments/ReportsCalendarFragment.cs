@@ -42,7 +42,7 @@ namespace Toggl.Giskard.Fragments
                .Push(BindingContext as IMvxAndroidBindingContext);
 
             pager = view.FindViewById<ViewPager>(Resource.Id.ReportsCalendarFragmentViewPager);
-            pager.Adapter = new CalendarPagerAdapter(Activity, ViewModel);
+            pager.Adapter = new ReportsCalendarPagerAdapter(Activity, ViewModel);
             pager.SetCurrentItem(ViewModel.Months.Count - 1, false);
 
             view.FindViewById<MvxRecyclerView>(Resource.Id.ReportsCalendarFragmentShortcuts)

@@ -10,8 +10,8 @@ using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.MvvmCross.Parameters;
 using Toggl.Foundation.MvvmCross.ViewModels;
-using Toggl.Foundation.MvvmCross.ViewModels.Calendar;
-using Toggl.Foundation.MvvmCross.ViewModels.Calendar.QuickSelectShortcuts;
+using Toggl.Foundation.MvvmCross.ViewModels.ReportsCalendar;
+using Toggl.Foundation.MvvmCross.ViewModels.ReportsCalendar.QuickSelectShortcuts;
 using Toggl.Foundation.Tests.Generators;
 using Toggl.Multivac;
 using Toggl.PrimeRadiant.Models;
@@ -87,13 +87,13 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
             {
                 var expectedShortCuts = new List<Type>
                 {
-                    typeof(CalendarTodayQuickSelectShortcut),
-                    typeof(CalendarYesterdayQuickSelectShortcut),
-                    typeof(CalendarThisWeekQuickSelectShortcut),
-                    typeof(CalendarLastWeekQuickSelectShortcut),
-                    typeof(CalendarThisMonthQuickSelectShortcut),
-                    typeof(CalendarLastMonthQuickSelectShortcut),
-                    typeof(CalendarThisYearQuickSelectShortcut)
+                    typeof(ReportsCalendarTodayQuickSelectShortcut),
+                    typeof(ReportsCalendarYesterdayQuickSelectShortcut),
+                    typeof(ReportsCalendarThisWeekQuickSelectShortcut),
+                    typeof(ReportsCalendarLastWeekQuickSelectShortcut),
+                    typeof(ReportsCalendarThisMonthQuickSelectShortcut),
+                    typeof(ReportsCalendarLastMonthQuickSelectShortcut),
+                    typeof(ReportsCalendarThisYearQuickSelectShortcut)
                 };
                 var now = new DateTimeOffset(2020, 4, 2, 1, 1, 1, TimeSpan.Zero);
                 TimeService.CurrentDateTime.Returns(now);
@@ -234,8 +234,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
 
         private static bool ensureDateRangeIsCorrect(
             DateRangeParameter dateRange,
-            CalendarDayViewModel expectedStart,
-            CalendarDayViewModel expectedEnd)
+            ReportsCalendarDayViewModel expectedStart,
+            ReportsCalendarDayViewModel expectedEnd)
             => dateRange.StartDate.Year == expectedStart.CalendarMonth.Year
                && dateRange.StartDate.Month == expectedStart.CalendarMonth.Month
                && dateRange.StartDate.Day == expectedStart.Day
@@ -253,7 +253,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.Initialize().Wait();
             }
 
-            protected CalendarDayViewModel FindDayViewModel(int monthIndex, int dayIndex)
+            protected ReportsCalendarDayViewModel FindDayViewModel(int monthIndex, int dayIndex)
                 => ViewModel.Months[monthIndex].Days[dayIndex];
 
             public sealed class AfterTappingOneCell : TheCalendarDayTappedCommand
@@ -376,7 +376,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 }
 
                 private void assertDaysInMonthSelected(
-                    CalendarPageViewModel calendarPage, int startindex, int endIndex)
+                    ReportsCalendarPageViewModel calendarPage, int startindex, int endIndex)
                 {
                     for (int i = startindex; i <= endIndex; i++)
                         calendarPage.Days[i].Selected.Should().BeTrue();
@@ -426,7 +426,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 usingShortcut.Should().NotThrow();
             }
 
-            private sealed class CustomShortcut : CalendarBaseQuickSelectShortcut
+            private sealed class CustomShortcut : ReportsCalendarBaseQuickSelectShortcut
             {
                 private DateRangeParameter range;
 

@@ -30,7 +30,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     [Preserve(AllMembers = true)]
     public sealed class ReportsViewModel : MvxViewModel<long>
     {
-        
+
 
         private readonly ITimeService timeService;
         private readonly ITogglDataSource dataSource;
@@ -210,13 +210,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         private void toggleCalendar()
         {
-            navigationService.ChangePresentation(new ToggleCalendarVisibilityHint());
+            navigationService.ChangePresentation(new ToggleReportsCalendarVisibilityHint());
             calendarViewModel.OnToggleCalendar();
         }
 
         private void hideCalendar()
         {
-            navigationService.ChangePresentation(new ToggleCalendarVisibilityHint(forceHide: true));
+            navigationService.ChangePresentation(new ToggleReportsCalendarVisibilityHint(forceHide: true));
             calendarViewModel.OnHideCalendar();
         }
 

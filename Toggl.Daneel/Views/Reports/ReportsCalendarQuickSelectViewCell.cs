@@ -5,7 +5,7 @@ using MvvmCross.Platforms.Ios.Binding.Views;
 using MvvmCross.Plugin.Color.Platforms.Ios;
 using Toggl.Foundation.MvvmCross.Converters;
 using Toggl.Foundation.MvvmCross.Helper;
-using Toggl.Foundation.MvvmCross.ViewModels.Calendar.QuickSelectShortcuts;
+using Toggl.Foundation.MvvmCross.ViewModels.ReportsCalendar.QuickSelectShortcuts;
 using UIKit;
 
 namespace Toggl.Daneel.Views.Reports
@@ -36,15 +36,15 @@ namespace Toggl.Daneel.Views.Reports
             this.DelayBind(() =>
             {
                 var backgroundColorConverter = new BoolToConstantValueConverter<UIColor>(
-                    Color.Calendar.QuickSelect.SelectedBackground.ToNativeColor(),
-                    Color.Calendar.QuickSelect.UnselectedBackground.ToNativeColor()
+                    Color.ReportsCalendar.QuickSelect.SelectedBackground.ToNativeColor(),
+                    Color.ReportsCalendar.QuickSelect.UnselectedBackground.ToNativeColor()
                 );
                 var titleColorConverter = new BoolToConstantValueConverter<UIColor>(
-                    Color.Calendar.QuickSelect.SelectedTitle.ToNativeColor(),
-                    Color.Calendar.QuickSelect.UnselectedTitle.ToNativeColor()
+                    Color.ReportsCalendar.QuickSelect.SelectedTitle.ToNativeColor(),
+                    Color.ReportsCalendar.QuickSelect.UnselectedTitle.ToNativeColor()
                 );
 
-                var bindingSet = this.CreateBindingSet<ReportsCalendarQuickSelectViewCell, CalendarBaseQuickSelectShortcut>();
+                var bindingSet = this.CreateBindingSet<ReportsCalendarQuickSelectViewCell, ReportsCalendarBaseQuickSelectShortcut>();
 
                 //Text
                 bindingSet.Bind(TitleLabel).To(vm => vm.Title);

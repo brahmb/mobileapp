@@ -45,7 +45,7 @@ namespace Toggl.Giskard.Presenters
         {
             switch (hint)
             {
-                case ToggleCalendarVisibilityHint calendarHint when CurrentActivity is ReportsActivity reportsActivity:
+                case ToggleReportsCalendarVisibilityHint calendarHint when CurrentActivity is ReportsActivity reportsActivity:
                     reportsActivity.ToggleCalendarState(calendarHint.ForceHide);
                     return;
             }

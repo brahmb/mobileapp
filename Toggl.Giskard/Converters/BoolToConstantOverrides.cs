@@ -61,14 +61,14 @@ namespace Toggl.Giskard.Converters
         public ManualModeEnabledDrawableValueConverter() : base(Resource.Drawable.add_white, Resource.Drawable.play_white) { }
     }
 
-    public sealed class CalendarDayColorValueConverter : BoolToConstantValueConverter<Color>
+    public sealed class ReportsCalendarDayColorValueConverter : BoolToConstantValueConverter<Color>
     {
-        public CalendarDayColorValueConverter() : base(Color.White, Reports.DayNotInMonth.ToNativeColor()) { }
+        public ReportsCalendarDayColorValueConverter() : base(Color.White, Reports.DayNotInMonth.ToNativeColor()) { }
     }
 
-    public sealed class CalendarShortcutBackgroundColorValueConverter : BoolToConstantValueConverter<Color>
+    public sealed class ReportsCalendarShortcutBackgroundColorValueConverter : BoolToConstantValueConverter<Color>
     {
-        public CalendarShortcutBackgroundColorValueConverter()
+        public ReportsCalendarShortcutBackgroundColorValueConverter()
             : base(Color.ParseColor("#328fff"), Color.ParseColor("#3e3e3e")) { }
     }
 

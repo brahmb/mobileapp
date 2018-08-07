@@ -64,7 +64,7 @@ namespace Toggl.Daneel.ViewControllers
         {
             base.DidMoveToParentViewController(parent);
 
-            var rowCountConverter = new CalendarRowCountToCalendarHeightConverter(
+            var rowCountConverter = new ReportsCalendarRowCountToCalendarHeightConverter(
                 ReportsCalendarCollectionViewLayout.CellHeight,
                 View.Bounds.Height - CalendarCollectionView.Bounds.Height
             );

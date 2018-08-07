@@ -4,7 +4,7 @@ using Foundation;
 using MvvmCross.Commands;
 using MvvmCross.Platforms.Ios.Binding.Views;
 using Toggl.Daneel.Views;
-using Toggl.Foundation.MvvmCross.ViewModels.Calendar;
+using Toggl.Foundation.MvvmCross.ViewModels.ReportsCalendar;
 using UIKit;
 
 namespace Toggl.Daneel.ViewSources
@@ -13,10 +13,10 @@ namespace Toggl.Daneel.ViewSources
     {
         private const string cellIdentifier = nameof(ReportsCalendarViewCell);
 
-        private List<CalendarPageViewModel> months
-            => (List<CalendarPageViewModel>)ItemsSource;
+        private List<ReportsCalendarPageViewModel> months
+        => (List<ReportsCalendarPageViewModel>)ItemsSource;
 
-        public IMvxCommand<CalendarDayViewModel> CellTappedCommand { get; set; }
+        public IMvxCommand<ReportsCalendarDayViewModel> CellTappedCommand { get; set; }
 
         public ReportsCalendarCollectionViewSource(UICollectionView collectionView)
             : base(collectionView)

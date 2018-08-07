@@ -246,7 +246,7 @@ namespace Toggl.Foundation.MvvmCross.Helper
             public static readonly MvxColor LightGray = pinkishGrey;
         }
 
-        public sealed class Calendar
+        public sealed class ReportsCalendar
         {
             public sealed class QuickSelect
             {
