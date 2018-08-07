@@ -25,7 +25,7 @@ namespace Toggl.Multivac
 
                 for (int i = 0; i < items.Length; i++)
                 {
-                    hash ^= items.GetHashCode() * primeNumbers[i % primeNumbers.Length];
+                    hash ^= items[i].GetHashCode() * primeNumbers[i % primeNumbers.Length];
                 }
 
                 return hash;
