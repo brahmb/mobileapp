@@ -1,34 +1,28 @@
-﻿using System;
-namespace Toggl.Multivac
+﻿namespace Toggl.Multivac
 {
     public static class HashCode
     {
-        private static int[] primeNumbers = new[]
-        {
-            94907, 94007, 93089, 92251, 91309, 90379, 89533, 88681, 87643, 86753, 
-            85831, 84919, 84011, 83059, 82141, 81233, 80387, 79537, 78577, 77647, 
-            76801, 75833, 74933, 74101, 73133, 72251, 71399, 70571, 69697, 68729, 
-            67777, 66947, 65993, 65167, 64217, 63377, 62467, 61547, 60631, 59663, 
-            58897, 57973, 57107, 56311, 55469, 54547, 53681, 52817, 51907, 51131, 
-            50153, 49363, 48523, 47639, 46751, 45863, 44959, 44111, 43201, 42391, 
-            41609, 40801, 39863, 39043, 38189, 37313, 36523, 35597, 34747, 33911, 
-            33119, 32359, 31513, 30697, 29833, 28949, 28163, 27337, 26501, 25703, 
-            24889, 24019, 23209, 22447, 21649, 20899, 20089, 19333, 18433, 17681, 
-            16921, 16073, 15329, 14621, 13789, 13009, 12301, 11549, 10753, 10009
-        };
-
-        public static int From(params object[] items)
+        public static int From<T1, T2, T3, T4>(T1 itemA, T2 itemB, T3 itemC, T4 itemD)
         {
             unchecked
             {
-                int hash = 100279;
+                return (itemA.GetHashCode() * 397) ^ From(itemB, itemC, itemD);
+            }
+        }
 
-                for (int i = 0; i < items.Length; i++)
-                {
-                    hash ^= items[i].GetHashCode() * primeNumbers[i % primeNumbers.Length];
-                }
+        public static int From<T1, T2, T3>(T1 itemA, T2 itemB, T3 itemC)
+        {
+            unchecked
+            {
+                return (itemA.GetHashCode() * 397) ^ From(itemB, itemC);
+            }
+        }
 
-                return hash;
+        public static int From<T1, T2>(T1 itemA, T2 itemB)
+        {
+            unchecked
+            {
+                return (itemA.GetHashCode() * 397) ^ itemB.GetHashCode();
             }
         }
     }
