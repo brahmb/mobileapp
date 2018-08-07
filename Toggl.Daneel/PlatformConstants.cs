@@ -16,8 +16,6 @@ namespace Toggl.Daneel
 
         public string OperatingSystem { get; } = $"{UIDevice.CurrentDevice.SystemName} {UIDevice.CurrentDevice.SystemVersion}";
 
-        public string FeedbackEmailSubject { get; } = "Toggl iOS feedback";
-
         public string BuildNumber { get; } = NSBundle.MainBundle.InfoDictionary["CFBundleVersion"].ToString();
 
         [DllImport("libc", CallingConvention = CallingConvention.Cdecl)]

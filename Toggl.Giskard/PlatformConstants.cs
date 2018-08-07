@@ -13,8 +13,6 @@ namespace Toggl.Giskard
 
         public string OperatingSystem { get; } = getOperatingSystem();
 
-        public string FeedbackEmailSubject => Resource.String.TogglAndroidFeedback;
-
         public string BuildNumber { get; } = Application.Context
             .ApplicationContext
             .PackageManager
