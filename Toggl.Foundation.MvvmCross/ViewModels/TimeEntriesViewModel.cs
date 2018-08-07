@@ -173,7 +173,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 }
                 else
                 {
-                    TimeEntries.UpdateItem(update.Id, timeEntryViewModel);
+                    TimeEntries.UpdateItem(timeEntryViewModel);
                 }
             }
         }
