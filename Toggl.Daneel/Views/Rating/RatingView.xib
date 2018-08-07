@@ -17,27 +17,27 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GcE-sU-iW3" userLabel="Question View">
-                    <rect key="frame" x="16" y="24" width="302" height="207.66666666666666"/>
+                    <rect key="frame" x="16" y="24" width="302" height="228"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" text="Enjoying Toggl?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q7u-md-X3a">
-                            <rect key="frame" x="85.999999999999986" y="24" width="129.66666666666663" height="21.666666666666671"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" ambiguous="YES" text="Enjoying Toggl?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q7u-md-X3a">
+                            <rect key="frame" x="86" y="24" width="130" height="22"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sGb-Wn-53V" userLabel="Yes View">
-                            <rect key="frame" x="30" y="61.666666666666671" width="117" height="130"/>
+                        <view opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sGb-Wn-53V" userLabel="Yes View">
+                            <rect key="frame" x="30" y="62" width="117" height="130"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="thumbsup" translatesAutoresizingMaskIntoConstraints="NO" id="wgt-rv-tvA" userLabel="Thumbs Up">
+                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" ambiguous="YES" image="thumbsup" translatesAutoresizingMaskIntoConstraints="NO" id="wgt-rv-tvA" userLabel="Thumbs Up">
                                     <rect key="frame" x="25" y="8" width="67" height="64"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="64" id="5kA-bp-ns8"/>
                                         <constraint firstAttribute="width" constant="67" id="KML-zO-LQR"/>
                                     </constraints>
                                 </imageView>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" text="Yes!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MbA-X0-Hp5" userLabel="Yes">
-                                    <rect key="frame" x="43" y="87.999999999999986" width="31" height="18"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" ambiguous="YES" text="Yes!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MbA-X0-Hp5" userLabel="Yes">
+                                    <rect key="frame" x="43" y="88" width="31" height="18"/>
                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                                     <color key="textColor" red="0.023529411764705882" green="0.66666666666666663" blue="0.96078431372549022" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
@@ -53,18 +53,18 @@
                                 <constraint firstItem="wgt-rv-tvA" firstAttribute="top" secondItem="sGb-Wn-53V" secondAttribute="top" constant="8" id="yee-lx-ah4"/>
                             </constraints>
                         </view>
-                        <view opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qNh-51-CEm" userLabel="Not Really View">
-                            <rect key="frame" x="155" y="61.666666666666671" width="117" height="130"/>
+                        <view opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qNh-51-CEm" userLabel="Not Really View">
+                            <rect key="frame" x="155" y="62" width="117" height="130"/>
                             <subviews>
-                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" image="thumbsdown" translatesAutoresizingMaskIntoConstraints="NO" id="neR-xk-WRh" userLabel="Thumbs Down">
+                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" ambiguous="YES" image="thumbsdown" translatesAutoresizingMaskIntoConstraints="NO" id="neR-xk-WRh" userLabel="Thumbs Down">
                                     <rect key="frame" x="25" y="8" width="67" height="64"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="67" id="XjL-w8-aO4"/>
                                         <constraint firstAttribute="height" constant="64" id="YSF-hU-4uP"/>
                                     </constraints>
                                 </imageView>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" text="Not really" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Pm-a2-TMM" userLabel="Not Really">
-                                    <rect key="frame" x="25" y="87.999999999999986" width="67.666666666666671" height="18"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" ambiguous="YES" text="Not really" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Pm-a2-TMM" userLabel="Not Really">
+                                    <rect key="frame" x="25" y="88" width="68" height="18"/>
                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
                                     <color key="textColor" red="0.89803921568627454" green="0.6705882352941176" blue="0.17254901960784313" alpha="1" colorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
@@ -93,22 +93,22 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OxT-vM-sJG" userLabel="CTA View">
-                    <rect key="frame" x="16" y="23.999999999999986" width="302" height="227.66666666666663"/>
+                    <rect key="frame" x="16" y="24" width="302" height="228"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Awesome!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fiL-lD-qx5" userLabel="CTA Title">
-                            <rect key="frame" x="108.66666666666669" y="24" width="85.333333333333314" height="21.666666666666671"/>
+                            <rect key="frame" x="109" y="24" width="85" height="22"/>
                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Would you mind rating us in the App Store? Your App Store review really makes a difference." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f7G-wc-dSL" userLabel="CTA Description">
-                            <rect key="frame" x="16" y="49.666666666666671" width="270" height="54"/>
+                            <rect key="frame" x="16" y="50" width="270" height="54"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fDt-tb-hdG" userLabel="Dismiss Button">
-                            <rect key="frame" x="16" y="175.66666666666666" width="270" height="40"/>
+                            <rect key="frame" x="16" y="176" width="270" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="zvA-Ab-byB"/>
                             </constraints>
@@ -117,7 +117,7 @@
                             </state>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mx1-vM-Q1x" userLabel="CTA Button">
-                            <rect key="frame" x="16" y="119.66666666666666" width="270" height="40"/>
+                            <rect key="frame" x="16" y="120" width="270" height="40"/>
                             <color key="backgroundColor" red="0.29803921568627451" green="0.85098039215686272" blue="0.39215686274509803" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="Iet-tu-CXp"/>
@@ -149,23 +149,32 @@
             <color key="backgroundColor" red="0.29803921570000003" green="0.85098039219999999" blue="0.3921568627" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
                 <constraint firstItem="OxT-vM-sJG" firstAttribute="top" secondItem="1" secondAttribute="top" constant="24" id="1CD-a3-leH"/>
+                <constraint firstAttribute="bottom" secondItem="GcE-sU-iW3" secondAttribute="bottom" constant="27.329999999999998" id="ApI-CR-sBH"/>
                 <constraint firstAttribute="trailing" secondItem="GcE-sU-iW3" secondAttribute="trailing" constant="16" id="HNU-K5-b5H"/>
+                <constraint firstAttribute="bottom" secondItem="OxT-vM-sJG" secondAttribute="bottom" constant="27.333333333333371" id="NNt-fi-Kgw"/>
                 <constraint firstItem="OxT-vM-sJG" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="16" id="bKT-pL-iv6"/>
                 <constraint firstItem="GcE-sU-iW3" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="16" id="w6S-Gz-gL5"/>
                 <constraint firstItem="GcE-sU-iW3" firstAttribute="top" secondItem="1" secondAttribute="top" constant="24" id="wrw-6T-oEr"/>
                 <constraint firstAttribute="trailing" secondItem="OxT-vM-sJG" secondAttribute="trailing" constant="16" id="xdZ-dE-FTM"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="NNt-fi-Kgw"/>
+                </mask>
+            </variation>
             <connections>
                 <outlet property="CtaButton" destination="mx1-vM-Q1x" id="xyh-wP-LH9"/>
                 <outlet property="CtaDescription" destination="f7G-wc-dSL" id="QNR-8l-TQD"/>
                 <outlet property="CtaTitle" destination="fiL-lD-qx5" id="NLr-9a-qtI"/>
                 <outlet property="CtaView" destination="OxT-vM-sJG" id="LNW-AO-XIO"/>
+                <outlet property="CtaViewBottomConstraint" destination="NNt-fi-Kgw" id="wuL-oc-OqN"/>
                 <outlet property="CtaViewToTopConstraint" destination="1CD-a3-leH" id="EDL-sL-v00"/>
                 <outlet property="DismissButton" destination="fDt-tb-hdG" id="iBZ-bb-YXE"/>
                 <outlet property="NotReallyLabel" destination="5Pm-a2-TMM" id="osi-2x-nhh"/>
                 <outlet property="NotReallyView" destination="qNh-51-CEm" id="KQ2-lj-chG"/>
                 <outlet property="QuestionView" destination="GcE-sU-iW3" id="Ges-VT-EGG"/>
+                <outlet property="QuestionViewBottomConstraint" destination="ApI-CR-sBH" id="DT5-m3-bc5"/>
                 <outlet property="TitleLabel" destination="Q7u-md-X3a" id="beN-my-eXj"/>
                 <outlet property="YesLabel" destination="MbA-X0-Hp5" id="n9w-D4-D3r"/>
                 <outlet property="YesView" destination="sGb-Wn-53V" id="kUy-kR-Ii7"/>

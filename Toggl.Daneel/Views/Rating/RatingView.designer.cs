@@ -25,6 +25,9 @@ namespace Toggl.Daneel
 		UIKit.UIView CtaView { get; set; }
 
 		[Outlet]
+		UIKit.NSLayoutConstraint CtaViewBottomConstraint { get; set; }
+
+		[Outlet]
 		UIKit.NSLayoutConstraint CtaViewToTopConstraint { get; set; }
 
 		[Outlet]
@@ -38,6 +41,9 @@ namespace Toggl.Daneel
 
 		[Outlet]
 		UIKit.UIView QuestionView { get; set; }
+
+		[Outlet]
+		UIKit.NSLayoutConstraint QuestionViewBottomConstraint { get; set; }
 
 		[Outlet]
 		UIKit.UILabel TitleLabel { get; set; }
@@ -68,6 +74,11 @@ namespace Toggl.Daneel
 			if (CtaView != null) {
 				CtaView.Dispose ();
 				CtaView = null;
+			}
+
+			if (CtaViewToTopConstraint != null) {
+				CtaViewToTopConstraint.Dispose ();
+				CtaViewToTopConstraint = null;
 			}
 
 			if (DismissButton != null) {
@@ -105,9 +116,14 @@ namespace Toggl.Daneel
 				YesView = null;
 			}
 
-			if (CtaViewToTopConstraint != null) {
-				CtaViewToTopConstraint.Dispose ();
-				CtaViewToTopConstraint = null;
+			if (CtaViewBottomConstraint != null) {
+				CtaViewBottomConstraint.Dispose ();
+				CtaViewBottomConstraint = null;
+			}
+
+			if (QuestionViewBottomConstraint != null) {
+				QuestionViewBottomConstraint.Dispose ();
+				QuestionViewBottomConstraint = null;
 			}
 		}
 	}

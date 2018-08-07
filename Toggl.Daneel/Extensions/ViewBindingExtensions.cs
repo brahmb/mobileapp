@@ -33,6 +33,9 @@ namespace Toggl.Daneel.Extensions
         public static string BindConstant(this NSLayoutConstraint self)
             => LayoutConstraintConstantTargetBinding.BindingName;
 
+        public static string BindActive(this NSLayoutConstraint self)
+            => LayoutConstraintActiveTargetBinding.BindingName;
+
         public static string BindFirstResponder(this LoginTextField self)
             => LoginTextFieldFirstResponderTargetBinding.BindingName;
 

@@ -55,14 +55,6 @@ namespace Toggl.Daneel
             return Runtime.GetNSObject<RatingView>(arr.ValueAt(0));
         }
 
-        public override void AwakeFromNib()
-        {
-            base.AwakeFromNib();
-
-            heightConstraint = HeightAnchor.ConstraintEqualTo(1);
-            heightConstraint.Active = true;
-        }
-
         private void updateBindings()
         {
             this.Bind(DataContext.CtaTitle, CtaTitle.BindText());
@@ -83,21 +75,15 @@ namespace Toggl.Daneel
             this.Bind(
                 DataContext
                     .Impression
-                    .Select(impression => impression.HasValue)
-                    .Select(gotImpression =>
-                    {
-                        SetNeedsLayout();
-                        LayoutIfNeeded();
+                    .Select(impression => impression.HasValue),
+                CtaViewBottomConstraint.BindActive());
 
-                        var ctaHeight = CtaView.Frame;
-                        var questionFrame = QuestionView.Frame;
-                        var height = (gotImpression ? ctaHeight.Height : questionFrame.Height) +
-                                     CtaViewToTopConstraint.Constant * 2;
-                        Console.WriteLine($"Text {CtaTitle.Text}");
-                        Console.WriteLine($"SOMETHING {height}");
-                        return height;
-                    }),
-                heightConstraint.BindConstant());
+            this.Bind(
+                DataContext
+                    .Impression
+                    .Select(impression => impression.HasValue)
+                    .Select(Invert),
+                QuestionViewBottomConstraint.BindActive());
 
             this.BindVoid(YesView.Tapped(), () => DataContext.RegisterImpression(true));
             this.BindVoid(NotReallyView.Tapped(), () => DataContext.RegisterImpression(false));

@@ -1016,6 +1016,7 @@
       <DependentUpon>NoWorkspaceViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensions\UIKitRxExtensions\UIControlRxExtensions.cs" />
+    <Compile Include="Binding\LayoutConstraintActiveTargetBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation.MvvmCross\Toggl.Foundation.MvvmCross.csproj">
