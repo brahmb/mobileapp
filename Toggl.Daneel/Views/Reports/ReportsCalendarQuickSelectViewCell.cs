@@ -20,7 +20,7 @@ namespace Toggl.Daneel.Views.Reports
             Nib = UINib.FromName(nameof(ReportsCalendarQuickSelectViewCell), NSBundle.MainBundle);
         }
 
-        private ReportsCalendarQuickSelectViewCell(IntPtr handle)
+        public ReportsCalendarQuickSelectViewCell(IntPtr handle)
             : base(handle)
         {
             // Note: this .ctor should not contain any initialization logic.

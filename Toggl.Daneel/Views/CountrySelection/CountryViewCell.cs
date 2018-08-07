@@ -19,7 +19,7 @@ namespace Toggl.Daneel.Views.CountrySelection
             Nib = UINib.FromName(nameof(CountryViewCell), NSBundle.MainBundle);
         }
 
-        private CountryViewCell(IntPtr handle) : base(handle)
+        public CountryViewCell(IntPtr handle) : base(handle)
         {
             // Note: this .ctor should not contain any initialization logic.
         }
