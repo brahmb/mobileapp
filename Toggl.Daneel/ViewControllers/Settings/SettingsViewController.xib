@@ -766,6 +766,20 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lLQ-ez-Mpw">
                     <rect key="frame" x="8" y="626.33333333333337" width="398" height="85.666666666666629"/>
                     <subviews>
+                        <visualEffectView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3Ph-2N-Kz0">
+                            <rect key="frame" x="0.0" y="0.0" width="398" height="85.666666666666671"/>
+                            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Umr-DA-Rdg">
+                                <rect key="frame" x="0.0" y="0.0" width="398" height="85.666666666666671"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </view>
+                            <color key="backgroundColor" red="0.83137254900000002" green="0.94509803920000002" blue="0.99607843139999996" alpha="0.82999999999999996" colorSpace="custom" customColorSpace="sRGB"/>
+                            <blurEffect style="light"/>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="8"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </visualEffectView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="confirmation" translatesAutoresizingMaskIntoConstraints="NO" id="zRo-AL-EKX">
                             <rect key="frame" x="14" y="14" width="16" height="16"/>
                         </imageView>
@@ -782,16 +796,19 @@
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" red="0.83137254901960778" green="0.94509803921568625" blue="0.99607843137254903" alpha="0.82999999999999996" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstItem="zRo-AL-EKX" firstAttribute="top" secondItem="lLQ-ez-Mpw" secondAttribute="top" constant="14" id="44v-hz-oWv"/>
                         <constraint firstAttribute="trailing" secondItem="Xjj-dL-R3z" secondAttribute="trailing" constant="12" id="6c8-A1-gBe"/>
                         <constraint firstAttribute="bottom" secondItem="Xjj-dL-R3z" secondAttribute="bottom" constant="16" id="ACE-os-snP"/>
+                        <constraint firstAttribute="bottom" secondItem="3Ph-2N-Kz0" secondAttribute="bottom" id="EdX-Rd-yCD"/>
                         <constraint firstItem="zRo-AL-EKX" firstAttribute="leading" secondItem="lLQ-ez-Mpw" secondAttribute="leading" constant="14" id="K51-oE-A4Z"/>
                         <constraint firstItem="5Oo-uJ-3bC" firstAttribute="leading" secondItem="lLQ-ez-Mpw" secondAttribute="leading" constant="42" id="X2M-Pm-dmH"/>
+                        <constraint firstItem="3Ph-2N-Kz0" firstAttribute="top" secondItem="lLQ-ez-Mpw" secondAttribute="top" id="lFp-Zc-OaC"/>
                         <constraint firstItem="Xjj-dL-R3z" firstAttribute="leading" secondItem="lLQ-ez-Mpw" secondAttribute="leading" constant="42" id="lRF-LI-58P"/>
+                        <constraint firstItem="3Ph-2N-Kz0" firstAttribute="leading" secondItem="lLQ-ez-Mpw" secondAttribute="leading" id="lTm-Uq-yN0"/>
                         <constraint firstItem="Xjj-dL-R3z" firstAttribute="top" secondItem="5Oo-uJ-3bC" secondAttribute="bottom" constant="6" id="n0C-3S-LBe"/>
                         <constraint firstItem="5Oo-uJ-3bC" firstAttribute="top" secondItem="lLQ-ez-Mpw" secondAttribute="top" constant="13" id="sq9-DH-poW"/>
+                        <constraint firstAttribute="trailing" secondItem="3Ph-2N-Kz0" secondAttribute="trailing" id="xCU-4J-Eut"/>
                     </constraints>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
