@@ -293,7 +293,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 return;
 
             await dataSource.User.Update(new EditUserDTO { BeginningOfWeek = newBeginningOfWeek });
-            var pushSync = dataSource.SyncManager.PushSync();
+            var _ = dataSource.SyncManager.PushSync();
         }
 
         public async Task SelectDurationFormat()
@@ -344,7 +344,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             };
 
             await dataSource.Preferences.Update(preferencesDto);
-            var pushSync = dataSource.SyncManager.PushSync();
+            var _ = dataSource.SyncManager.PushSync();
         }
 
         private async Task changeDefaultWorkspace(long selectedWorkspaceId)
@@ -352,7 +352,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             if (selectedWorkspaceId == currentUser.DefaultWorkspaceId) return;
 
             await dataSource.User.UpdateWorkspace(selectedWorkspaceId);
-            var pushSync = dataSource.SyncManager.PushSync();
+            var _ = dataSource.SyncManager.PushSync();
         }
 
         private WorkspaceToSelectableWorkspaceLambda selectableWorkspacesFromWorkspaces(IThreadSafeUser user)

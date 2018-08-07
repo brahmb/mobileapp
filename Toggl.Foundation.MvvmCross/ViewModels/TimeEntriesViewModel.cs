@@ -115,7 +115,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private void onPreferencesChanged(IThreadSafePreferences preferences)
         {
             durationFormat = preferences.DurationFormat;
-            var timeEntriesFetchTask = fetchSectionedTimeEntries();
+            var _ = fetchSectionedTimeEntries();
         }
 
         private bool isNotRunning(IThreadSafeTimeEntry timeEntry) => !timeEntry.IsRunning();

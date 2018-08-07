@@ -209,7 +209,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 }
             }
 
-            var fetchTask = fetchSectionedTimeEntries();
+            var _ = fetchSectionedTimeEntries();
         }
 
         private bool isNotRunning(IThreadSafeTimeEntry timeEntry) => !timeEntry.IsRunning();
@@ -226,7 +226,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             await interactorFactory.DeleteTimeEntry(timeEntryViewModel.Id).Execute();
 
             analyticsService.DeleteTimeEntry.Track();
-            var pushSync = dataSource.SyncManager.PushSync();
+            var _ = dataSource.SyncManager.PushSync();
         }
 
         private async Task continueTimeEntry(TimeEntryViewModel timeEntryViewModel)
