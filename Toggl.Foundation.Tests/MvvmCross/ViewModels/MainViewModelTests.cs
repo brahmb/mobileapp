@@ -279,6 +279,39 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 => ViewModel.AlternativeStartTimeEntryCommand.ExecuteAsync();
         }
 
+        public sealed class TheOpenSettingsCommand : MainViewModelTest
+        {
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask NavigatesToTheSettingsViewModel()
+            {
+                await ViewModel.OpenSettingsCommand.ExecuteAsync();
+
+                await NavigationService.Received().Navigate<SettingsViewModel>();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask MarksTheActionBeforeStopButtonForOnboardingPurposes()
+            {
+                OnboardingStorage.StopButtonWasTappedBefore.Returns(Observable.Return(false));
+                ViewModel.Initialize().Wait();
+
+                await ViewModel.OpenSettingsCommand.ExecuteAsync();
+
+                OnboardingStorage.DidNotReceive().SetNavigatedAwayFromMainViewAfterStopButton();
+            }
+
+            [Fact, LogIfTooSlow]
+            public async ThreadingTask MarksTheActionAfterStopButtonForOnboardingPurposes()
+            {
+                OnboardingStorage.StopButtonWasTappedBefore.Returns(Observable.Return(true));
+                ViewModel.Initialize().Wait();
+
+                await ViewModel.OpenSettingsCommand.ExecuteAsync();
+
+                OnboardingStorage.Received().SetNavigatedAwayFromMainViewAfterStopButton();
+            }
+        }
+
         public sealed class TheOpenSyncFailuresCommand : MainViewModelTest
         {
             [Fact, LogIfTooSlow]
