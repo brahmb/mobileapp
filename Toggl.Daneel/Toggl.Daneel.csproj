@@ -29,8 +29,7 @@
     <MtouchLink>Full</MtouchLink>
     <MtouchArch>x86_64</MtouchArch>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
-    <MtouchExtraArgs>--linkskip Toggl.Daneel --registrar:static --framework:/Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries/RevealServer.framework
-</MtouchExtraArgs>
+    <MtouchExtraArgs>--linkskip Toggl.Daneel --registrar:static</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>

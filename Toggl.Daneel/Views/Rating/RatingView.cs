@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using CoreGraphics;
@@ -8,7 +7,6 @@ using MvvmCross.Commands;
 using MvvmCross.Platforms.Ios.Binding.Views;
 using ObjCRuntime;
 using Toggl.Foundation.MvvmCross.ViewModels;
-using Toggl.Multivac.Extensions;
 using UIKit;
 using static Toggl.Daneel.Extensions.UIKitRxExtensions;
 using static Toggl.Multivac.Extensions.CommonFunctions;
@@ -63,7 +61,7 @@ namespace Toggl.Daneel
                 DataContext.Impression.Select(impression => impression.HasValue),
                 CtaView.BindIsVisibleWithFade());
             this.Bind(
-                DataContext.CtaDescription.Select(attributedDescription).Debug("Updating desc"),
+                DataContext.CtaDescription.Select(attributedDescription),
                 CtaDescription.BindAttributedText());
             this.Bind(
                 DataContext
