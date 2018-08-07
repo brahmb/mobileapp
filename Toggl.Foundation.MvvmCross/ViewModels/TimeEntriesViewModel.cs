@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using MvvmCross.Commands;
-using MvvmCross.Navigation;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
 using Toggl.Foundation.Helper;
@@ -15,7 +14,6 @@ using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.MvvmCross.Collections;
 using Toggl.Multivac;
 using Toggl.Multivac.Extensions;
-using Toggl.PrimeRadiant.Settings;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
@@ -25,6 +23,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly ITogglDataSource dataSource;
         private readonly IInteractorFactory interactorFactory;
         private readonly IAnalyticsService analyticsService;
+        private readonly IScheduler scheduler;
 
         private CompositeDisposable disposeBag = new CompositeDisposable();
         private bool areContineButtonsEnabled = true;
@@ -45,15 +44,18 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public TimeEntriesViewModel (ITogglDataSource dataSource,
                                      IInteractorFactory interactorFactory,
-                                     IAnalyticsService analyticsService)
+                                     IAnalyticsService analyticsService,
+                                     IScheduler scheduler)
         {
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
+            Ensure.Argument.IsNotNull(scheduler, nameof(scheduler));
 
             this.dataSource = dataSource;
             this.interactorFactory = interactorFactory;
             this.analyticsService = analyticsService;
+            this.scheduler = scheduler;
 
             TimeEntries = new ObservableGroupedOrderedCollection<TimeEntryViewModel>(
                 indexKey: t => t.Id,
@@ -90,7 +92,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .DisposedBy(disposeBag);
         }
 
-
         private IObservable<Unit> delayDeleteTimeEntry(TimeEntryViewModel timeEntry)
         {
             timeEntryToDelete = timeEntry;
@@ -99,7 +100,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             showUndoSubject.OnNext(true);
 
             delayedDeletionDisposable = Observable.Merge( // If 5 seconds pass or we try to delete another TE
-                    Observable.Return(timeEntry).Delay(Constants.UndoTime),
+                    Observable.Return(timeEntry).Delay(Constants.UndoTime, scheduler),
                     showUndoSubject.Where(t => t).Select(timeEntry)
                 )
                 .Take(1)
@@ -172,7 +173,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 }
                 else
                 {
-                    TimeEntries.UpdateItem(timeEntryViewModel);
+                    TimeEntries.UpdateItem(update.Id, timeEntryViewModel);
                 }
             }
         }
