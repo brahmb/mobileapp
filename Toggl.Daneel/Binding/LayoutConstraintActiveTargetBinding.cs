@@ -21,7 +21,6 @@ namespace Toggl.Daneel.Binding
         {
             Target.Active = value;
             var targetView = (UIView)Target.FirstItem;
-            targetView.SetNeedsLayout();
             targetView.LayoutIfNeeded();
         }
     }
