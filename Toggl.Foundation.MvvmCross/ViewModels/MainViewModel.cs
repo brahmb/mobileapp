@@ -304,7 +304,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             onboardingStorage.SetRatingViewOutcome(RatingViewOutcome.NoInteraction, timeService.CurrentDateTime);
             timeService.RunAfterDelay(ratingViewTimeout, () =>
             {
-                navigationService.ChangePresentation(new ToggleRatingViewVisibilityHint());
+                navigationService.ChangePresentation(new ToggleRatingViewVisibilityHint(true));
             });
         }
 
