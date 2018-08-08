@@ -63,6 +63,7 @@ namespace Toggl.Foundation
         {
             configurePullTransitions(transitions, database, api, dataSource, timeService, analyticsService, scheduler, entryPoints.StartPullSync, delayCancellation);
             configurePushTransitions(transitions, api, dataSource, analyticsService, apiDelay, scheduler, entryPoints.StartPushSync, delayCancellation);
+            configureCleanUpTransitions(transitions, timeService, dataSource, entryPoints.StartCleanUp);
         }
 
         private static void configurePullTransitions(
@@ -136,8 +137,6 @@ namespace Toggl.Foundation
             var checkServerStatus = new CheckServerStatusState(api, scheduler, apiDelay, statusDelay, delayCancellation);
 
             var finished = new ResetAPIDelayState(apiDelay);
-            var deleteOlderEntries = new DeleteOldEntriesState(timeService, dataSource.TimeEntries);
-            var deleteNonReferencedGhostProjects = new DeleteNonReferencedProjectGhostsState(dataSource.Projects, dataSource.TimeEntries);
 
             transitions.ConfigureTransition(entryPoint, fetchAllSince);
             transitions.ConfigureTransition(fetchAllSince.FetchStarted, persistWorkspaces);
@@ -169,9 +168,6 @@ namespace Toggl.Foundation
             transitions.ConfigureTransition(persistTimeEntries.FinishedPersisting, updateTimeEntriesSinceDate);
             transitions.ConfigureTransition(updateTimeEntriesSinceDate.Finished, refetchInaccessibleProjects);
             transitions.ConfigureTransition(refetchInaccessibleProjects.FetchNext, refetchInaccessibleProjects);
-
-            transitions.ConfigureTransition(refetchInaccessibleProjects.FinishedPersisting, deleteOlderEntries);
-            transitions.ConfigureTransition(deleteOlderEntries.FinishedDeleting, deleteNonReferencedGhostProjects);
 
             transitions.ConfigureTransition(persistWorkspaces.ErrorOccured, retryOrThrow);
             transitions.ConfigureTransition(persistUser.ErrorOccured, retryOrThrow);
@@ -208,6 +204,19 @@ namespace Toggl.Foundation
             var pushingClientsFinished = configureCreateOnlyPush(transitions, pushingTagsFinished, dataSource.Clients, analyticsService, api.Clients, Client.Clean, Client.Unsyncable, api, scheduler, delayCancellation);
             var pushingProjectsFinished = configureCreateOnlyPush(transitions, pushingClientsFinished, dataSource.Projects, analyticsService, api.Projects, Project.Clean, Project.Unsyncable, api, scheduler, delayCancellation);
             configurePush(transitions, pushingProjectsFinished, dataSource.TimeEntries, analyticsService, api.TimeEntries, api.TimeEntries, api.TimeEntries, TimeEntry.Clean, TimeEntry.Unsyncable, api, apiDelay, scheduler, delayCancellation);
+        }
+
+        private static void configureCleanUpTransitions(
+            ITransitionConfigurator transitions,
+            ITimeService timeService,
+            ITogglDataSource dataSource,
+            StateResult entryPoint)
+        {
+            var deleteOlderEntries = new DeleteOldEntriesState(timeService, dataSource.TimeEntries);
+            var deleteNonReferencedGhostProjects = new DeleteNonReferencedProjectGhostsState(dataSource.Projects, dataSource.TimeEntries);
+
+            transitions.ConfigureTransition(entryPoint, deleteOlderEntries);
+            transitions.ConfigureTransition(deleteOlderEntries.FinishedDeleting, deleteNonReferencedGhostProjects);
         }
 
         private static IStateResult configurePush<TModel, TDatabase, TThreadsafe>(
