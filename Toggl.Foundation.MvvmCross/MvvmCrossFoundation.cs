@@ -219,7 +219,6 @@ namespace Toggl.Foundation.MvvmCross
                 Ensure.Argument.IsNotNull(BrowserService, nameof(BrowserService));
                 Ensure.Argument.IsNotNull(KeyValueStorage, nameof(KeyValueStorage));
                 Ensure.Argument.IsNotNull(UserPreferences, nameof(UserPreferences));
-                Ensure.Argument.IsNotNull(FeedbackService, nameof(FeedbackService));
                 Ensure.Argument.IsNotNull(OnboardingStorage, nameof(OnboardingStorage));
                 Ensure.Argument.IsNotNull(NavigationService, nameof(NavigationService));
                 Ensure.Argument.IsNotNull(ErrorHandlingService, nameof(ErrorHandlingService));

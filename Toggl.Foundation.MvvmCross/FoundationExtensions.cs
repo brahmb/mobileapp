@@ -84,7 +84,6 @@ namespace Toggl.Foundation.MvvmCross
             Mvx.RegisterSingleton(foundation.RatingService);
             Mvx.RegisterSingleton(foundation.ShortcutCreator);
             Mvx.RegisterSingleton(foundation.LicenseProvider);
-            Mvx.RegisterSingleton(foundation.FeedbackService);
             Mvx.RegisterSingleton(foundation.ShortcutCreator);
             Mvx.RegisterSingleton(foundation.AnalyticsService);
             Mvx.RegisterSingleton(foundation.PlatformConstants);
@@ -97,6 +96,12 @@ namespace Toggl.Foundation.MvvmCross
             Mvx.RegisterSingleton(foundation.LastTimeUsageStorage);
             Mvx.RegisterSingleton(foundation.ErrorHandlingService);
             Mvx.RegisterSingleton(foundation.PasswordManagerService ?? new StubPasswordManagerService());
+
+            // Feedback service is obsolete and is used only in the Android App and should be removed soon
+            if (foundation.FeedbackService != null)
+            {
+                Mvx.RegisterSingleton(foundation.FeedbackService);
+            }
         }
     }
 }

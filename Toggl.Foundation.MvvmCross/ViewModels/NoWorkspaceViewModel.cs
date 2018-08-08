@@ -35,6 +35,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             isLoading.OnNext(true);
 
+            dataSource.CreateNewSyncManager();
+
             var workspaces = await dataSource
                 .SyncManager
                 .ForceFullSync()
@@ -53,6 +55,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             isLoading.OnNext(true);
 
+            dataSource.CreateNewSyncManager();
+
             await dataSource
                 .User
                 .Current
@@ -60,6 +64,10 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .Select(user => $"{user.Fullname}'s Workspace")
                 .SelectMany(dataSource.Workspaces.Create)
                 .SelectMany(workspace => dataSource.User.UpdateWorkspace(workspace.Id));
+
+            await dataSource
+                .SyncManager
+                .ForceFullSync();
 
             isLoading.OnNext(false);
             close();

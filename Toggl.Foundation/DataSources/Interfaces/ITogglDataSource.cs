@@ -22,6 +22,7 @@ namespace Toggl.Foundation.DataSources
         IDataSource<IThreadSafeWorkspaceFeatureCollection, IDatabaseWorkspaceFeatureCollection> WorkspaceFeatures { get; }
 
         ISyncManager SyncManager { get; }
+        void CreateNewSyncManager();
 
         IObservable<Unit> StartSyncing();
         IReportsProvider ReportsProvider { get; }

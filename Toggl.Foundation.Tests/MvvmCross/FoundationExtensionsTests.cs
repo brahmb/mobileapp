@@ -75,7 +75,6 @@ namespace Toggl.Foundation.Tests.MvvmCross
             bool useBrowserService,
             bool useKeyValueStorage,
             bool useUserPreferences,
-            bool useFeedbackService,
             bool useOnboardingStorage,
             bool useNavigationService,
             bool useApiErrorHandlingService,
@@ -87,7 +86,6 @@ namespace Toggl.Foundation.Tests.MvvmCross
             var actualBrowserService = useBrowserService ? Substitute.For<IBrowserService>() : null;
             var actualKeyValueStorage = useKeyValueStorage ? Substitute.For<IKeyValueStorage>() : null;
             var actualUserPreferences = useUserPreferences ? Substitute.For<IUserPreferences>() : null;
-            var actualFeedbackService = useFeedbackService ? Substitute.For<IFeedbackService>() : null;
             var actualOnboardingStorage = useOnboardingStorage ? Substitute.For<IOnboardingStorage>() : null;
             var actualNavigationService = useNavigationService ? Substitute.For<IMvxNavigationService>() : null;
             var actualApiErrorHandlingService = useApiErrorHandlingService ? Substitute.For<IErrorHandlingService>() : null;
@@ -99,7 +97,6 @@ namespace Toggl.Foundation.Tests.MvvmCross
                     .WithDialogService(actualDialogService)
                     .WithBrowserService(actualBrowserService)
                     .WithKeyValueStorage(actualKeyValueStorage)
-                    .WithFeedbackService(actualFeedbackService)
                     .WithUserPreferences(actualUserPreferences)
                     .WithOnboardingStorage(actualOnboardingStorage)
                     .WithNavigationService(actualNavigationService)

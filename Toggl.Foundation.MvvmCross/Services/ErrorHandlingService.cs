@@ -63,8 +63,7 @@ namespace Toggl.Foundation.MvvmCross.Services
         {
             if (error is NoWorkspaceException)
             {
-                //Uncomment the next line to enable "No Workspace" view.
-                //navigationService.Navigate<NoWorkspaceViewModel>();
+                navigationService.Navigate<NoWorkspaceViewModel>();
                 return true;
             }
 
