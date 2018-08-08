@@ -75,6 +75,15 @@ namespace Toggl.Foundation.Sync
             }
         }
 
+        public IObservable<SyncState> CleanUp()
+        {
+            lock (stateLock)
+            {
+                queue.QueueCleanUp();
+                return startSyncIfNeededAndObserve();
+            }
+        }
+
         public IObservable<SyncState> Freeze()
         {
             lock (stateLock)

@@ -10,6 +10,8 @@ namespace Toggl.Foundation.Sync
 
         IObservable<SyncState> PushSync();
         IObservable<SyncState> ForceFullSync();
+        IObservable<SyncState> CleanUp();
+
         IObservable<SyncState> Freeze();
     }
 }
