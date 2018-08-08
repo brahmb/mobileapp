@@ -56,7 +56,7 @@ namespace Toggl.Giskard.Activities
             this.Bind(logoutView.Tapped(), ViewModel.TryLogout);
             this.Bind(helpView.Tapped(), ViewModel.OpenHelpView);
             this.Bind(aboutView.Tapped(), ViewModel.OpenAboutView);
-            this.Bind(feedbackView.Tapped(), ViewModel.SubmitFeedback);
+            this.Bind(feedbackView.Tapped(), ViewModel.SubmitFeedbackUsingEmail);
             this.BindVoid(manualModeView.Tapped(), ViewModel.ToggleManualMode);
             this.Bind(beginningOfWeekView.Tapped(), ViewModel.SelectBeginningOfWeek);
 

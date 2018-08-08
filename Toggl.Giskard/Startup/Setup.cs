@@ -79,6 +79,7 @@ namespace Toggl.Giskard
             var platformConstants = new PlatformConstants();
             var keyValueStorage = new SharedPreferencesStorage(sharedPreferences);
             var settingsStorage = new SettingsStorage(appVersion, keyValueStorage);
+            var feedbackService = new FeedbackService(userAgent, mailService, dialogService, platformConstants);
 
             var foundation =
                 TogglFoundation
@@ -101,6 +102,7 @@ namespace Toggl.Giskard
 
                     .StartRegisteringPlatformServices()
                     .WithDialogService(dialogService)
+                    .WithFeedbackService(feedbackService)
                     .WithLastTimeUsageStorage(settingsStorage)
                     .WithBrowserService<BrowserService>()
                     .WithKeyValueStorage(keyValueStorage)

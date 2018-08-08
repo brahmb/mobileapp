@@ -13,5 +13,17 @@ namespace Toggl.Giskard
         public TogglApplication(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
         {
         }
+
+        public override void OnCreate()
+        {
+            base.OnCreate();
+#if USE_ANALYTICS
+            Firebase.FirebaseApp.InitializeApp(this);
+            Microsoft.AppCenter.AppCenter.Start(
+                "{TOGGL_APP_CENTER_ID_DROID}",
+                typeof(Microsoft.AppCenter.Crashes.Crashes),
+                typeof(Microsoft.AppCenter.Analytics.Analytics));
+#endif
+        }
     }
 }
