@@ -11,6 +11,7 @@ using Toggl.Multivac;
 
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
+    [Preserve(AllMembers = true)]
     public sealed class NoWorkspaceViewModel : MvxViewModel
     {
         private readonly IMvxNavigationService navigationService;
@@ -21,8 +22,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public NoWorkspaceViewModel(
             IMvxNavigationService navigationService,
-            ITogglDataSource dataSource
-        )
+            ITogglDataSource dataSource)
         {
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
@@ -34,6 +34,8 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public async Task TryAgain()
         {
             isLoading.OnNext(true);
+
+            dataSource.CreateNewSyncManager();
 
             var workspaces = await dataSource
                 .SyncManager
@@ -53,8 +55,19 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             isLoading.OnNext(true);
 
-            var user = await dataSource.User.Current;
-            await dataSource.Workspaces.Create($"{user.Fullname}'s Workspace");
+            dataSource.CreateNewSyncManager();
+
+            await dataSource
+                .User
+                .Current
+                .FirstAsync()
+                .Select(user => $"{user.Fullname}'s Workspace")
+                .SelectMany(dataSource.Workspaces.Create)
+                .SelectMany(workspace => dataSource.User.UpdateWorkspace(workspace.Id));
+
+            await dataSource
+                .SyncManager
+                .ForceFullSync();
 
             isLoading.OnNext(false);
             close();

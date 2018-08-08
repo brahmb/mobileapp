@@ -98,6 +98,12 @@ namespace Toggl.Foundation.MvvmCross
             Mvx.RegisterSingleton(foundation.PasswordManagerService ?? new StubPasswordManagerService());
             Mvx.RegisterSingleton(foundation.PermissionsService);
             Mvx.RegisterSingleton(foundation.CalendarService);
+
+            // Feedback service is obsolete and is used only in the Android App and should be removed soon
+            if (foundation.FeedbackService != null)
+            {
+                Mvx.RegisterSingleton(foundation.FeedbackService);
+            }
         }
     }
 }

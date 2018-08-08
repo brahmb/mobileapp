@@ -54,7 +54,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                 collection.CollectionChanges.SelectMany( l => l.ToObservable()).Subscribe(observer);
 
                 var updated = new MockItem { Id = 1, Description = "ED" };
-                collection.UpdateItem(updated);
+                collection.UpdateItem(updated.Id, updated);
 
                 List<List<MockItem>> expected = new List<List<MockItem>>
                 {
@@ -94,7 +94,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                 collection.CollectionChanges.SelectMany( l => l.ToObservable()).Subscribe(observer);
 
                 var updated = new MockItem { Id = 8, Description = "C" };
-                collection.UpdateItem(updated);
+                collection.UpdateItem(updated.Id, updated);
 
                 List<List<MockItem>> expected = new List<List<MockItem>>
                 {
@@ -255,7 +255,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                 collection.CollectionChanges.SelectMany( l => l.ToObservable()).Subscribe(observer);
 
                 var updated = new MockItem { Id = 1, Description = "C" };
-                collection.UpdateItem(updated);
+                collection.UpdateItem(updated.Id, updated);
 
                 var change = new CollectionChange
                 {
@@ -286,7 +286,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                 collection.CollectionChanges.SelectMany( l => l.ToObservable()).Subscribe(observer);
 
                 var updated = new MockItem { Id = 1, Description = "E" };
-                collection.UpdateItem(updated);
+                collection.UpdateItem(updated.Id, updated);
 
                 var change = new CollectionChange
                 {
@@ -319,7 +319,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                 collection.CollectionChanges.SelectMany( l => l.ToObservable()).Subscribe(observer);
 
                 var updated = new MockItem { Id = 1, Description = "ED" };
-                collection.UpdateItem(updated);
+                collection.UpdateItem(updated.Id, updated);
 
                 var change = new CollectionChange
                 {
@@ -359,7 +359,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                 collection.CollectionChanges.SelectMany( l => l.ToObservable()).Subscribe(observer);
 
                 var updated = new MockItem { Id = 5, Description = "E" };
-                collection.UpdateItem(updated);
+                collection.UpdateItem(updated.Id, updated);
 
                 var change = new CollectionChange
                 {
@@ -391,7 +391,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
                 collection.CollectionChanges.SelectMany( l => l.ToObservable()).Subscribe(observer);
 
                 var updated = new MockItem { Id = 5, Description = "DE" };
-                collection.UpdateItem(updated);
+                collection.UpdateItem(updated.Id, updated);
 
                 var change = new CollectionChange
                 {
@@ -425,8 +425,8 @@ namespace Toggl.Foundation.Tests.MvvmCross.Collections
 
                 collection.CollectionChanges.SelectMany( l => l.ToObservable()).Subscribe(observer);
 
-                var updated = new MockItem { Id = 1, Description = "B2" };
-                var index = collection.UpdateItem(updated);
+                var updated = new MockItem { Id = 4, Description = "B2" };
+                var index = collection.UpdateItem(1, updated);
 
                 index.HasValue.Should().BeTrue();
                 index.Value.Section.Should().Be(1);

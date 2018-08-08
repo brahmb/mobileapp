@@ -6,6 +6,7 @@ using Toggl.Foundation.Calendar;
 using Toggl.Foundation.Models;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.Suggestions;
+using Toggl.Multivac;
 
 namespace Toggl.Foundation.Interactors
 {
@@ -93,6 +94,10 @@ namespace Toggl.Foundation.Interactors
         #region Calendar
 
         IInteractor<IObservable<IEnumerable<CalendarItem>>> GetCalendarItemsForDate(DateTime date);
+
+        IInteractor<IObservable<IEnumerable<UserCalendar>>> GetUserCalendars();
+
+        IInteractor<Unit> SetEnabledCalendars(params string[] ids);
 
         #endregion
     }

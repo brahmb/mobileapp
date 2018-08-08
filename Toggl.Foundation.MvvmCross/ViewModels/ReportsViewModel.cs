@@ -17,6 +17,7 @@ using Toggl.Foundation.Interactors;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.MvvmCross.Helper;
 using Toggl.Foundation.MvvmCross.Parameters;
+using Toggl.Foundation.MvvmCross.Services;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.MvvmCross.ViewModels.Hints;
 using Toggl.Foundation.Reports;
@@ -28,7 +29,7 @@ using static Toggl.Multivac.Extensions.EnumerableExtensions;
 namespace Toggl.Foundation.MvvmCross.ViewModels
 {
     [Preserve(AllMembers = true)]
-    public sealed class ReportsViewModel : MvxViewModel<long>
+    public sealed class ReportsViewModel : MvxViewModel
     {
 
 
@@ -37,6 +38,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly IMvxNavigationService navigationService;
         private readonly IInteractorFactory interactorFactory;
         private readonly IAnalyticsService analyticsService;
+        private readonly IDialogService dialogService;
         private readonly ReportsCalendarViewModel calendarViewModel;
         private readonly Subject<Unit> reportSubject = new Subject<Unit>();
         private readonly CompositeDisposable disposeBag = new CompositeDisposable();
@@ -93,49 +95,58 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             }
         }
 
+        public string WorkspaceName { get; private set; }
+
+        public IDictionary<string, IThreadSafeWorkspace> Workspaces { get; private set; }
+
         public IMvxCommand HideCalendarCommand { get; }
 
         public IMvxCommand ToggleCalendarCommand { get; }
 
         public IMvxCommand<DateRangeParameter> ChangeDateRangeCommand { get; }
 
+        public IMvxAsyncCommand SelectWorkspace { get; }
+
         public ReportsViewModel(ITogglDataSource dataSource,
                                 ITimeService timeService,
                                 IMvxNavigationService navigationService,
                                 IInteractorFactory interactorFactory,
-                                IAnalyticsService analyticsService)
+                                IAnalyticsService analyticsService,
+                                IDialogService dialogService)
         {
             Ensure.Argument.IsNotNull(navigationService, nameof(navigationService));
             Ensure.Argument.IsNotNull(dataSource, nameof(dataSource));
             Ensure.Argument.IsNotNull(timeService, nameof(timeService));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
+            Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
 
             this.timeService = timeService;
             this.navigationService = navigationService;
             this.analyticsService = analyticsService;
             this.dataSource = dataSource;
             this.interactorFactory = interactorFactory;
+            this.dialogService = dialogService;
 
             calendarViewModel = new ReportsCalendarViewModel(timeService, dataSource);
 
             HideCalendarCommand = new MvxCommand(hideCalendar);
             ToggleCalendarCommand = new MvxCommand(toggleCalendar);
             ChangeDateRangeCommand = new MvxCommand<DateRangeParameter>(changeDateRange);
-        }
-
-        public override void Prepare(long parameter)
-        {
-            workspaceId = parameter;
+            SelectWorkspace = new MvxAsyncCommand(selectWorkspace);
         }
 
         public override async Task Initialize()
         {
-            if (workspaceId == 0)
-            {
-                var workspace = await interactorFactory.GetDefaultWorkspace().Execute();
-                workspaceId = workspace.Id;
-            }
+            Workspaces = await dataSource.Workspaces
+                .GetAll()
+                .SelectMany(CommonFunctions.Identity)
+                .ToDictionary(ws => ws.Name, ws => ws);
+
+            var workspace = await interactorFactory.GetDefaultWorkspace().Execute();
+
+            workspaceId = workspace.Id;
+            WorkspaceName = workspace.Name;
 
             disposeBag.Add(
                 reportSubject
@@ -335,6 +346,17 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 .Append(lastSegment)
                 .ToList()
                 .AsReadOnly();
+        }
+
+        private async Task selectWorkspace()
+        {
+            var workspace = await dialogService.Select(Resources.SelectWorkspace, Workspaces);
+
+            if (workspace == null || workspace.Id == workspaceId) return;
+
+            workspaceId = workspace.Id;
+            WorkspaceName = workspace.Name;
+            reportSubject.OnNext(Unit.Default);
         }
 
         private float percentageOf(List<ChartSegment> list)

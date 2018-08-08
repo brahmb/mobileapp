@@ -5,7 +5,9 @@ using MvvmCross;
 using MvvmCross.Binding;
 using MvvmCross.Droid.Support.V7.AppCompat;
 using MvvmCross.Navigation;
+using MvvmCross.Platforms.Android;
 using MvvmCross.Platforms.Android.Presenters;
+using MvvmCross.Platforms.Android.Views;
 using MvvmCross.Plugin;
 using MvvmCross.ViewModels;
 using MvvmCross.Views;
@@ -77,6 +79,7 @@ namespace Toggl.Giskard
             var platformConstants = new PlatformConstants();
             var keyValueStorage = new SharedPreferencesStorage(sharedPreferences);
             var settingsStorage = new SettingsStorage(appVersion, keyValueStorage);
+            var feedbackService = new FeedbackService(userAgent, mailService, dialogService, platformConstants);
 
             var foundation =
                 TogglFoundation
@@ -99,6 +102,7 @@ namespace Toggl.Giskard
 
                     .StartRegisteringPlatformServices()
                     .WithDialogService(dialogService)
+                    .WithFeedbackService(feedbackService)
                     .WithLastTimeUsageStorage(settingsStorage)
                     .WithBrowserService<BrowserService>()
                     .WithKeyValueStorage(keyValueStorage)
@@ -114,6 +118,14 @@ namespace Toggl.Giskard
             foundation.RevokeNewUserIfNeeded().Initialize();
 
             base.InitializeApp(pluginManager, app);
+        }
+
+        protected override IMvxAndroidCurrentTopActivity CreateAndroidCurrentTopActivity()
+        {
+            var mvxApplication = MvxAndroidApplication.Instance;
+            var activityLifecycleCallbacksManager = new QueryableMvxLifecycleMonitorCurrentTopActivity();
+            mvxApplication.RegisterActivityLifecycleCallbacks(activityLifecycleCallbacksManager);
+            return activityLifecycleCallbacksManager;
         }
     }
 }

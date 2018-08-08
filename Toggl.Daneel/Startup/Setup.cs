@@ -84,9 +84,11 @@ namespace Toggl.Daneel
             );
 
             var appVersion = Version.Parse(version);
-            var userAgent = new UserAgent(clientName, version);
             var keyValueStorage = new UserDefaultsStorage();
+            var permissionsService = new PermissionsService();
+            var userAgent = new UserAgent(clientName, version);
             var settingsStorage = new SettingsStorage(Version.Parse(version), keyValueStorage);
+            var calendarService = new CalendarService(settingsStorage, permissionsService);
 
             var foundation =
                 TogglFoundation
@@ -113,13 +115,13 @@ namespace Toggl.Daneel
                     .WithBrowserService<BrowserService>()
                     .WithKeyValueStorage(keyValueStorage)
                     .WithUserPreferences(settingsStorage)
+                    .WithCalendarService(calendarService)
                     .WithOnboardingStorage(settingsStorage)
                     .WithNavigationService(navigationService)
+                    .WithPermissionsService(permissionsService)
                     .WithAccessRestrictionStorage(settingsStorage)
                     .WithPasswordManagerService<OnePasswordService>()
                     .WithErrorHandlingService(new ErrorHandlingService(navigationService, settingsStorage))
-                    .WithPermissionsService<PermissionsService>()
-                    .WithCalendarService<CalendarService>()
                     .Build();
 
             foundation.RevokeNewUserIfNeeded().Initialize();

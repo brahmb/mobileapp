@@ -11,6 +11,9 @@ using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Multivac.Extensions;
 using UIKit;
 using static Toggl.Daneel.Extensions.AnimationExtensions;
+using Toggl.Daneel.Converters;
+using Toggl.Foundation.Models.Interfaces;
+using System.Collections.Generic;
 
 namespace Toggl.Daneel.ViewControllers
 {
@@ -18,6 +21,8 @@ namespace Toggl.Daneel.ViewControllers
     public sealed partial class ReportsViewController : MvxViewController<ReportsViewModel>
     {
         private const string boundsKey = "bounds";
+
+        private const double maximumWorkspaceNameLabelWidth = 144;
 
         private nfloat calendarHeight => CalendarContainer.Bounds.Height;
 
@@ -47,6 +52,14 @@ namespace Toggl.Daneel.ViewControllers
             source.OnScroll += onReportsTableScrolled;
             ReportsTableView.Source = source;
 
+            var areThereEnoughWorkspaces = new LambdaConverter<IDictionary<string, IThreadSafeWorkspace>, bool>(workspaces => workspaces.Count > 1);
+            var isWorkspaceNameTooLong = new LambdaConverter<string, bool>(workspaceName =>
+            {
+                var attributes = new UIStringAttributes { Font = WorkspaceLabel.Font };
+                var size = new NSString(workspaceName).GetSizeUsingAttributes(attributes);
+                return size.Width >= maximumWorkspaceNameLabelWidth;
+            });
+
             var bindingSet = this.CreateBindingSet<ReportsViewController, ReportsViewModel>();
 
             bindingSet.Bind(source).To(vm => vm.Segments);
@@ -62,6 +75,23 @@ namespace Toggl.Daneel.ViewControllers
             bindingSet.Bind(ReportsTableView)
                       .For(v => v.BindTap())
                       .To(vm => vm.HideCalendarCommand);
+
+            bindingSet.Bind(WorkspaceButton)
+                      .For(v => v.BindVisible())
+                      .To(vm => vm.Workspaces)
+                      .WithConversion(areThereEnoughWorkspaces);
+
+            bindingSet.Bind(WorkspaceButton)
+                      .For(v => v.BindTap())
+                      .To(vm => vm.SelectWorkspace);
+
+            bindingSet.Bind(WorkspaceLabel)
+                      .To(vm => vm.WorkspaceName);
+
+            bindingSet.Bind(WorkspaceFadeView)
+                      .For(v => v.FadeRight)
+                      .To(vm => vm.WorkspaceName)
+                      .WithConversion(isWorkspaceNameTooLong);
 
             bindingSet.Apply();
         }
@@ -129,6 +159,13 @@ namespace Toggl.Daneel.ViewControllers
 
             // Calendar configuration
             TopCalendarConstraint.Constant = calendarHeight;
+
+            // Workspace button settings
+            WorkspaceFadeView.FadeWidth = 32;
+            WorkspaceButton.Layer.ShadowColor = UIColor.Black.CGColor;
+            WorkspaceButton.Layer.ShadowRadius = 10;
+            WorkspaceButton.Layer.ShadowOffset = new CGSize(0, 2);
+            WorkspaceButton.Layer.ShadowOpacity = 0.10f;
         }
 
         private void onCalendarSizeChanged(NSObservedChange change)

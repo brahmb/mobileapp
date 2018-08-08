@@ -42,6 +42,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         private readonly ITogglDataSource dataSource;
         private readonly IDialogService dialogService;
         private readonly IUserPreferences userPreferences;
+        private readonly IFeedbackService feedbackService;
         private readonly IAnalyticsService analyticsService;
         private readonly IPlatformConstants platformConstants;
         private readonly IOnboardingStorage onboardingStorage;
@@ -91,6 +92,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             ITogglDataSource dataSource,
             IDialogService dialogService,
             IUserPreferences userPreferences,
+            IFeedbackService feedbackService,
             IAnalyticsService analyticsService,
             IInteractorFactory interactorFactory,
             IPlatformConstants platformConstants,
@@ -102,6 +104,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             Ensure.Argument.IsNotNull(mailService, nameof(mailService));
             Ensure.Argument.IsNotNull(dialogService, nameof(dialogService));
             Ensure.Argument.IsNotNull(userPreferences, nameof(userPreferences));
+            Ensure.Argument.IsNotNull(feedbackService, nameof(feedbackService));
             Ensure.Argument.IsNotNull(analyticsService, nameof(analyticsService));
             Ensure.Argument.IsNotNull(onboardingStorage, nameof(onboardingStorage));
             Ensure.Argument.IsNotNull(interactorFactory, nameof(interactorFactory));
@@ -113,6 +116,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             this.mailService = mailService;
             this.dialogService = dialogService;
             this.userPreferences = userPreferences;
+            this.feedbackService = feedbackService;
             this.analyticsService = analyticsService;
             this.interactorFactory = interactorFactory;
             this.navigationService = navigationService;
@@ -228,6 +232,11 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         {
             var sendFeedbackSucceed = await navigationService.Navigate<SendFeedbackViewModel, bool>();
             isFeedbackSuccessViewShowing.OnNext(sendFeedbackSucceed);
+        }
+
+        public async Task SubmitFeedbackUsingEmail()
+        {
+            feedbackService.SubmitFeedback();
         }
 
         public Task SelectDefaultWorkspace(SelectableWorkspaceViewModel workspace)

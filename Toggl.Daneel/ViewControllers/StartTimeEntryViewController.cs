@@ -224,6 +224,9 @@ namespace Toggl.Daneel.ViewControllers
         {
             TimeLabel.Hidden = !TimeLabel.Hidden;
             TimeInput.Hidden = !TimeInput.Hidden;
+
+            TimeLabelTrailingConstraint.Active = !TimeLabel.Hidden;
+            TimeInputTrailingConstraint.Active = !TimeInput.Hidden;
         }
 
         private void updatePlaceholder()

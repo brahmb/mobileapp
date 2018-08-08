@@ -10,4 +10,11 @@ namespace Toggl.Foundation.MvvmCross.Services
 
         void EnterForeground();
     }
+
+    public sealed class NotAuthorizedException : Exception
+    {
+        public NotAuthorizedException(string message) : base(message)
+        {
+        }
+    }
 }

@@ -51,6 +51,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                     DataSource,
                     DialogService,
                     UserPreferences,
+                    FeedbackService,
                     AnalyticsService,
                     InteractorFactory,
                     PlatformConstants,
@@ -73,6 +74,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 bool useMailService,
                 bool useDialogService,
                 bool useUserPreferences,
+                bool useFeedbackService,
                 bool useAnalyticsService,
                 bool useInteractorFactory,
                 bool usePlatformConstants,
@@ -84,6 +86,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 var mailService = useMailService ? MailService : null;
                 var dialogService = useDialogService ? DialogService : null;
                 var userPreferences = useUserPreferences ? UserPreferences : null;
+                var feedbackService = useFeedbackService ? FeedbackService : null;
                 var analyticsService = useAnalyticsService ? AnalyticsService : null;
                 var onboardingStorage = useOnboardingStorage ? OnboardingStorage : null;
                 var navigationService = useNavigationService ? NavigationService : null;
@@ -97,6 +100,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                         dataSource,
                         dialogService,
                         userPreferences,
+                        feedbackService,
                         analyticsService,
                         interactorFactory,
                         platformConstants,
@@ -770,6 +774,16 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 viewModel.IsFeedbackSuccessViewShowing.StartWith(true).Subscribe(observer);
                 viewModel.CloseFeedbackSuccessView();
                 observer.Messages.Last().Value.Value.Should().BeFalse();
+            }
+        }
+
+        public sealed class TheSubmitFeedbackUsingEmailMethod : SettingsViewModelTest
+        {
+            [Fact, LogIfTooSlow]
+            public async Task CallsTheFeedbackService()
+            {
+                await ViewModel.SubmitFeedbackUsingEmail();
+                await FeedbackService.Received().SubmitFeedback();
             }
         }
     }

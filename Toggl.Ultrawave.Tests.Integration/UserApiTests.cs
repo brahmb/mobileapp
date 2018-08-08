@@ -275,20 +275,19 @@ namespace Toggl.Ultrawave.Tests.Integration
             }
 
             [Fact, LogTestInfo]
-            public async Task SucceedsEvenIfUserDidNotAcceptTermsAndConditions()
+            public void FailsIfUserDidNotAcceptTermsAndConditions()
             {
                 var email = Email.From($"{Guid.NewGuid().ToString()}@email.com");
                 var password = "s3cr3tzzz".ToPassword();
                 var termsAccepted = false;
                 var countryId = 237;
 
-                // User.SignUp will throw in the future when acceptance of ToS is enforced in the backend
-                var user = await unauthenticatedTogglApi
-                    .User
-                    .SignUp(email, password, termsAccepted, countryId);
+                Action signingUpWithoutAcceptingTerms =
+                    () => unauthenticatedTogglApi.User
+                        .SignUp(email, password, termsAccepted, countryId)
+                        .Wait();
 
-                user.Id.Should().BeGreaterThan(0);
-                user.Email.Should().Be(email);
+                signingUpWithoutAcceptingTerms.Should().Throw<BadRequestException>();
             }
 
             [Theory, LogTestInfo]

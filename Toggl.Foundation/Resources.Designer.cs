@@ -820,5 +820,11 @@ namespace Toggl.Foundation {
                 return ResourceManager.GetString("Success", resourceCulture);
             }
         }
+        
+        public static string SelectWorkspace {
+            get {
+                return ResourceManager.GetString("SelectWorkspace", resourceCulture);
+            }
+        }
     }
 }

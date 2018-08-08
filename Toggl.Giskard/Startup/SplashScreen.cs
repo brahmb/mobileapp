@@ -23,7 +23,7 @@ namespace Toggl.Giskard
         Categories = new[] { "android.intent.category.BROWSABLE", "android.intent.category.DEFAULT" },
         DataSchemes = new[] { "toggl" },
         DataHost = "*")]
-    public class SplashScreen : MvxSplashScreenAppCompatActivity<Setup, App<LoginViewModel>>
+    public class SplashScreen : MvxSplashScreenAppCompatActivity
     {
         public SplashScreen()
             : base(Resource.Layout.SplashScreen)
@@ -47,14 +47,6 @@ namespace Toggl.Giskard
 
             var statusBarColor = new Color(ContextCompat.GetColor(this, Resource.Color.lightGray));
             this.ChangeStatusBarColor(statusBarColor);
-
-#if USE_ANALYTICS
-            Firebase.FirebaseApp.InitializeApp(this);
-            Microsoft.AppCenter.AppCenter.Start(
-                "{TOGGL_APP_CENTER_ID_DROID}",
-                typeof(Microsoft.AppCenter.Crashes.Crashes),
-                typeof(Microsoft.AppCenter.Analytics.Analytics));
-#endif
         }
     }
 }

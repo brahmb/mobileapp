@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Foundation;
 using Toggl.Daneel.Extensions;
-using Toggl.Daneel.Transformations;
 using Toggl.Foundation.Extensions;
+using Toggl.Foundation.MvvmCross.Transformations;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using UIKit;
 

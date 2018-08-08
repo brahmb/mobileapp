@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Reflection;
 using Android.Content;
 using Android.Support.V4.App;
+using MvvmCross;
 using MvvmCross.Droid.Support.V7.AppCompat;
+using MvvmCross.Platforms.Android;
 using MvvmCross.Platforms.Android.Presenters.Attributes;
 using MvvmCross.ViewModels;
+using MvvmCross.Views;
 using Toggl.Foundation.MvvmCross.ViewModels;
 using Toggl.Foundation.MvvmCross.ViewModels.Hints;
 using Toggl.Giskard.Activities;
@@ -64,6 +67,25 @@ namespace Toggl.Giskard.Presenters
             }
 
             return false;
+        }
+
+        protected override bool CloseActivity(IMvxViewModel viewModel, MvxActivityPresentationAttribute attribute)
+        {
+            var currentView = CurrentActivity as IMvxView;
+
+            if (currentView == null)
+            {
+                var currentTopActivity = Mvx.Resolve<IMvxAndroidCurrentTopActivity>() as QueryableMvxLifecycleMonitorCurrentTopActivity;
+                var closingActivity = currentTopActivity?.FindActivityByViewModel(viewModel);
+                closingActivity?.Finish();
+                if (closingActivity != null)
+                {
+                    //found an activity and handled it
+                    return true;
+                }
+            }
+
+            return base.CloseActivity(viewModel, attribute);
         }
     }
 }

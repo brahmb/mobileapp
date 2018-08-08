@@ -109,9 +109,9 @@ namespace Toggl.Foundation.MvvmCross.Collections
             }
         }
 
-        public SectionedIndex? UpdateItem(TItem item)
+        public SectionedIndex? UpdateItem(IComparable key, TItem item)
         {
-            var oldIndex = IndexOf(indexKey(item));
+            var oldIndex = IndexOf(key);
 
             if (!oldIndex.HasValue)
                 return null;

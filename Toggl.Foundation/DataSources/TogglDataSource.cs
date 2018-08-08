@@ -33,6 +33,8 @@ namespace Toggl.Foundation.DataSources
 
         private bool isLoggedIn;
 
+        private Func<ITogglDataSource, ISyncManager> createSyncManager;
+
         public TogglDataSource(
             ITogglApi api,
             ITogglDatabase database,
@@ -70,13 +72,14 @@ namespace Toggl.Foundation.DataSources
             Workspaces = new WorkspacesDataSource(database.IdProvider, database.Workspaces, timeService);
             WorkspaceFeatures = new WorkspaceFeaturesDataSource(database.WorkspaceFeatures);
 
-            SyncManager = createSyncManager(this);
+
+            this.createSyncManager = createSyncManager;
+            CreateNewSyncManager();
 
             ReportsProvider = new ReportsProvider(api, database);
 
             FeedbackApi = api.Feedback;
 
-            errorHandlingDisposable = SyncManager.ProgressObservable.Subscribe(onSyncError);
             isLoggedIn = true;
         }
 
@@ -90,11 +93,18 @@ namespace Toggl.Foundation.DataSources
         public IWorkspacesSource Workspaces { get; }
         public IDataSource<IThreadSafeWorkspaceFeatureCollection, IDatabaseWorkspaceFeatureCollection> WorkspaceFeatures { get; }
 
-        public ISyncManager SyncManager { get; }
+        public ISyncManager SyncManager { get; private set; }
 
         public IReportsProvider ReportsProvider { get; }
 
         public IFeedbackApi FeedbackApi { get; }
+
+        public void CreateNewSyncManager()
+        {
+            SyncManager = createSyncManager(this);
+            errorHandlingDisposable?.Dispose();
+            errorHandlingDisposable = SyncManager.ProgressObservable.Subscribe(onSyncError);
+        }
 
         public IObservable<Unit> StartSyncing()
         {

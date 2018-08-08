@@ -63,7 +63,7 @@ namespace Toggl.Foundation.MvvmCross.Services
         {
             if (error is NoWorkspaceException)
             {
-                // Show no workspace UI here. Also don't forget to call `DataSource.StartSyncing` when the user creates the workspace
+                navigationService.Navigate<NoWorkspaceViewModel>();
                 return true;
             }
 

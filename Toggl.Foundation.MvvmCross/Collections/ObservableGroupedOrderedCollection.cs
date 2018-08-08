@@ -81,11 +81,11 @@ namespace Toggl.Foundation.MvvmCross.Collections
             return index;
         }
 
-        public SectionedIndex? UpdateItem(TItem item)
+        public SectionedIndex? UpdateItem(IComparable key, TItem item)
         {
             var changes = new List<CollectionChange>();
 
-            var oldIndex = collection.IndexOf(indexKey(item));
+            var oldIndex = collection.IndexOf(key);
             var shouldDeleteSection = false;
             var shouldAddSection = false;
 

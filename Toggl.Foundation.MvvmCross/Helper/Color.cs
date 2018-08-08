@@ -116,6 +116,12 @@ namespace Toggl.Foundation.MvvmCross.Helper
             public static readonly MvxColor Cursor = lightishGreen;
         }
 
+        public static class NoWorkspace
+        {
+            public static readonly MvxColor ActivityIndicator = lightishGreen;
+            public static readonly MvxColor DisabledCreateWorkspaceButton = new MvxColor(255, 255, 255, 122);
+        }
+
         internal static MvxColor FromHSV(float hue, float saturation, float value)
         {
             int r = 0, g = 0, b = 0;

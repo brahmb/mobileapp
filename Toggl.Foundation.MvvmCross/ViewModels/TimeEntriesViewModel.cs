@@ -96,7 +96,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             else
             {
                 var timeEntryViewModel = new TimeEntryViewModel(timeEntry, durationFormat);
-                TimeEntries.UpdateItem(timeEntryViewModel);
+                TimeEntries.UpdateItem(update.Id, timeEntryViewModel);
             }
         }
 

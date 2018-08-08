@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reactive;
 
 namespace Toggl.Foundation.MvvmCross.Services
@@ -14,6 +15,8 @@ namespace Toggl.Foundation.MvvmCross.Services
         IObservable<Unit> Alert(string title, string message, string buttonTitle);
 
         IObservable<bool> ConfirmDestructiveAction(ActionType type);
+
+        IObservable<T> Select<T>(string title, IDictionary<string, T> options) where T : class;
     }
 
     public enum ActionType
