@@ -233,7 +233,7 @@ namespace Toggl.Foundation.Tests.MvvmCross.ViewModels
                 ViewModel.Dismiss();
 
                 NavigationService.Received().ChangePresentation(
-                    Arg.Is<ToggleRatingViewVisibilityHint>(hint => hint.ForceHide == true)
+                    Arg.Is<ToggleRatingViewVisibilityHint>(hint => hint.ShouldHide == true)
                 );
             }
 
