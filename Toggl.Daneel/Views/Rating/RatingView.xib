@@ -17,7 +17,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GcE-sU-iW3" userLabel="Question View">
-                    <rect key="frame" x="16" y="24" width="302" height="208"/>
+                    <rect key="frame" x="16" y="16" width="302" height="208"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" verticalCompressionResistancePriority="1000" text="Enjoying Toggl?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q7u-md-X3a">
                             <rect key="frame" x="86" y="24" width="130" height="22"/>
@@ -93,22 +93,22 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OxT-vM-sJG" userLabel="CTA View">
-                    <rect key="frame" x="16" y="24" width="302" height="271"/>
+                    <rect key="frame" x="16" y="16" width="302" height="279"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Awesome!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fiL-lD-qx5" userLabel="CTA Title">
-                            <rect key="frame" x="109" y="24" width="85.333333333333314" height="65"/>
+                            <rect key="frame" x="109" y="24" width="85.333333333333314" height="73"/>
                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Would you mind rating us in the App Store? Your App Store review really makes a difference." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f7G-wc-dSL" userLabel="CTA Description">
-                            <rect key="frame" x="16" y="93" width="270" height="54"/>
+                            <rect key="frame" x="16" y="101" width="270" height="54"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fDt-tb-hdG" userLabel="Dismiss Button">
-                            <rect key="frame" x="16" y="219" width="270" height="40"/>
+                            <rect key="frame" x="16" y="227" width="270" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="zvA-Ab-byB"/>
                             </constraints>
@@ -117,7 +117,7 @@
                             </state>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mx1-vM-Q1x" userLabel="CTA Button">
-                            <rect key="frame" x="16" y="163" width="270" height="40"/>
+                            <rect key="frame" x="16" y="171" width="270" height="40"/>
                             <color key="backgroundColor" red="0.29803921568627451" green="0.85098039215686272" blue="0.39215686274509803" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="Iet-tu-CXp"/>
@@ -148,13 +148,13 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
-                <constraint firstItem="OxT-vM-sJG" firstAttribute="top" secondItem="1" secondAttribute="top" constant="24" id="1CD-a3-leH"/>
+                <constraint firstItem="OxT-vM-sJG" firstAttribute="top" secondItem="1" secondAttribute="top" constant="16" id="1CD-a3-leH"/>
                 <constraint firstAttribute="bottom" secondItem="GcE-sU-iW3" secondAttribute="bottom" id="ApI-CR-sBH"/>
                 <constraint firstAttribute="trailing" secondItem="GcE-sU-iW3" secondAttribute="trailing" constant="16" id="HNU-K5-b5H"/>
                 <constraint firstAttribute="bottom" secondItem="OxT-vM-sJG" secondAttribute="bottom" id="NNt-fi-Kgw"/>
                 <constraint firstItem="OxT-vM-sJG" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="16" id="bKT-pL-iv6"/>
                 <constraint firstItem="GcE-sU-iW3" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="16" id="w6S-Gz-gL5"/>
-                <constraint firstItem="GcE-sU-iW3" firstAttribute="top" secondItem="1" secondAttribute="top" constant="24" id="wrw-6T-oEr"/>
+                <constraint firstItem="GcE-sU-iW3" firstAttribute="top" secondItem="1" secondAttribute="top" constant="16" id="wrw-6T-oEr"/>
                 <constraint firstAttribute="trailing" secondItem="OxT-vM-sJG" secondAttribute="trailing" constant="16" id="xdZ-dE-FTM"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
