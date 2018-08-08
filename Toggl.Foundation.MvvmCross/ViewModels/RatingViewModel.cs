@@ -141,7 +141,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
         public void Dismiss()
         {
             navigationService.ChangePresentation(
-                new ToggleRatingViewVisibilityHint(forceHide: true)
+                ToggleRatingViewVisibilityHint.Hide()
             );
 
             if (impressionSubject.Value == null) return;

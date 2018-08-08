@@ -6,9 +6,21 @@ namespace Toggl.Foundation.MvvmCross.ViewModels.Hints
     {
         public bool ShouldHide { get; }
 
-        public ToggleRatingViewVisibilityHint(bool shouldHide) : base()
+        private ToggleRatingViewVisibilityHint(bool shouldHide) : base()
         {
             ShouldHide = shouldHide;
+        }
+
+        public static ToggleRatingViewVisibilityHint Show()
+        {
+            var hint = new ToggleRatingViewVisibilityHint(shouldHide: false);
+            return hint;
+        }
+
+        public static ToggleRatingViewVisibilityHint Hide()
+        {
+            var hint = new ToggleRatingViewVisibilityHint(shouldHide: true);
+            return hint;
         }
     }
 }

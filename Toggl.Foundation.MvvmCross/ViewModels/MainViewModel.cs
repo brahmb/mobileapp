@@ -298,13 +298,13 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
                 if (oneDayHasNotPassedSinceLastTime && !wasShownMoreThanOnce) return;
             }
 
-            navigationService.ChangePresentation(new ToggleRatingViewVisibilityHint());
+            navigationService.ChangePresentation(ToggleRatingViewVisibilityHint.Show());
             analyticsService.RatingViewWasShown.Track();
             onboardingStorage.SetDidShowRatingView();
             onboardingStorage.SetRatingViewOutcome(RatingViewOutcome.NoInteraction, timeService.CurrentDateTime);
             timeService.RunAfterDelay(ratingViewTimeout, () =>
             {
-                navigationService.ChangePresentation(new ToggleRatingViewVisibilityHint(true));
+                navigationService.ChangePresentation(ToggleRatingViewVisibilityHint.Hide());
             });
         }
 
