@@ -10,6 +10,7 @@ namespace Toggl.Foundation.MvvmCross.Services
     public sealed class FeedbackService : IFeedbackService
     {
         private const string feedbackRecipient = "support@toggl.com";
+        private const string subject = "Toggl Mobile App Feedback";
 
         private readonly UserAgent userAgent;
         private readonly IMailService mailService;
@@ -50,7 +51,7 @@ namespace Toggl.Foundation.MvvmCross.Services
 
             var mailResult = await mailService.Send(
                 feedbackRecipient,
-                platformConstants.FeedbackEmailSubject,
+                subject,
                 messageBuilder.ToString()
             );
 

@@ -50,19 +50,15 @@ namespace Toggl.Foundation.Tests.MvvmCross.Services
                     .Wait();
             }
 
-            [Property]
-            public void SendsAnEmailWithTheProperSubject(
-                NonEmptyString nonEmptyString)
+            [Fact]
+            public void SendsAnEmailWithTheProperSubject()
             {
-                var subject = nonEmptyString.Get;
-                platformConstants.FeedbackEmailSubject.Returns(subject);
-
                 feedbackService.SubmitFeedback().Wait();
 
                 mailService.Received()
                     .Send(
                         Arg.Any<string>(),
-                        subject,
+                        "Toggl Mobile App Feedback",
                         Arg.Any<string>())
                    .Wait();
             }
