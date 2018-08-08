@@ -593,6 +593,8 @@
     <InterfaceDefinition Include="ViewControllers\Settings\SendFeedbackViewController.xib" />
     <InterfaceDefinition Include="Views\CalendarItemView.xib" />
     <InterfaceDefinition Include="ViewControllers\CalendarViewController.xib" />
+    <InterfaceDefinition Include="Views\Calendar\HourSupplementaryView.xib" />
+    <InterfaceDefinition Include="Views\Calendar\CurrentTimeSupplementaryView.xib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -1016,6 +1018,15 @@
     <Compile Include="ViewControllers\CalendarViewController.designer.cs">
       <DependentUpon>CalendarViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Calendar\HourSupplementaryView.cs" />
+    <Compile Include="Views\Calendar\HourSupplementaryView.designer.cs">
+      <DependentUpon>HourSupplementaryView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Calendar\CurrentTimeSupplementaryView.cs" />
+    <Compile Include="Views\Calendar\CurrentTimeSupplementaryView.designer.cs">
+      <DependentUpon>CurrentTimeSupplementaryView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Calendar\ICalendarCollectionViewLayoutDataSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toggl.Foundation.MvvmCross\Toggl.Foundation.MvvmCross.csproj">

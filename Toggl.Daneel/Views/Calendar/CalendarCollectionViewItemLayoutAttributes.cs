@@ -1,4 +1,5 @@
 ﻿using System;
+using Toggl.Multivac;
 
 namespace Toggl.Daneel.Views.Calendar
 {
@@ -19,6 +20,8 @@ namespace Toggl.Daneel.Views.Calendar
             int overlappingItemsCount,
             int positionInOverlappingGroup)
         {
+            Ensure.Argument.IsNotZero(overlappingItemsCount, nameof(overlappingItemsCount));
+
             StartTime = startTime;
             Duration = duration;
             OverlappingItemsCount = overlappingItemsCount;

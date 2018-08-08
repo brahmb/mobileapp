@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="cZE-iV-UFb" customClass="HourSupplementaryView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="20"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="375" height="20"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="12:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D8j-S2-83X">
+                        <rect key="frame" x="16" y="0.0" width="32" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="RfK-Sg-N0I"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" red="0.70980392160000005" green="0.73725490199999999" blue="0.75294117650000003" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zwI-f9-qCG">
+                        <rect key="frame" x="76" y="9.5" width="299" height="1"/>
+                        <color key="backgroundColor" red="0.70980392156862748" green="0.73725490196078436" blue="0.75294117647058822" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="fvp-sQ-a8e"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="zwI-f9-qCG" firstAttribute="leading" secondItem="cZE-iV-UFb" secondAttribute="leading" constant="76" id="2kJ-Jh-N1S"/>
+                <constraint firstItem="D8j-S2-83X" firstAttribute="centerY" secondItem="cZE-iV-UFb" secondAttribute="centerY" id="2mS-df-lw3"/>
+                <constraint firstAttribute="trailing" secondItem="zwI-f9-qCG" secondAttribute="trailing" id="3zi-IR-U7b"/>
+                <constraint firstItem="D8j-S2-83X" firstAttribute="leading" secondItem="cZE-iV-UFb" secondAttribute="leading" constant="16" id="8Mu-oO-E2j"/>
+                <constraint firstItem="D8j-S2-83X" firstAttribute="centerY" secondItem="cZE-iV-UFb" secondAttribute="centerY" id="BS2-aN-nhV"/>
+                <constraint firstItem="zwI-f9-qCG" firstAttribute="centerY" secondItem="cZE-iV-UFb" secondAttribute="centerY" id="Edr-wz-RB4"/>
+                <constraint firstItem="D8j-S2-83X" firstAttribute="top" secondItem="cZE-iV-UFb" secondAttribute="top" id="ebs-e1-gGh"/>
+                <constraint firstAttribute="bottom" secondItem="D8j-S2-83X" secondAttribute="bottom" id="kjy-vi-KY5"/>
+            </constraints>
+            <size key="customSize" width="343" height="50"/>
+            <connections>
+                <outlet property="HourLabel" destination="D8j-S2-83X" id="woH-Tg-7sF"/>
+            </connections>
+            <point key="canvasLocation" x="180.5" y="54"/>
+        </collectionViewCell>
+    </objects>
+</document>
