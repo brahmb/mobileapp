@@ -340,7 +340,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
 
         public void Refresh()
         {
-            dataSource.SyncManager.ForceFullSync();
+            dataSource.SyncManager.InitiateFullSync();
         }
 
         private void onMidnight(DateTimeOffset midnight)
@@ -424,7 +424,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             StopTimeEntryCommand.RaiseCanExecuteChanged();
 
             await dataSource.TimeEntries.Stop(timeService.CurrentDateTime)
-                .Do(_ => dataSource.SyncManager.PushSync());
+                .Do(dataSource.SyncManager.InitiatePushSync);
 
             CurrentTimeEntryElapsedTime = TimeSpan.Zero;
         }

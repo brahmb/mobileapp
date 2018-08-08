@@ -42,7 +42,7 @@ namespace Toggl.Foundation.Interactors
                 .Select(timeEntries => timeEntries.MaxBy(te => te.Start))
                 .Select(newTimeEntry)
                 .SelectMany(dataSource.TimeEntries.Create)
-                .Do(_ => dataSource.SyncManager.PushSync())
+                .Do(dataSource.SyncManager.InitiatePushSync)
                 .Track(StartTimeEntryEvent.With(TimeEntryStartOrigin.ContinueMostRecent), analyticsService);
 
         private IThreadSafeTimeEntry newTimeEntry(IThreadSafeTimeEntry timeEntry)

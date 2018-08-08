@@ -9,6 +9,7 @@ using MvvmCross.ViewModels;
 using PropertyChanged;
 using Toggl.Foundation.Analytics;
 using Toggl.Foundation.DataSources;
+using Toggl.Foundation.Extensions;
 using Toggl.Foundation.Interactors;
 using Toggl.Foundation.Models.Interfaces;
 using Toggl.Foundation.MvvmCross.Collections;
@@ -226,7 +227,7 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
             await interactorFactory.DeleteTimeEntry(timeEntryViewModel.Id).Execute();
 
             analyticsService.DeleteTimeEntry.Track();
-            var _ = dataSource.SyncManager.PushSync();
+            dataSource.SyncManager.InitiatePushSync();
         }
 
         private async Task continueTimeEntry(TimeEntryViewModel timeEntryViewModel)
