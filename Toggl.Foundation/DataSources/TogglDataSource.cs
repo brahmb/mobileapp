@@ -24,12 +24,14 @@ namespace Toggl.Foundation.DataSources
         private readonly ITogglDatabase database;
         private readonly IErrorHandlingService errorHandlingService;
         private readonly IBackgroundService backgroundService;
+        private readonly ITimeService timeService;
         private readonly IApplicationShortcutCreator shortcutCreator;
 
         private readonly TimeSpan minimumTimeInBackgroundForFullSync;
 
         private IDisposable errorHandlingDisposable;
         private IDisposable signalDisposable;
+        private IDisposable midnightDisposable;
 
         private bool isLoggedIn;
 
@@ -56,6 +58,7 @@ namespace Toggl.Foundation.DataSources
             this.database = database;
             this.errorHandlingService = errorHandlingService;
             this.backgroundService = backgroundService;
+            this.timeService = timeService;
             this.shortcutCreator = shortcutCreator;
 
             this.minimumTimeInBackgroundForFullSync = minimumTimeInBackgroundForFullSync;
@@ -101,12 +104,15 @@ namespace Toggl.Foundation.DataSources
             if (isLoggedIn == false)
                 throw new InvalidOperationException("Cannot start syncing after the user logged out of the app.");
 
-            if (signalDisposable != null)
+            if (signalDisposable != null || midnightDisposable != null)
                 throw new InvalidOperationException("The StartSyncing method has already been called.");
 
             signalDisposable = backgroundService.AppResumedFromBackground
                 .Where(timeInBackground => timeInBackground >= minimumTimeInBackgroundForFullSync)
                 .Subscribe((TimeSpan _) => SyncManager.ForceFullSync());
+
+            midnightDisposable = timeService.MidnightObservable
+                .Subscribe((DateTimeOffset _) => SyncManager.CleanUp());
 
             return SyncManager.ForceFullSync()
                 .Select(_ => Unit.Default);
