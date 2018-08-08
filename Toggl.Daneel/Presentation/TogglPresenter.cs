@@ -206,7 +206,7 @@ namespace Toggl.Daneel.Presentation
                     {
                         if (MasterNavigationController?.TopViewController is MainViewController mainViewController)
                         {
-                            if (ratingViewVisibilityHint.ForceHide)
+                            if (ratingViewVisibilityHint.ShouldHide)
                                 mainViewController.HideRatingView();
                             else
                                 mainViewController.ShowRatingView();
