@@ -29,6 +29,9 @@ namespace Toggl.Foundation.Tests.Sync
                         case Push:
                             queue.QueuePushSync();
                             break;
+                        case CleanUp:
+                            queue.QueueCleanUp();
+                            break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -99,6 +102,16 @@ namespace Toggl.Foundation.Tests.Sync
                 );
             }
 
+            [Fact, LogIfTooSlow]
+            public void StartsCleanUpIfOnlyCleanUpIsQueue()
+            {
+                QueueSyncs(CleanUp);
+
+                Dequeue();
+
+                DequeuedStates.ShouldBeSameEventsAs(CleanUp);
+            }
+
             [Property]
             public void AlwaysReturnsTheStateItRuns(bool[] pushPull)
             {
@@ -154,6 +167,18 @@ namespace Toggl.Foundation.Tests.Sync
                     Pull, Push, Pull, Push, Sleep
                 );
             }
+
+            [Fact, LogIfTooSlow]
+            public void RunsCleanUpJustBeforeSleepIfPullAndPushIsQueuedAsWell()
+            {
+                QueueSyncs(Pull, Push, CleanUp);
+
+                DequeueUntilSleep();
+
+                DequeuedStates.ShouldBeSameEventsAs(
+                    Pull, Push, CleanUp, Sleep
+                );
+            }
         }
 
         public sealed class TheClearMethod : BaseStateQueueTests
@@ -180,8 +205,19 @@ namespace Toggl.Foundation.Tests.Sync
                 returnValues.ShouldBeSameEventsAs(Sleep);
             }
 
+            [Fact, LogIfTooSlow]
+            public void ClearsCleanUp()
+            {
+                QueueSyncs(CleanUp);
+
+                Clear();
+                var returnValues = DequeueUntilSleep();
+
+                returnValues.ShouldBeSameEventsAs(Sleep);
+            }
+
             [Property]
-            public void RetursSleepAfterClearNoMatterWhatWasQueuedPreviously(NonEmptyArray<bool> pushPull)
+            public void RetursSleepAfterClearNoMatterHowManyPullsAndPushesWereQueuedPreviously(NonEmptyArray<bool> pushPull)
             {
                 DequeuedStates.Clear();
                 QueueSyncs(BoolToEnumValues(pushPull.Get));

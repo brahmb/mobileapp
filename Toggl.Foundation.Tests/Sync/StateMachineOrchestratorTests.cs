@@ -245,6 +245,13 @@ namespace Toggl.Foundation.Tests.Sync
                 protected override void CallMethod() => Orchestrator.Start(Push);
             }
 
+            public sealed class TheStartCleanUp : PullPushSyncMethodTests
+            {
+                protected override SyncState ExpectedState => CleanUp;
+                protected override StateResult EntryPoint => EntryPoints.StartCleanUp;
+                protected override void CallMethod() => Orchestrator.Start(CleanUp);
+            }
+
             public sealed class TheStartSleep : StateChangeMethodTests
             {
                 protected override SyncState ExpectedState => Sleep;

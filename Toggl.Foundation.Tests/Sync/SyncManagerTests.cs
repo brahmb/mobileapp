@@ -373,6 +373,24 @@ namespace Toggl.Foundation.Tests.Sync
             }
         }
 
+        public sealed class TheCleanUpMethod : SyncMethodTests
+        {
+            protected override IObservable<SyncState> CallSyncMethod()
+                => SyncManager.CleanUp();
+
+            [Fact, LogIfTooSlow]
+            public void TellsQueueToStartSyncAfterQueingPush()
+            {
+                CallMethod();
+
+                Received.InOrder(() =>
+                {
+                    Queue.QueueCleanUp();
+                    Queue.Dequeue();
+                });
+            }
+        }
+
         public sealed class TheFreezeMethod : SyncManagerTestBase
         {
             [Fact, LogIfTooSlow]
