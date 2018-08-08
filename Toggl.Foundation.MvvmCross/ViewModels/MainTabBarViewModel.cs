@@ -22,7 +22,6 @@ namespace Toggl.Foundation.MvvmCross.ViewModels
     {
         private MainViewModel mainViewModel;
         private ReportsViewModel reportsViewModel;
-        private SettingsViewModel settingsViewModel;
 
         public IEnumerable<MvxViewModel> ViewModels { get; private set; }
 
