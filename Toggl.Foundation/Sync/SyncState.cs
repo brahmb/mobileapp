@@ -4,6 +4,7 @@
     {
         Sleep = 0,
         Pull,
-        Push
+        Push,
+        CleanUp
     }
 }
