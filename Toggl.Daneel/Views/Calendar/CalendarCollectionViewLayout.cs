@@ -152,7 +152,7 @@ namespace Toggl.Daneel.Views.Calendar
             var width = CollectionViewContentSize.Width - leftPadding - rightPadding - currentTimeSupplementaryLeftOffset;
             var height = 8;
             var x = leftPadding + currentTimeSupplementaryLeftOffset;
-            var y = yHour + yMins;
+            var y = yHour + yMins - height / 2;
 
             return new CGRect(x, y, width, height);
         }
